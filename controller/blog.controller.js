@@ -24,6 +24,12 @@ const createBlog = async (req, res) => {
   const { title, description, status, premium, meta_title, meta_description } =
     req.body;
   try {
+    if (title.length > 100 || title.length < 10) {
+      return res
+        .status(400)
+        .json({ err: "Title must be between 10 and 100 characters" });
+    }
+
     const createBlog = await blogModel.create({
       title: title,
       description: description,
@@ -44,6 +50,11 @@ const updateBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
+    if (req?.body?.title?.length > 100 || req?.body?.title?.length < 10) {
+      return res
+        .status(400)
+        .json({ err: "Title must be between 10 and 100 characters" });
+    }
     const findBlog = await blogModel.findByPk(id);
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
