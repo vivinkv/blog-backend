@@ -1,0 +1,88 @@
+const { where } = require("sequelize");
+const blogModel = require("../models/blog.model");
+
+//get all blogs
+const getAllBlogs = async (req, res) => {
+  const blogs = await blogModel.findAll({});
+  res.json({ data: blogs });
+};
+
+//get specific blog details
+const getBlogDetail = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const blog = await blogModel.findByPk(id);
+    res.json({ data: blog.dataValues });
+  } catch (error) {
+    res.json({ err: error });
+  }
+};
+
+//creat new blog
+
+const createBlog = async (req, res) => {
+  const { title, description, status, premium, meta_title, meta_description } =
+    req.body;
+  try {
+    const createBlog = await blogModel.create({
+      title: title,
+      description: description,
+      status: status,
+      premium: premium,
+      meta_title: meta_title,
+      meta_description: meta_description,
+      author: req.user.id,
+    });
+    res.status(200).json({ data: createBlog.dataValues });
+  } catch (error) {
+    res.status(500).json({ err: error });
+  }
+};
+
+//update existing blog
+const updateBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog notfound" });
+    }
+
+    await findBlog.update(req.body, {
+      where: {
+        id: id,
+      },
+    });
+
+    res.status(200).json({ data: findBlog.dataValues });
+  } catch (error) {
+    res.status(500).json({ err: error });
+  }
+};
+
+// Delete existing blog
+const deleteBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog notfound" });
+    }
+
+    await findBlog.destroy();
+
+    res.status(200).json({ data: findBlog.dataValues });
+  } catch (error) {
+    res.status(500).json({ err: error });
+  }
+};
+
+module.exports = {
+  getAllBlogs,
+  getBlogDetail,
+  createBlog,
+  updateBlog,
+  deleteBlog,
+};
