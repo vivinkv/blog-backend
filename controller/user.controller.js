@@ -14,6 +14,9 @@ const createUser = async (req, res) => {
     if (!emailValidator.validate(email) || email.length > 20) {
       return res.status(422).json({ err: "Please Enter Valid Email" });
     }
+    if(email.length<12){
+      return res.status(422).json({ err: "Email must contain 12 characters" });
+    }
     const findUser = await userModel.findOne({
       where: {
         email: email,
