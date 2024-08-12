@@ -26,7 +26,7 @@ const userModel = sequelizeConfig.define(
     },
     bio: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {
