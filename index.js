@@ -38,7 +38,7 @@ app.get("/", async (req, res) => {
         },
       ],
     });
-    res.json({ data: getNonPremiumBlogs });
+    res.json({ data: getNonPremiumBlogs,msg:"Working" });
   } catch (error) {
     res.json({ err: error });
   }
