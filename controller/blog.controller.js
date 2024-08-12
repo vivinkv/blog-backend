@@ -1,22 +1,69 @@
-const { where } = require("sequelize");
+const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
+const featuredImageModel = require("../models/featuredImage.model");
+const ogImageModel = require("../models/ogImage.model");
+const userModel = require("../models/user.model");
 
 //get all blogs
 const getAllBlogs = async (req, res) => {
-  const blogs = await blogModel.findAll({
-    order:[['createdAt','DESC']]
-  });
-  res.json({ data: blogs });
+  try {
+    const blogs = await blogModel.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          attributes: ["id", "name", "email", "bio"],
+        },
+        {
+          model:bannerImageModel,
+          foreignKey:'banner_id'
+        },
+        {
+          model:featuredImageModel,
+          foreignKey:'featured_id'
+        },
+        {
+          model:ogImageModel,
+          foreignKey:'og_id'
+        }
+
+      ],
+    });
+    res.json({ data: blogs });
+  } catch (error) {
+    res.json({ err: error.message });
+  }
 };
 
 //get specific blog details
 const getBlogDetail = async (req, res) => {
   const { id } = req.params;
   try {
-    const blog = await blogModel.findByPk(id);
+    const blog = await blogModel.findByPk(id, {
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          attributes: ["id", "name", "email", "bio"],
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+        },
+        {
+          model: featuredImageModel,
+          foreignKey: "featured_id",
+        },
+        {
+          model: ogImageModel,
+          foreignKey: "og_id",
+        },
+      ],
+    });
     res.json({ data: blog.dataValues });
   } catch (error) {
-    res.json({ err: error });
+    res.status(500).json({ err: error.message });
   }
 };
 

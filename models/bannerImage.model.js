@@ -1,38 +1,30 @@
 const sequelizeConfig = require("../config/sequelize.config");
 const { DataTypes } = require("sequelize");
-const blogModel = require("./blog.model");
-
-const userModel = sequelizeConfig.define(
-  "user",
+const bannerImageModel = sequelizeConfig.define(
+  "bannerimg",
   {
     id: {
       type: DataTypes.STRING,
+      primaryKey: true,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      primaryKey: true,
+    },
+    alt: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    path: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    bio: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   },
   {
-    timestamps: true,
     freezeTableName: true,
   }
 );
 
-module.exports = userModel;
+module.exports = bannerImageModel;

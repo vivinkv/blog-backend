@@ -42,27 +42,39 @@ const blogModel = sequelizeConfig.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    banner_id: {
+      type: DataTypes.STRING,
+      references: {
+        model: "bannerimg",
+        key: "id",
+      },
+    },
+    featured_id: {
+      type: DataTypes.STRING,
+      references: {
+        model: "featuredimg",
+        key: "id",
+      },
+    },
+    og_id: {
+      type: DataTypes.STRING,
+      references: {
+        model: "ogimg",
+        key: "id",
+      },
+    },
     author: {
       type: DataTypes.STRING,
       references: {
-        model: "users",
+        model: "user",
         key: "id",
       },
     },
   },
   {
     timestamps: true,
+    freezeTableName: true,
   }
 );
-
-blogModel.associate = () => {
-  blogModel.belongsTo(userModel, {
-    foreignKey: "author",
-  });
-
-  userModel.hasMany(blogModel, {
-    foreignKey: "author",
-  });
-};
 
 module.exports = blogModel;

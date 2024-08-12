@@ -1,14 +1,15 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
-const userModel = require("../models/user.model");
 const jwt = require("jsonwebtoken");
-const { generateToken } = require("../utils/generateToken");
 var emailValidator = require("email-validator");
 var { passwordStrength } = require("check-password-strength");
+const adminModel = require("../models/admin.model");
+const userModel = require("../models/user.model");
+const blogModel = require("../models/blog.model");
 
 //Create a new User
-const createUser = async (req, res) => {
-  const { email, name, password, bio } = req.body;
+const createAdmin = async (req, res) => {
+  const { email, name, password } = req.body;
 
   try {
     if (!emailValidator.validate(email) || email.length > 20) {
@@ -17,13 +18,13 @@ const createUser = async (req, res) => {
     if (email.length < 12) {
       return res.status(400).json({ err: "Email must contain 12 characters" });
     }
-    const findUser = await userModel.findOne({
+    const findAdmin = await adminModel.findOne({
       where: {
         email: email,
       },
     });
 
-    if (findUser) {
+    if (findAdmin) {
       return res.status(409).json({ err: "Email Already Exist" });
     }
 
@@ -33,19 +34,12 @@ const createUser = async (req, res) => {
       return res.status(400).json({ err: "Please Enter Valid Password" });
     }
 
-    if (bio.length > 70) {
-      return res
-        .status(400)
-        .json({ err: "Bio must be less than 50 characters" });
-    }
-
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const createUser = await userModel.create({
+    const createUser = await adminModel.create({
       name: name,
       email: email,
       password: hashPassword,
-      bio: bio,
     });
 
     const token = jwt.sign(
@@ -57,13 +51,12 @@ const createUser = async (req, res) => {
         id: createUser.dataValues.id,
         email: createUser.dataValues.email,
         name: createUser.dataValues.name,
-        bio: createUser.dataValues.bio,
         token: token,
       },
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ err: error });
+    res.status(500).json({ err: error.message });
   }
 };
 
@@ -73,19 +66,19 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const findUser = await userModel.findOne({
+    const findAdmin = await adminModel.findOne({
       where: {
         email: email,
       },
     });
 
-    if (!findUser) {
+    if (!findAdmin) {
       return res.status(404).json({ err: "Invalid Email" });
     }
 
     const checkPassword = await bcrypt.compare(
       password,
-      findUser.dataValues.password
+      findAdmin.dataValues.password
     );
 
     if (!checkPassword) {
@@ -93,15 +86,14 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      findUser.dataValues.id,
+      findAdmin.dataValues.id,
       process.env.JWT_SECRET_TOKEN
     );
     res.status(200).json({
       data: {
-        id: findUser.dataValues.id,
-        name: findUser.dataValues.name,
-        email: findUser.dataValues.email,
-        bio: findUser.dataValues.bio,
+        id: findAdmin.dataValues.id,
+        name: findAdmin.dataValues.name,
+        email: findAdmin.dataValues.email,
         token: token,
       },
     });
@@ -110,18 +102,22 @@ const login = async (req, res) => {
   }
 };
 
-//get all users
-const getAllUsers = async (req, res) => {
+const getAllBlogs = async (req, res) => {
   try {
-    const users = await userModel.findAll({
-      attributes:{
-        exclude:['password']
-      }
+    const blogs = await blogModel.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          attributes: ["id", "name", "email", "bio"],
+        },
+      ],
     });
-    res.status(200).json({ data: users });
+    res.json({ data: blogs });
   } catch (error) {
-    res.status(500).json({ err: error.message });
+    res.json({ err: error.message });
   }
 };
 
-module.exports = { createUser, login, getAllUsers };
+module.exports = { createAdmin, login, getAllBlogs };

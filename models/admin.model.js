@@ -1,9 +1,8 @@
 const sequelizeConfig = require("../config/sequelize.config");
 const { DataTypes } = require("sequelize");
-const blogModel = require("./blog.model");
 
-const userModel = sequelizeConfig.define(
-  "user",
+const adminModel = sequelizeConfig.define(
+  "admin",
   {
     id: {
       type: DataTypes.STRING,
@@ -24,10 +23,6 @@ const userModel = sequelizeConfig.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    bio: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
   },
   {
     timestamps: true,
@@ -35,4 +30,4 @@ const userModel = sequelizeConfig.define(
   }
 );
 
-module.exports = userModel;
+module.exports = adminModel;
