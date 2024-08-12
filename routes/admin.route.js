@@ -5,6 +5,8 @@ const {
   login,
   createAdmin,
   getAllBlogs,
+  deleteBlog,
+  deleteUser,
 } = require("../controller/admin.controller");
 const router = express.Router();
 
@@ -13,5 +15,6 @@ router.post("/login", login);
 router.use(adminAuth);
 router.get("/blogs", getAllBlogs);
 router.get("/users", getAllUsers);
-
+router.delete("/blogs/:id", deleteBlog);
+router.delete("/users/:id", deleteUser);
 module.exports = router;

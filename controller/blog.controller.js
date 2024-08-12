@@ -109,6 +109,10 @@ const updateBlog = async (req, res) => {
       return res.status(404).json({ err: "Blog notfound" });
     }
 
+    if(!findBlog.dataValues.author==req.user.id){
+      return res.status(403).json({data:"Update Permission Denied"})
+    }
+
     await findBlog.update(req.body, {
       where: {
         id: id,
@@ -129,6 +133,9 @@ const deleteBlog = async (req, res) => {
     const findBlog = await blogModel.findByPk(id);
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
+    }
+    if(!findBlog.dataValues.author==req.user.id){
+      return res.status(403).json({data:"Delete Permission Denied"})
     }
 
     await findBlog.destroy();

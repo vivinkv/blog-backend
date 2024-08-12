@@ -120,4 +120,32 @@ const getAllBlogs = async (req, res) => {
   }
 };
 
-module.exports = { createAdmin, login, getAllBlogs };
+const deleteBlog = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findBlog = await blogModel.findByPk(id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not found" });
+    }
+    await findBlog.destroy();
+    res.json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findUser = await blogModel.findByPk(id);
+    if (!findUser) {
+      return res.status(404).json({ err: "Blog not found" });
+    }
+    await findUser.destroy();
+    res.json({ data: findUser.dataValues, msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+module.exports = { createAdmin, login, getAllBlogs, deleteBlog, deleteUser };
