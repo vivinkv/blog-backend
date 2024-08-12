@@ -3,7 +3,9 @@ const blogModel = require("../models/blog.model");
 
 //get all blogs
 const getAllBlogs = async (req, res) => {
-  const blogs = await blogModel.findAll({});
+  const blogs = await blogModel.findAll({
+    order:[['createdAt','DESC']]
+  });
   res.json({ data: blogs });
 };
 

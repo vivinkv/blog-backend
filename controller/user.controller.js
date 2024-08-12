@@ -12,10 +12,10 @@ const createUser = async (req, res) => {
 
   try {
     if (!emailValidator.validate(email) || email.length > 20) {
-      return res.status(422).json({ err: "Please Enter Valid Email" });
+      return res.status(400).json({ err: "Please Enter Valid Email" });
     }
-    if(email.length<12){
-      return res.status(422).json({ err: "Email must contain 12 characters" });
+    if (email.length < 12) {
+      return res.status(400).json({ err: "Email must contain 12 characters" });
     }
     const findUser = await userModel.findOne({
       where: {
@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
     });
 
     if (findUser) {
-      return res.json({ err: "Email Already Exist" });
+      return res.status(409).json({ err: "Email Already Exist" });
     }
 
     if (passwordStrength(password).id < 2) {
@@ -89,7 +89,7 @@ const login = async (req, res) => {
     );
 
     if (!checkPassword) {
-      return res.status(404).json({ err: "Wrong Password" });
+      return res.status(401).json({ err: "Wrong Password" });
     }
 
     const token = jwt.sign(
