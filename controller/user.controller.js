@@ -33,7 +33,7 @@ const createUser = async (req, res) => {
       return res.status(400).json({ err: "Please Enter Valid Password" });
     }
 
-    if (bio.length > 70) {
+    if (bio?.length > 70) {
       return res
         .status(400)
         .json({ err: "Bio must be less than 50 characters" });
@@ -45,7 +45,7 @@ const createUser = async (req, res) => {
       name: name,
       email: email,
       password: hashPassword,
-      bio: bio,
+      bio: bio||null,
     });
 
     const token = jwt.sign(
@@ -63,7 +63,7 @@ const createUser = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ err: error });
+    res.status(500).json({ err: error.message });
   }
 };
 
