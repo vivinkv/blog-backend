@@ -45,7 +45,7 @@ const createUser = async (req, res) => {
       name: name,
       email: email,
       password: hashPassword,
-      bio: bio||null,
+      bio: bio || null,
     });
 
     const token = jwt.sign(
@@ -71,6 +71,7 @@ const createUser = async (req, res) => {
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.file);
 
   try {
     const findUser = await userModel.findOne({
@@ -106,7 +107,7 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ err: error });
+    res.status(500).json({ err: error.message });
   }
 };
 
@@ -114,9 +115,9 @@ const login = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await userModel.findAll({
-      attributes:{
-        exclude:['password']
-      }
+      attributes: {
+        exclude: ["password"],
+      },
     });
     res.status(200).json({ data: users });
   } catch (error) {
