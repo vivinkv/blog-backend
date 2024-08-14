@@ -9,8 +9,14 @@ const {
   deleteUser,
 } = require("../controller/admin.controller");
 const router = express.Router();
-
+router.get('/create',(req,res)=>{
+  res.render('create',{title:"Create",css:"/login.css"})
+})
 router.post("/create", createAdmin);
+
+router.get('/login',(req,res)=>{
+  res.render('login',{title:"Login",css:"/login.css"})
+})
 router.post("/login", login);
 router.use(adminAuth);
 router.get("/blogs", getAllBlogs);

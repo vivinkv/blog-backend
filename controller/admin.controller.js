@@ -15,7 +15,7 @@ const createAdmin = async (req, res) => {
   const { email, name, password } = req.body;
 
   try {
-    const { count, rows } = await adminModel.findAndCountAll({
+    const { count } = await adminModel.findAndCountAll({
       where: {
         email: email,
       },
@@ -24,20 +24,24 @@ const createAdmin = async (req, res) => {
       return res.status(400).json({ err: "Admin Already Exist" });
     }
     if (!emailValidator.validate(email) || email.length > 20) {
-      return res.status(400).json({ err: "Please Enter Valid Email" });
+      return res
+        .status(400)
+        .json({ type: "email", err: "Please Enter Valid Email" });
     }
     if (email.length < 12) {
-      return res.status(400).json({ err: "Email must contain 12 characters" });
-    }
-
-    if (rows) {
-      return res.status(409).json({ err: "Email Already Exist" });
+      return res
+        .status(400)
+        .json({ type: "email", err: "Email must contain 12 characters" });
     }
 
     if (passwordStrength(password).id < 2) {
-      return res.status(400).json({ err: "Please Enter Strong Password" });
+      return res
+        .status(400)
+        .json({ type: "password", err: "Please Enter Strong Password" });
     } else if (password.length > 20 || password.length < 6) {
-      return res.status(400).json({ err: "Please Enter Valid Password" });
+      return res
+        .status(400)
+        .json({ type: "password", err: "Please Enter Valid Password" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -52,6 +56,11 @@ const createAdmin = async (req, res) => {
       createUser.dataValues.id,
       process.env.JWT_SECRET_TOKEN
     );
+
+    res.cookie("admin", token, {
+      httpOnly: true,
+      expiresIn: "1h",
+    });
     return res.status(201).json({
       user: {
         id: createUser.dataValues.id,
@@ -79,7 +88,7 @@ const login = async (req, res) => {
     });
 
     if (!findAdmin) {
-      return res.status(404).json({ err: "Invalid Email" });
+      return res.status(404).json({ type: "email", err: "Invalid Email" });
     }
 
     const checkPassword = await bcrypt.compare(
@@ -88,23 +97,29 @@ const login = async (req, res) => {
     );
 
     if (!checkPassword) {
-      return res.status(401).json({ err: "Wrong Password" });
+      return res.status(401).json({ type: "password", err: "Wrong Password" });
     }
 
     const token = jwt.sign(
       findAdmin.dataValues.id,
       process.env.JWT_SECRET_TOKEN
     );
+    res.cookie("admin", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+    });
     res.status(200).json({
-      data: {
+      user: {
         id: findAdmin.dataValues.id,
         name: findAdmin.dataValues.name,
         email: findAdmin.dataValues.email,
         token: token,
+        redirect: "/",
       },
     });
   } catch (error) {
-    res.status(500).json({ err: error });
+    res.status(500).json({ err: error.message });
   }
 };
 
