@@ -6,25 +6,31 @@ var { passwordStrength } = require("check-password-strength");
 const adminModel = require("../models/admin.model");
 const userModel = require("../models/user.model");
 const blogModel = require("../models/blog.model");
+const bannerImageModel = require("../models/bannerImage.model");
+const featuredImageModel = require("../models/featuredImage.model");
+const ogImageModel = require("../models/ogImage.model");
 
 //Create a new User
 const createAdmin = async (req, res) => {
   const { email, name, password } = req.body;
 
   try {
+    const { count, rows } = await adminModel.findAndCountAll({
+      where: {
+        email: email,
+      },
+    });
+    if (count == 1) {
+      return res.status(400).json({ err: "Admin Already Exist" });
+    }
     if (!emailValidator.validate(email) || email.length > 20) {
       return res.status(400).json({ err: "Please Enter Valid Email" });
     }
     if (email.length < 12) {
       return res.status(400).json({ err: "Email must contain 12 characters" });
     }
-    const findAdmin = await adminModel.findOne({
-      where: {
-        email: email,
-      },
-    });
 
-    if (findAdmin) {
+    if (rows) {
       return res.status(409).json({ err: "Email Already Exist" });
     }
 
@@ -112,6 +118,18 @@ const getAllBlogs = async (req, res) => {
           foreignKey: "author",
           attributes: ["id", "name", "email", "bio"],
         },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+        },
+        {
+          model: featuredImageModel,
+          foreignKey: "featured_id",
+        },
+        {
+          model: ogImageModel,
+          foreignKey: "og_id",
+        },
       ],
     });
     res.json({ data: blogs });
@@ -122,18 +140,68 @@ const getAllBlogs = async (req, res) => {
 
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
+
   try {
-    const findBlog = await blogModel.findByPk(id);
+    const findBlog = await blogModel.findByPk(id, {
+      include: [
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+        },
+        {
+          model: featuredImageModel,
+          foreignKey: "featured_id",
+        },
+        {
+          model: ogImageModel,
+          foreignKey: "og_id",
+        },
+      ],
+    });
     if (!findBlog) {
-      return res.status(404).json({ err: "Blog not found" });
+      return res.status(404).json({ err: "Blog notfound" });
     }
-    await findBlog.destroy();
-    res.json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
+
+    //delete images
+    fs.unlink(findBlog?.dataValues?.bannerimg?.path?.split("/")[1], (err) => {
+      if (err) {
+        return res.json({ err: err.message });
+      }
+      console.log("Deleted successfully");
+    });
+    fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
+      if (err) {
+        return res.json({ err: err.message });
+      }
+      console.log("Deleted successfully");
+    });
+    fs.unlink(findBlog?.dataValues?.ogimg?.path?.split("/")[1], (err) => {
+      if (err) {
+        return res.json({ err: err.message });
+      }
+      console.log("Deleted successfully");
+    });
+
+    const [banner, featured, og] = await Promise.all([
+      bannerImageModel.findByPk(findBlog.dataValues.banner_id),
+      featuredImageModel.findByPk(findBlog.dataValues.featured_id),
+      ogImageModel.findByPk(findBlog.dataValues.og_id),
+    ]);
+
+    await Promise.all([
+      findBlog.destroy(),
+      banner.destroy(),
+      featured.destroy(),
+      og.destroy(),
+    ]);
+
+    res
+      .status(200)
+      .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
-
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {

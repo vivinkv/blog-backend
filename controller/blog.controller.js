@@ -61,6 +61,9 @@ const getBlogDetail = async (req, res) => {
         },
       ],
     });
+    if(!blog){
+      return res.status(404).json({err:"Blog notfound"})
+    }
     res.json({ data: blog.dataValues });
   } catch (error) {
     res.status(500).json({ err: error.message });
@@ -108,7 +111,9 @@ const createBlog = async (req, res) => {
       og_id: ogImage.dataValues.id,
     });
 
-    res.status(200).json({ data: createBlog.dataValues });
+    res
+      .status(200)
+      .json({ data: createBlog.dataValues, msg: "Created Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -139,7 +144,9 @@ const updateBlog = async (req, res) => {
       },
     });
 
-    res.status(200).json({ data: findBlog.dataValues });
+    res
+      .status(200)
+      .json({ data: findBlog.dataValues, msg: "Updated Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -178,19 +185,16 @@ const deleteBlog = async (req, res) => {
       if (err) {
         return res.json({ err: err.message });
       }
-      console.log("Deleted successfully");
     });
     fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
       if (err) {
         return res.json({ err: err.message });
       }
-      console.log("Deleted successfully");
     });
     fs.unlink(findBlog?.dataValues?.ogimg?.path?.split("/")[1], (err) => {
       if (err) {
         return res.json({ err: err.message });
       }
-      console.log("Deleted successfully");
     });
 
     const [banner, featured, og] = await Promise.all([
@@ -206,7 +210,9 @@ const deleteBlog = async (req, res) => {
       og.destroy(),
     ]);
 
-    res.status(200).json({ data: findBlog.dataValues });
+    res
+      .status(200)
+      .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
