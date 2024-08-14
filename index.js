@@ -54,7 +54,7 @@ app.use("/admin", adminRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig
-  .sync()
+  .sync({force:true})
   .then(() => {
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on PORT: ${process.env.PORT}`);

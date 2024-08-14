@@ -17,7 +17,7 @@ const blogModel = sequelizeConfig.define(
       allowNull: false,
     },
     description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     status: {
@@ -39,7 +39,7 @@ const blogModel = sequelizeConfig.define(
       allowNull: false,
     },
     meta_description: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     banner_id: {
