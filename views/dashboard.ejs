@@ -1,0 +1,101 @@
+<%- include('wrapper/header') %>
+<div class="flex">
+  <aside class="bg-gray-200 w-64 h-screen p-5 hidden md:block">
+    <div class="flex justify-center mb-5">
+      <img src="/logo.png" class="h-24 w-24" alt="blogs" />
+    </div>
+    <nav>
+      <ul>
+        <li
+          class="mb-4 flex gap-x-2 items-center text-blue-900 hover:text-blue-500"
+        >
+          <img src="/users.svg" class="h-7 w-7" alt="blogs" />
+          <span class="font-semibold text-md text-gray-500">Users</span>
+        </li>
+        <li class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500">
+          <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
+          <span class="font-semibold text-md text-gray-500">Blogs</span>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Responsive Sidebar Button -->
+  <div class="md:hidden p-4">
+    <button id="menu-btn" class="text-blue-900 focus:outline-none">
+      <svg
+        class="w-8 h-8"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Main Content (Table) -->
+  <div class="flex-1 p-8">
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border rounded-lg shadow-lg">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="py-2 px-4 text-left text-blue-900 w-24">Profile</th>
+            <th class="py-2 px-4 text-left text-blue-900 w-32">Name</th>
+            <th class="py-2 px-4 text-left text-blue-900 w-48">Email</th>
+            <th class="py-2 px-4 text-left text-blue-900 w-64">Bio</th>
+            <th class="py-2 px-4 text-left text-blue-900 w-32">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Repeatable Row -->
+          <tr class="border-b">
+            <td class="py-2 px-4 w-24">
+              <div class="flex items-center">
+                <div
+                  class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
+                >
+                  P
+                </div>
+              </div>
+            </td>
+            <td class="py-2 px-4 text-blue-900 w-32">John Doe</td>
+            <td class="py-2 px-4 text-blue-900 w-48">johndoe@gmail.com</td>
+            <td class="py-2 px-4 text-blue-900 w-64">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam,
+              quaerat
+            </td>
+            <td class="py-2 px-4 flex space-x-2 w-32">
+              <button class="text-blue-600 hover:text-blue-800">
+                <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
+              </button>
+              <button class="text-red-600 hover:text-red-800">
+                <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
+              </button>
+            </td>
+          </tr>
+          <!-- End Repeatable Row -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Icons (Heroicons) -->
+
+  <%- include('wrapper/footer') %>
+
+  <script>
+    const menuBtn = document.getElementById("menu-btn");
+    const sidebar = document.querySelector("aside");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("hidden");
+    });
+  </script>
+</div>

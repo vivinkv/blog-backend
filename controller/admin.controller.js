@@ -59,7 +59,8 @@ const createAdmin = async (req, res) => {
 
     res.cookie("admin", token, {
       httpOnly: true,
-      expiresIn: "1h",
+      secure: true,
+      sameSite: "Strict",
     });
     return res.status(201).json({
       user: {
@@ -67,6 +68,7 @@ const createAdmin = async (req, res) => {
         email: createUser.dataValues.email,
         name: createUser.dataValues.name,
         token: token,
+        redirect:'/admin/dashboard'
       },
     });
   } catch (error) {
@@ -115,7 +117,7 @@ const login = async (req, res) => {
         name: findAdmin.dataValues.name,
         email: findAdmin.dataValues.email,
         token: token,
-        redirect: "/",
+        redirect: '/admin/dashboard',
       },
     });
   } catch (error) {
@@ -217,6 +219,7 @@ const deleteBlog = async (req, res) => {
     res.status(500).json({ err: error.message });
   }
 };
+
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
@@ -231,4 +234,9 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { createAdmin, login, getAllBlogs, deleteBlog, deleteUser };
+
+const dashboard=(req,res)=>{
+  res.render('dashboard',{title:"Admin Dashboard"})
+}
+
+module.exports = { createAdmin, login, getAllBlogs, deleteBlog, deleteUser,dashboard };

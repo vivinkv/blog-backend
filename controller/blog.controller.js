@@ -8,8 +8,13 @@ const fs = require("fs");
 //get all blogs
 const getAllBlogs = async (req, res) => {
   try {
-    const blogs = await blogModel.findAll({
+    const page=req?.query?.page || 1;
+    const limit=req?.query?.limit|| 15;
+    const offset=(page-1)*limit;
+    const {count,rows} = await blogModel.findAndCountAll({
       order: [["createdAt", "DESC"]],
+      limit:limit,
+      offset:offset,
       include: [
         {
           model: userModel,
@@ -30,7 +35,19 @@ const getAllBlogs = async (req, res) => {
         },
       ],
     });
-    res.json({ data: blogs });
+
+    res.json({
+      currentPage:page,
+      totalPages:Math.ceil(count/limit),
+      totalResults:count,
+      nextPage:page+1,
+      nextPageUrl:`${req?.headers?.host}/blogs?page=${parseInt(page)+1}&limit=${limit}`,
+      previousePageUrl:page>1 ? `${req?.headers?.host}/blogs?page=${page-1}&limit=${limit}`:null,
+      firstPageUrl:`${req?.headers?.host}/blogs?page=1&limit=${limit}`,
+      lastPageUrl:`${req?.headers?.host}/blogs?page=${Math.ceil(count/limit)}&limit=${limit}`,
+      offset:offset,
+      limit:limit,
+      data: rows});
   } catch (error) {
     res.json({ err: error.message });
   }
@@ -111,9 +128,7 @@ const createBlog = async (req, res) => {
       og_id: ogImage.dataValues.id,
     });
 
-    res
-      .status(200)
-      .json({ data: createBlog.dataValues, msg: "Created Successfully" });
+    res.status(200).json({ data: createBlog.dataValues, msg: "Created Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
