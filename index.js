@@ -16,13 +16,12 @@ const featuredImageModel = require("./models/featuredImage.model");
 const bannerImageModel = require("./models/bannerImage.model");
 const ogImageModel = require("./models/ogImage.model");
 
-//ejs setup
-app.use(cors());
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
-
-app.use("/uploads", express.static("uploads"));
+//ejs setup
+app.use(cors());
+app.use(express.static(path.join(__dirname,"uploads")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

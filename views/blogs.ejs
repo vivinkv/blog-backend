@@ -70,11 +70,7 @@
             <tr class="border-b">
               <td class="py-2 px-4 w-24">
                 <div class="flex items-center">
-                  <div
-                    class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
-                  >
-                    <%= data[i].dataValues.title.split('')[0].toUpperCase() %>
-                  </div>
+                <img src="<%= data[i]?.dataValues?.bannerimg?.dataValues?.path %>" alt="<%= data[i]?.dataValues?.bannerimg?.dataValues?.name %>">
                 </div>
               </td>
               <td class="py-2 px-4 text-blue-900 w-32">
