@@ -8,14 +8,18 @@ var { passwordStrength } = require("check-password-strength");
 
 //Create a new User
 const createUser = async (req, res) => {
-  const { email, name, password, bio } = req.body;
-
+  const { email, name, password, bio, role, phone } = req.body;
+  const phonePattern = /^[0-9]{10}$/;
   try {
     if (!emailValidator.validate(email) || email.length > 20) {
-      return res.status(400).json({ err: "Please Enter Valid Email" });
+      return res
+        .status(400)
+        .json({ type: "email", err: "Please Enter Valid Email" });
     }
     if (email.length < 12) {
-      return res.status(400).json({ err: "Email must contain 12 characters" });
+      return res
+        .status(400)
+        .json({ type: "email", err: "Email must contain 12 characters" });
     }
     const findUser = await userModel.findOne({
       where: {
@@ -24,19 +28,33 @@ const createUser = async (req, res) => {
     });
 
     if (findUser) {
-      return res.status(409).json({ err: "Email Already Exist" });
+      return res
+        .status(409)
+        .json({ type: "email", err: "Email Already Exist" });
+    }
+
+    if (req.body?.phone) {
+      if (!phonePattern.test(phone)) {
+        return res
+          .status(409)
+          .json({ type: "phone", err: "Please Enter Valid Mobile Number" });
+      }
     }
 
     if (passwordStrength(password).id < 2) {
-      return res.status(400).json({ err: "Please Enter Strong Password" });
+      return res
+        .status(400)
+        .json({ type: "password", err: "Please Enter Strong Password" });
     } else if (password.length > 20 || password.length < 6) {
-      return res.status(400).json({ err: "Please Enter Valid Password" });
+      return res
+        .status(400)
+        .json({ type: "password", err: "Please Enter Valid Password" });
     }
 
     if (bio?.length > 70) {
       return res
         .status(400)
-        .json({ err: "Bio must be less than 50 characters" });
+        .json({ type: "bio", err: "Bio must be less than 50 characters" });
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
@@ -46,6 +64,8 @@ const createUser = async (req, res) => {
       email: email,
       password: hashPassword,
       bio: bio || null,
+      role: role,
+      phone: phone,
     });
 
     const token = jwt.sign(

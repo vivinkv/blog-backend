@@ -9,20 +9,19 @@ const blogModel = require("../models/blog.model");
 const bannerImageModel = require("../models/bannerImage.model");
 const featuredImageModel = require("../models/featuredImage.model");
 const ogImageModel = require("../models/ogImage.model");
+const { Op } = require("sequelize");
 
 //Create a new User
 const createAdmin = async (req, res) => {
   const { email, name, password } = req.body;
 
   try {
-    const { count } = await adminModel.findAndCountAll({
+    const findAdmin = await userModel.findOne({
       where: {
         email: email,
       },
     });
-    if (count == 1) {
-      return res.status(400).json({ err: "Admin Already Exist" });
-    }
+  
     if (!emailValidator.validate(email) || email.length > 20) {
       return res
         .status(400)
@@ -46,10 +45,11 @@ const createAdmin = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
 
-    const createUser = await adminModel.create({
+    const createUser = await userModel.create({
       name: name,
       email: email,
       password: hashPassword,
+      role:'admin'
     });
 
     const token = jwt.sign(
@@ -83,9 +83,10 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const findAdmin = await adminModel.findOne({
+    const findAdmin = await userModel.findOne({
       where: {
         email: email,
+        role:'admin'
       },
     });
 
@@ -155,6 +156,7 @@ const getAllBlogs = async (req, res) => {
   }
 };
 
+
 const deleteBlog = async (req, res) => {
   const { id } = req.params;
 
@@ -220,12 +222,44 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+const updateBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    if (req?.body?.title?.length > 100 || req?.body?.title?.length < 10) {
+      return res
+        .status(400)
+        .json({ err: "Title must be between 10 and 100 characters" });
+    }
+    const findBlog = await blogModel.findByPk(id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog notfound" });
+    }
+
+    if (!findBlog.dataValues.author == req.user.id) {
+      return res.status(403).json({ data: "Update Permission Denied" });
+    }
+
+    await findBlog.update(req.body, {
+      where: {
+        id: id,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ data: findBlog.dataValues, msg: "Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   try {
-    const findUser = await blogModel.findByPk(id);
+    const findUser = await userModel.findByPk(id);
     if (!findUser) {
-      return res.status(404).json({ err: "Blog not found" });
+      return res.status(404).json({ err: "User not found" });
     }
     await findUser.destroy();
     res.json({ data: findUser.dataValues, msg: "Deleted Successfully" });
@@ -235,8 +269,25 @@ const deleteUser = async (req, res) => {
 };
 
 
-const dashboard=(req,res)=>{
-  res.render('dashboard',{title:"Admin Dashboard"})
+const dashboard=async(req,res)=>{
+  try {
+    const users = await userModel.findAll({
+      where: {
+        role: {
+          [Op.ne]: "admin",
+        },
+      },
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+    // res.status(200).json({ data: users });
+    console.log({data:users});
+    res.render('dashboard',{title:"Admin Dashboard",data:users})
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+ 
 }
 
 module.exports = { createAdmin, login, getAllBlogs, deleteBlog, deleteUser,dashboard };

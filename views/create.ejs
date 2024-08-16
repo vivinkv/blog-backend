@@ -89,8 +89,8 @@
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
-
-      const sendData = await fetch("http://localhost:5000/admin/create", {
+      console.log(window.location);
+      const sendData = await fetch(`${window.location.origin}/admin/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

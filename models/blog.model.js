@@ -70,6 +70,11 @@ const blogModel = sequelizeConfig.define(
         key: "id",
       },
     },
+    role: {
+      type:DataTypes.ENUM('user','admin','seo','author','member'), 
+      allowNull: false,
+      defaultValue: "user", 
+    },
   },
   {
     timestamps: true,

@@ -24,10 +24,19 @@ const userModel = sequelizeConfig.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    phone:{
+      type:DataTypes.STRING,
+      allowNull:true
+    },
     bio: {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    role:{
+      type:DataTypes.ENUM('user','admin','seo','author','member','editor'),
+      allowNull:false,
+      defaultValue:'user'
+    }
   },
   {
     timestamps: true,

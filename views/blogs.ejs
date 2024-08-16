@@ -1,0 +1,123 @@
+<%- include('wrapper/header') %>
+<div class="flex">
+    <!-- Sidebar -->
+    <aside
+      class="bg-gray-200 w-64 h-screen p-5 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:translate-x-0 z-20"
+      id="sidebar"
+    >
+      <div class="flex justify-center mb-5">
+        <img src="/logo.png" class="h-24 w-24" alt="blogs" />
+      </div>
+      <nav>
+        <ul>
+          <a href="/admin/dashboard"
+            class="mb-4 flex gap-x-2 items-center text-blue-900 hover:text-blue-500"
+          >
+            <img src="/users.svg" class="h-7 w-7" alt="users" />
+            <span class="font-semibold text-md text-gray-500">Users</span>
+          </a>
+          <a href="/admin/dashboard/blogs" class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 px-3 py-2 rounded-lg">
+            <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
+            <span class="font-semibold text-md text-gray-500">Blogs</span>
+          </a>
+        </ul>
+      </nav>
+    </aside>
+  
+    <!-- Responsive Sidebar Button -->
+    <div class="md:hidden p-4">
+      <button id="menu-btn" class="text-blue-900 focus:outline-none">
+        <svg
+          class="w-8 h-8"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
+    </div>
+  
+    <!-- Main Content (Table) -->
+    <div class="flex-1 md:ml-64 p-8">
+      <div class="overflow-x-auto">
+        <div class="flex justify-end my-5">
+          <a href="/admin/dashboard/blogs/create"
+            class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
+          >
+            <img src="/addblog.png" class="h-6 w-6" alt="add" />
+          </a>
+        </div>
+        <table class="min-w-full bg-white border rounded-lg shadow-lg">
+          <thead class="bg-blue-100">
+            <tr>
+              <th class="py-2 px-4 text-left text-blue-900 w-64">Picture</th>
+              <th class="py-2 px-4 text-left text-blue-900 w-24">Title</th>
+              <th class="py-2 px-4 text-left text-blue-900 w-32">Description</th>
+              <th class="py-2 px-4 text-left text-blue-900 w-48">Status</th>
+              <th class="py-2 px-4 text-left text-blue-900 w-64">Premium</th>
+              <th class="py-2 px-4 text-left text-blue-900 w-32">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (data.length>0) { %> <% for( let i = 0; i < data.length; i++ ){%>
+            <tr class="border-b">
+              <td class="py-2 px-4 w-24">
+                <div class="flex items-center">
+                  <div
+                    class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
+                  >
+                    <%= data[i].dataValues.title.split('')[0].toUpperCase() %>
+                  </div>
+                </div>
+              </td>
+              <td class="py-2 px-4 text-blue-900 w-32">
+                <%= data[i].dataValues.title%>
+              </td>
+              <td class="py-2 px-4 text-blue-900 w-48">
+                <%=data[i].dataValues.meta_description%>
+              </td>
+              <td class="py-2 px-4 text-blue-900 w-64">
+                <%= data[i].dataValues.status%>
+              </td>
+              <td class="py-2 px-4 text-blue-900 w-64">
+                <%= data[i].dataValues.premium%>
+              </td>
+              <td class="py-2 px-4 flex space-x-2 w-32">
+                <a href="blogs/update/<%= data[i].dataValues.id %>" class="text-blue-600 hover:text-blue-800">
+                  <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
+                </a>
+                
+               <a href="blogs/delete/<%= data[i].dataValues.id %>" id="deletebtn" onclick="deleteBlog(1)" class="text-red-600 hover:text-red-800">
+                  <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
+                </a> 
+              </td>
+            </tr>
+            <% } %> <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Icons (Heroicons) -->
+
+  <%- include('wrapper/footer') %>
+
+  <script>
+    const menuBtn = document.getElementById("menu-btn");
+    const sidebar = document.querySelector("aside");
+
+    menuBtn.addEventListener("click", () => {
+      sidebar.classList.toggle("hidden");
+    });
+
+  </script>
+</div>

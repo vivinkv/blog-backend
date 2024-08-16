@@ -6,16 +6,16 @@
     </div>
     <nav>
       <ul>
-        <li
-          class="mb-4 flex gap-x-2 items-center text-blue-900 hover:text-blue-500"
+        <a href="/admin/dashboard"
+          class="mb-4 flex gap-x-2 items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 px-3 py-2 rounded-lg"
         >
           <img src="/users.svg" class="h-7 w-7" alt="blogs" />
-          <span class="font-semibold text-md text-gray-500">Users</span>
-        </li>
-        <li class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500">
+          <span class="font-semibold text-md text-gray-500 ">Users</span>
+        </a>
+        <a href="/admin/dashboard/blogs" class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500">
           <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500">Blogs</span>
-        </li>
+        </a>
       </ul>
     </nav>
   </aside>
@@ -43,6 +43,13 @@
   <!-- Main Content (Table) -->
   <div class="flex-1 p-8">
     <div class="overflow-x-auto">
+      <div class="flex justify-end my-5">
+        <a href="/admin/dashboard/user/create"
+          class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
+        >
+          <img src="/adduser.png" class="h-6 w-6" alt="add" />
+        </a>
+      </div>
       <table class="min-w-full bg-white border rounded-lg shadow-lg">
         <thead class="bg-blue-100">
           <tr>
@@ -50,45 +57,51 @@
             <th class="py-2 px-4 text-left text-blue-900 w-32">Name</th>
             <th class="py-2 px-4 text-left text-blue-900 w-48">Email</th>
             <th class="py-2 px-4 text-left text-blue-900 w-64">Bio</th>
+            <th class="py-2 px-4 text-left text-blue-900 w-64">Role</th>
             <th class="py-2 px-4 text-left text-blue-900 w-32">Action</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Repeatable Row -->
+          <% if (data.length>0) { %> <% for( let i = 0; i < data.length; i++ ){%>
+
           <tr class="border-b">
             <td class="py-2 px-4 w-24">
               <div class="flex items-center">
                 <div
                   class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white"
                 >
-                  P
+                  <%= data[i].dataValues.name.split('')[0].toUpperCase() %>
                 </div>
               </div>
             </td>
-            <td class="py-2 px-4 text-blue-900 w-32">John Doe</td>
-            <td class="py-2 px-4 text-blue-900 w-48">johndoe@gmail.com</td>
+            <td class="py-2 px-4 text-blue-900 w-32">
+              <%= data[i].dataValues.name%>
+            </td>
+            <td class="py-2 px-4 text-blue-900 w-48">
+              <%=data[i].dataValues.email%>
+            </td>
             <td class="py-2 px-4 text-blue-900 w-64">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Totam,
-              quaerat
+              <%= data[i].dataValues?.bio == null ? null : data[i].dataValues.bio%>
+            </td>
+            <td class="py-2 px-4 text-blue-900 w-64">
+              <%= data[i].dataValues.role%>
             </td>
             <td class="py-2 px-4 flex space-x-2 w-32">
-              <button class="text-blue-600 hover:text-blue-800">
+              <a href="/admin/dashboard/user/update/<%= data[i].dataValues.id%>" class="text-blue-600 hover:text-blue-800">
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
-              </button>
-              <button class="text-red-600 hover:text-red-800">
+              </a>
+              <a href="/admin/dashboard/user/delete/<%= data[i].dataValues.id%>" class="text-red-600 hover:text-red-800">
                 <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
-              </button>
+              </a>
             </td>
           </tr>
-          <!-- End Repeatable Row -->
+<% } %> <% } %>
         </tbody>
       </table>
     </div>
   </div>
-
-  <!-- Icons (Heroicons) -->
-
-  <%- include('wrapper/footer') %>
+</div>
+<%- include('wrapper/footer') %>
 
   <script>
     const menuBtn = document.getElementById("menu-btn");
@@ -98,4 +111,3 @@
       sidebar.classList.toggle("hidden");
     });
   </script>
-</div>

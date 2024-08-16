@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create Blog</title>
+    <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet"> -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="/index.css" />
+    <style>
+      /* Container Styling */
+      .form-container {
+        max-width: 1280px;
+        margin: 20px auto;
+        padding: 24px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Form Group Styling */
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      /* Label Styling */
+      .form-label {
+        display: block;
+        color: #4a5568; /* text-gray-700 */
+        font-size: 1.25rem; /* text-xl */
+        font-weight: 600; /* font-semibold */
+        margin-bottom: 8px;
+      }
+
+      /* Input and Textarea Styling */
+      .form-input,
+      .form-textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #d1d5db; /* border-gray-300 */
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .form-input:focus,
+      .form-textarea:focus {
+        border-color: #63b3ed; /* focus:border-blue-300 */
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* focus:ring */
+      }
+
+      /* Textarea Height */
+      .form-textarea {
+        height: 160px; /* h-40 */
+        padding: 12px;
+      }
+
+      /* Button Styling */
+      .form-button {
+        width: 100px; /* w-32 */
+        background-color: #4299e1; /* bg-blue-500 */
+        color: white;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        font-size: 1rem;
+      }
+
+      .form-button:hover {
+        background-color: #2b6cb0; /* hover:bg-blue-700 */
+      }
+
+      .form-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.5); /* focus:ring-2 focus:ring-red-400 */
+      }
+
+      /* Flexbox for Button Container */
+      .form-action {
+        display: flex;
+        justify-content: flex-end;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .styled-checkbox {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #4a5568; /* border-gray-700 */
+        border-radius: 4px;
+        outline: none;
+        cursor: pointer;
+        position: relative;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+      }
+
+      /* Create custom checkmark */
+      .styled-checkbox::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 8px;
+        height: 8px;
+        background-color: #3182ce; /* bg-blue-500 */
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.2s ease;
+        border-radius: 2px;
+      }
+
+      /* Change appearance when checked */
+      .styled-checkbox:checked {
+        background-color: #3182ce; /* bg-blue-500 */
+        border-color: #3182ce;
+      }
+
+      .styled-checkbox:checked::after {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      /* Label styling */
+      .checkbox-label {
+        margin-left: 8px; /* Space between checkbox and label */
+        font-size: 1rem;
+        color: #4a5568; /* text-gray-700 */
+        cursor: pointer;
+      }
+      .alert-message {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #197ce5; /* Green background */
+    color: white; /* White text */
+    text-align: center;
+    border-radius: 5px;
+    font-size: 18px;
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+    </style>
+  </head>
+  <body>
+    <form action="" class="form-container">
+        <div class="form-group">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" name="title" id="title" required value="<%= data.title %>" class="form-input" placeholder="Enter title" />
+        </div>
+      
+        <div class="form-group">
+          <label for="banner" class="form-label">Banner Image</label>
+          <input type="file" name="image" id="banner" value="<%= data.title %>" class="form-input" multiple />
+        </div>
+      
+        <div class="form-group">
+          <label for="content" class="form-label">Short Description</label>
+          <input type="hidden" name="id" id="id" value="<%= data.id %>">
+          <textarea id="shortdescription" class="form-textarea" required placeholder="Meta Description"><%= data.meta_description %></textarea>
+        </div>
+        <div class="form-group">
+          <label for="content" class="form-label">Content</label>
+          <textarea id="summernote" class="form-textarea" required><%= data.description %></textarea>
+        </div>
+      
+        <div class="form-action">
+          <div style="display: flex;align-items: center;">
+            <input type="checkbox" id="premium" <%= data.premium ? 'checked': '' %>  class="styled-checkbox" />
+            <label for="premium" class="checkbox-label">Premium</label>
+          </div>
+          <button type="button" id="submitbtn" class="form-button">Update</button>
+        </div>
+      </form>
+      <div id="alertMessage" class="alert-message" style="display: none;">
+        Form submitted successfully!
+      </div>
+      
+      <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+      <script>
+        $("#summernote").summernote({
+          placeholder: "Enter your content here...",
+          tabsize: 2,
+          height: "80vh",
+        });
+      
+        document.getElementById("submitbtn").addEventListener("click", async function (e) {
+          e.preventDefault();
+          const title = document.getElementById("title").value;
+          const bannerImg = document.getElementById("banner").files;
+          const shortDescription = document.getElementById("shortdescription").value;
+          const content = $("#summernote").summernote("code");
+          const premium = document.getElementById("premium").checked;
+          const id=document.getElementById('id').value;
+      
+          const formData = new FormData();
+          formData.append("title", title);
+          formData.append("description", content);
+          formData.append("meta_description", shortDescription);
+          formData.append("premium", premium);
+      
+          for (let i = 0; i < bannerImg.length; i++) {
+            formData.append("image", bannerImg[i]);
+          }
+      
+          const response = await fetch(`${window.location.origin}/admin/blogs/update/${id}`, {
+            method: "PUT",
+            body: formData,
+          });
+      
+          const result = await response.json();
+          console.log(result);
+          if (response.ok) {
+      // Show the alert message
+      const alertMessage = document.getElementById("alertMessage");
+      alertMessage.innerText=result.msg
+      alertMessage.style.display = "block";
+
+      // Hide the alert after 3 seconds
+      setTimeout(() => {
+        alertMessage.style.display = "none";
+      }, 3000);
+    }
+        });
+      </script>
+      
+  </body>
+</html>

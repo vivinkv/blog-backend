@@ -118,7 +118,7 @@ const createBlog = async (req, res) => {
     const createBlog = await blogModel.create({
       title: title,
       description: description,
-      status: status,
+      status: 'Published',
       premium: premium,
       meta_title: meta_title,
       meta_description: meta_description,

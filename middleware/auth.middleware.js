@@ -39,7 +39,12 @@ const adminAuth = async (req, res, next) => {
       //   return res.redirect("/admin/dashboard");
       // } else {
       const id = jwt.verify(req?.cookies?.admin, process.env.JWT_SECRET_TOKEN);
-      const findAdmin = await adminModel.findByPk(id, {
+      const findAdmin = await userModel.findOne({
+        where: {
+          id: id,
+          role: "admin",
+        },
+
         attributes: ["name", "email", "id"],
       });
       if (!findAdmin) {
