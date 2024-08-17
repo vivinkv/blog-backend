@@ -21,7 +21,7 @@ app.set("views", "./views");
 
 //ejs setup
 app.use(cors());
-app.use(express.static(path.join(__dirname,"uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -39,18 +39,58 @@ blogModel.belongsTo(ogImageModel, { foreignKey: "og_id" });
 
 app.get("/", async (req, res) => {
   try {
-    const getNonPremiumBlogs = await blogModel.findAll({
-      where: {
-        premium: false,
-      },
+    const page = req?.query?.page || 1;
+    const limit = req?.query?.limit || 15;
+    const offset = (page - 1) * limit;
+    const { count, rows } = await blogModel.findAndCountAll({
+      order: [["createdAt", "DESC"]],
+      limit: limit,
+      offset: offset,
       include: [
         {
           model: userModel,
+          foreignKey: "author",
           attributes: ["id", "name", "email", "bio"],
         },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+        },
+        {
+          model: featuredImageModel,
+          foreignKey: "featured_id",
+        },
+        {
+          model: ogImageModel,
+          foreignKey: "og_id",
+        },
       ],
+      where: {
+        premium: false,
+      },
     });
-    res.json({ data: getNonPremiumBlogs });
+
+
+    res.json({
+      currentPage: page,
+      totalPages: Math.ceil(count / limit),
+      totalResults: count,
+      nextPage: page < Math.ceil(count / limit) ?page + 1:null,
+      nextPageUrl: page < Math.ceil(count / limit) ? `https://blogs-23vc.onrender.com/blogs?page=${
+        parseInt(page) + 1
+      }&limit=${limit}`:null,
+      previousePageUrl:
+        page > 1
+          ? `https://blogs-23vc.onrender.com/blogs?page=${page - 1}&limit=${limit}`
+          : null,
+      firstPageUrl: `https://blogs-23vc.onrender.com/blogs?page=1&limit=${limit}`,
+      lastPageUrl: `https://blogs-23vc.onrender.com/blogs?page=${Math.ceil(
+        count / limit
+      )}&limit=${limit}`,
+      offset: offset,
+      limit: limit,
+      data: rows,
+    });
   } catch (error) {
     res.json({ err: error });
   }
@@ -62,7 +102,7 @@ app.use("/admin", adminRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig
-  .sync()
+  .sync({force:true})
   .then(() => {
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on PORT: ${process.env.PORT}`);
