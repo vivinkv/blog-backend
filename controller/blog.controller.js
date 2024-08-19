@@ -4,7 +4,7 @@ const featuredImageModel = require("../models/featuredImage.model");
 const ogImageModel = require("../models/ogImage.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
-require('dotenv').config();
+require("dotenv").config();
 
 //get all blogs
 const getAllBlogs = async (req, res) => {
@@ -41,10 +41,13 @@ const getAllBlogs = async (req, res) => {
       currentPage: page,
       totalPages: Math.ceil(count / limit),
       totalResults: count,
-      nextPage: page < Math.ceil(count / limit) ?page + 1:null,
-      nextPageUrl: page < Math.ceil(count / limit) ? `${process.env.BACKEND_URL}/blogs?page=${
-        parseInt(page) + 1
-      }&limit=${limit}`:null,
+      nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
+      nextPageUrl:
+        page < Math.ceil(count / limit)
+          ? `${process.env.BACKEND_URL}/blogs?page=${
+              parseInt(page) + 1
+            }&limit=${limit}`
+          : null,
       previousePageUrl:
         page > 1
           ? `${process.env.BACKEND_URL}/blogs?page=${page - 1}&limit=${limit}`
@@ -113,18 +116,18 @@ const createBlog = async (req, res) => {
     console.log(req.files);
     const bannerImage = await bannerImageModel.create({
       path: `${process.env.BACKEND_URL}/uploads/${req?.files[0]?.filename}`,
-      fieldname:req?.files[0]?.fieldname,
-      originalname:req?.files[0]?.originalname,
-      encoding:req?.files[0]?.encoding,
-      mimetype:req?.files[0]?.mimetype,
-      destination:req?.files[0]?.destination,
-      filename:req?.files[0]?.filename,
-      size:req?.files[0]?.size
+      fieldname: req?.files[0]?.fieldname,
+      originalname: req?.files[0]?.originalname,
+      encoding: req?.files[0]?.encoding,
+      mimetype: req?.files[0]?.mimetype,
+      destination: req?.files[0]?.destination,
+      filename: req?.files[0]?.filename,
+      size: req?.files[0]?.size,
     });
     const createBlog = await blogModel.create({
       title: title,
       description: description,
-      is_published:is_published,
+      is_published: is_published,
       premium: premium,
       short_description: short_description,
       author: req.user.id,
@@ -174,26 +177,35 @@ const updateBlog = async (req, res) => {
     if (req?.files) {
       const bannerImage = await bannerImageModel.create({
         path: `${process.env.BACKEND_URL}/uploads/${req?.files[0]?.filename}`,
-        fieldname:req?.files[0]?.fieldname,
-        originalname:req?.files[0]?.originalname,
-        encoding:req?.files[0]?.encoding,
-        mimetype:req?.files[0]?.mimetype,
-        destination:req?.files[0]?.destination,
-        filename:req?.files[0]?.filename,
-        size:req?.files[0]?.size
+        fieldname: req?.files[0]?.fieldname,
+        originalname: req?.files[0]?.originalname,
+        encoding: req?.files[0]?.encoding,
+        mimetype: req?.files[0]?.mimetype,
+        destination: req?.files[0]?.destination,
+        filename: req?.files[0]?.filename,
+        size: req?.files[0]?.size,
       });
-      fs.unlink(`/uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`, (err) => {
-        if (err) {
-          return res.json({ err: err.message });
-        }
-      });
+      if (
+        fs.existsSync(
+          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+        )
+      ) {
+        fs.unlink(
+          `/uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          (err) => {
+            if (err) {
+              return res.json({ err: err.message });
+            }
+          }
+        );
+      }
       const updateBlog = await blogModel.update(
         {
           title: title,
           description: description,
-          is_published:is_published,
+          is_published: is_published,
           premium: premium,
-          short_description:short_description,
+          short_description: short_description,
           author: req.user.id,
           banner_id: bannerImage.dataValues.id,
         },
@@ -209,14 +221,14 @@ const updateBlog = async (req, res) => {
         .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
     } else {
       const updateBlog = await blogModel.update(
-      {
-        title: title,
-        description: description,
-        is_published:is_published,
-        premium: premium,
-        short_description:short_description,
-        author: req.user.id,
-      },
+        {
+          title: title,
+          description: description,
+          is_published: is_published,
+          premium: premium,
+          short_description: short_description,
+          author: req.user.id,
+        },
         {
           where: {
             id: id,
@@ -230,7 +242,7 @@ const updateBlog = async (req, res) => {
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
-}
+};
 
 // Delete existing blog
 const deleteBlog = async (req, res) => {
@@ -261,12 +273,21 @@ const deleteBlog = async (req, res) => {
     }
 
     //delete images
-    fs.unlink(`/uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`, (err) => {
-      if (err) {
-        return res.json({ err: err.message });
-      }
-    });
-   
+
+    if (
+      fs.existsSync(
+        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+      )
+    ) {
+      fs.unlink(
+        `/uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+        (err) => {
+          if (err) {
+            return res.json({ err: err.message });
+          }
+        }
+      );
+    }
 
     const [banner, featured, og] = await Promise.all([
       bannerImageModel.findByPk(findBlog.dataValues.banner_id),
