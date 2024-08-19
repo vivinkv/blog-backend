@@ -80,6 +80,7 @@ const createUser = async (req, res) => {
         bio: createUser.dataValues.bio,
         token: token,
       },
+      msg:"User Created Successfully"
     });
   } catch (error) {
     console.log(error);

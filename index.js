@@ -76,15 +76,15 @@ app.get("/", async (req, res) => {
       totalPages: Math.ceil(count / limit),
       totalResults: count,
       nextPage: page < Math.ceil(count / limit) ?page + 1:null,
-      nextPageUrl: page < Math.ceil(count / limit) ? `https://blogs-23vc.onrender.com/blogs?page=${
+      nextPageUrl: page < Math.ceil(count / limit) ? `${process.env.BACKEND_URL}/blogs?page=${
         parseInt(page) + 1
       }&limit=${limit}`:null,
       previousePageUrl:
         page > 1
-          ? `https://blogs-23vc.onrender.com/blogs?page=${page - 1}&limit=${limit}`
+          ? `${process.env.BACKEND_URL}/blogs?page=${page - 1}&limit=${limit}`
           : null,
-      firstPageUrl: `https://blogs-23vc.onrender.com/blogs?page=1&limit=${limit}`,
-      lastPageUrl: `https://blogs-23vc.onrender.com/blogs?page=${Math.ceil(
+      firstPageUrl: `${process.env.BACKEND_URL}/blogs?page=1&limit=${limit}`,
+      lastPageUrl: `${process.env.BACKEND_URL}/blogs?page=${Math.ceil(
         count / limit
       )}&limit=${limit}`,
       offset: offset,
@@ -102,7 +102,7 @@ app.use("/admin", adminRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig
-  .sync()
+  .sync({force:true})
   .then(() => {
     app.listen(process.env.PORT, () => {
       console.log(`Server is running on PORT: ${process.env.PORT}`);

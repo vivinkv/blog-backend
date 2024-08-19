@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Create Blog</title>
+    <title><%= title %></title>
     <!-- <link href="https://cdn.jsdelivr.net/npm/tailwindcss@latest/dist/tailwind.min.css" rel="stylesheet"> -->
     <link
       href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
@@ -133,102 +133,170 @@
         cursor: pointer;
       }
       .alert-message {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #197ce5; /* Green background */
-    color: white; /* White text */
-    text-align: center;
-    border-radius: 5px;
-    font-size: 18px;
-    position: absolute;
-    bottom: 5%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-  }
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #197ce5; /* Green background */
+        color: white; /* White text */
+        text-align: center;
+        border-radius: 5px;
+        font-size: 18px;
+        position: absolute;
+        bottom: 5%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      small {
+        color: red;
+        display: none;
+        margin-top: 5px;
+      }
+      .note-editable {
+      background-color: #ffffff; 
+    }
     </style>
   </head>
   <body>
     <form action="" class="form-container">
-        <div class="form-group">
-          <label for="title" class="form-label">Title</label>
-          <input type="text" name="title" id="title" required value="<%= data.title %>" class="form-input" placeholder="Enter title" />
-        </div>
-      
-        <div class="form-group">
-          <label for="banner" class="form-label">Banner Image</label>
-          <input type="file" name="image" id="banner" value="<%= data.title %>" class="form-input" multiple />
-        </div>
-      
-        <div class="form-group">
-          <label for="content" class="form-label">Short Description</label>
-          <input type="hidden" name="id" id="id" value="<%= data.id %>">
-          <textarea id="shortdescription" class="form-textarea" required placeholder="Meta Description"><%= data.meta_description %></textarea>
-        </div>
-        <div class="form-group">
-          <label for="content" class="form-label">Content</label>
-          <textarea id="summernote" class="form-textarea" required><%= data.description %></textarea>
-        </div>
-      
-        <div class="form-action">
-          <div style="display: flex;align-items: center;">
-            <input type="checkbox" id="premium" <%= data.premium ? 'checked': '' %>  class="styled-checkbox" />
-            <label for="premium" class="checkbox-label">Premium</label>
-          </div>
-          <button type="button" id="submitbtn" class="form-button">Update</button>
-        </div>
-      </form>
-      <div id="alertMessage" class="alert-message" style="display: none;">
-        Form submitted successfully!
+      <div class="form-group">
+        <label for="title" class="form-label">Title</label>
+        <input
+          type="text"
+          name="title"
+          id="title"
+          required
+          value="<%= data.title %>"
+          class="form-input"
+          placeholder="Enter title"
+        />
+        <small id="titleError"> * Title </small>
       </div>
-      
-      <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-      <script>
-        $("#summernote").summernote({
-          placeholder: "Enter your content here...",
-          tabsize: 2,
-          height: "80vh",
-        });
-      
-        document.getElementById("submitbtn").addEventListener("click", async function (e) {
+
+      <div class="form-group">
+        <label for="banner" class="form-label">Banner Image</label>
+        <input
+          type="file"
+          name="image"
+          id="banner"
+          value="<%= data.title %>"
+          class="form-input"
+          multiple
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="content" class="form-label">Short Description</label>
+        <input type="hidden" name="id" id="id" value="<%= data.id %>" />
+        <textarea
+          id="shortdescription"
+          class="form-textarea"
+          required
+          placeholder="Meta Description"
+        >
+<%= data.short_description %></textarea
+        >
+      </div>
+      <div class="form-group">
+        <label for="content" class="form-label">Content</label>
+        <textarea id="summernote" class="form-textarea" required>
+<%= data.description %></textarea
+        >
+        <small id="contentError"> * Title </small>
+      </div>
+
+      <div class="form-action">
+        <div style="display: flex; align-items: center">
+          <input type="checkbox" id="is_published" <%= data.is_published ?
+          'checked': '' %> class="styled-checkbox" />
+          <label for="is_published" class="checkbox-label">Is_Published</label>
+        </div>
+        <div style="display: flex; align-items: center">
+          <input type="checkbox" id="premium" <%= data.premium ? 'checked': ''
+          %> class="styled-checkbox" />
+          <label for="premium" class="checkbox-label">Premium</label>
+        </div>
+        <button type="button" id="submitbtn" class="form-button">Update</button>
+      </div>
+    </form>
+    <div id="alertMessage" class="alert-message" style="display: none">
+      Form submitted successfully!
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
+    <script>
+      $("#summernote").summernote({
+        placeholder: "Enter your content here...",
+        tabsize: 2,
+        height: "80vh",
+      });
+
+      document
+        .getElementById("submitbtn")
+        .addEventListener("click", async function (e) {
           e.preventDefault();
           const title = document.getElementById("title").value;
           const bannerImg = document.getElementById("banner").files;
-          const shortDescription = document.getElementById("shortdescription").value;
+          const shortDescription =
+            document.getElementById("shortdescription").value;
           const content = $("#summernote").summernote("code");
           const premium = document.getElementById("premium").checked;
-          const id=document.getElementById('id').value;
-      
+          const is_published = document.getElementById("is_published").checked;
+          const id = document.getElementById("id").value;
+          document.getElementById("titleError").style.display = "none";
+          document.getElementById("contentError").style.display = "none";
+
           const formData = new FormData();
           formData.append("title", title);
           formData.append("description", content);
-          formData.append("meta_description", shortDescription);
+          formData.append("short_description", shortDescription);
           formData.append("premium", premium);
-      
+          formData.append("is_published", is_published);
+
           for (let i = 0; i < bannerImg.length; i++) {
             formData.append("image", bannerImg[i]);
           }
-      
-          const response = await fetch(`${window.location.origin}/admin/blogs/update/${id}`, {
-            method: "PUT",
-            body: formData,
-          });
-      
+
+          const response = await fetch(
+            `${window.location.origin}/admin/blogs/update/${id}`,
+            {
+              method: "PUT",
+              body: formData,
+            }
+          );
+
           const result = await response.json();
           console.log(result);
           if (response.ok) {
-      // Show the alert message
-      const alertMessage = document.getElementById("alertMessage");
-      alertMessage.innerText=result.msg
-      alertMessage.style.display = "block";
+            // Show the alert message
+            const alertMessage = document.getElementById("alertMessage");
+            alertMessage.innerText = result.msg;
+            alertMessage.style.display = "block";
 
-      // Hide the alert after 3 seconds
-      setTimeout(() => {
-        alertMessage.style.display = "none";
-      }, 3000);
-    }
+            // Hide the alert after 3 seconds
+            setTimeout(() => {
+              alertMessage.style.display = "none";
+              window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
+            }, 3000);
+          }
+          if (result?.type == "title") {
+            document.getElementById(
+              "titleError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("titleError").style.display = "block";
+            return;
+          }
+          if (result?.err) {
+            document.getElementById(
+              "contentError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("contentError").style.display = "block";
+            return;
+          }
         });
-      </script>
-      
+    </script>
   </body>
 </html>

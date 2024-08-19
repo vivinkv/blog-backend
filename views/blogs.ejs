@@ -1,119 +1,164 @@
 <%- include('wrapper/header') %>
 <div class="flex">
-    <!-- Sidebar -->
-    <aside
-      class="bg-gray-200 w-64 h-screen p-5 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:translate-x-0 z-20"
-      id="sidebar"
-    >
-      <div class="flex justify-center mb-5">
-        <img src="/logo.png" class="h-24 w-24" alt="blogs" />
-      </div>
-      <nav>
-        <ul>
+  <!-- Sidebar -->
+  <aside
+    class="bg-gray-200 w-40 max-md:w-20 h-screen p-5 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:translate-x-0 z-20"
+    id="sidebar"
+  >
+    <div class="flex justify-center mb-5">
+      <img src="/logo.png" class="h-10 w-10 md:h-24 md:w-24" alt="blogs" />
+    </div>
+    <nav>
+      <ul>
+        <li>
           <a href="/admin/dashboard"
             class="mb-4 flex gap-x-2 items-center text-blue-900 hover:text-blue-500"
           >
             <img src="/users.svg" class="h-7 w-7" alt="users" />
-            <span class="font-semibold text-md text-gray-500">Users</span>
+            <span class="font-semibold text-md text-gray-500 hidden md:block">Users</span>
           </a>
-          <a href="/admin/dashboard/blogs" class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 px-3 py-2 rounded-lg">
+        </li>
+        <li>
+          <a href="/admin/dashboard/blogs" class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 max-md:w-10 px-3 py-2 rounded-lg">
             <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
-            <span class="font-semibold text-md text-gray-500">Blogs</span>
+            <span class="font-semibold text-md text-gray-500  hidden md:block">Blogs</span>
           </a>
-        </ul>
-      </nav>
-    </aside>
-  
-    <!-- Responsive Sidebar Button -->
-    <div class="md:hidden p-4">
-      <button id="menu-btn" class="text-blue-900 focus:outline-none">
-        <svg
-          class="w-8 h-8"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
-        </svg>
-      </button>
-    </div>
-  
-    <!-- Main Content (Table) -->
-    <div class="flex-1 md:ml-64 p-8">
-      <div class="overflow-x-auto">
-        <div class="flex justify-end my-5">
-          <a href="/admin/dashboard/blogs/create"
-            class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
-          >
-            <img src="/addblog.png" class="h-6 w-6" alt="add" />
-          </a>
-        </div>
-        <table class="min-w-full bg-white border rounded-lg shadow-lg">
-          <thead class="bg-blue-100">
-            <tr>
-              <th class="py-2 px-4 text-left text-blue-900 w-64">Picture</th>
-              <th class="py-2 px-4 text-left text-blue-900 w-24">Title</th>
-              <th class="py-2 px-4 text-left text-blue-900 w-32">Description</th>
-              <th class="py-2 px-4 text-left text-blue-900 w-48">Status</th>
-              <th class="py-2 px-4 text-left text-blue-900 w-64">Premium</th>
-              <th class="py-2 px-4 text-left text-blue-900 w-32">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% if (data.length>0) { %> <% for( let i = 0; i < data.length; i++ ){%>
-            <tr class="border-b">
-              <td class="py-2 px-4 w-24">
-                <div class="flex items-center">
-                <img src="<%= data[i]?.dataValues?.bannerimg?.dataValues?.path %>" alt="<%= data[i]?.dataValues?.bannerimg?.dataValues?.name %>">
-                </div>
-              </td>
-              <td class="py-2 px-4 text-blue-900 w-32">
-                <%= data[i].dataValues.title%>
-              </td>
-              <td class="py-2 px-4 text-blue-900 w-48">
-                <%=data[i].dataValues.meta_description%>
-              </td>
-              <td class="py-2 px-4 text-blue-900 w-64">
-                <%= data[i].dataValues.status%>
-              </td>
-              <td class="py-2 px-4 text-blue-900 w-64">
-                <%= data[i].dataValues.premium%>
-              </td>
-              <td class="py-2 px-4 flex space-x-2 w-32">
-                <a href="blogs/update/<%= data[i].dataValues.id %>" class="text-blue-600 hover:text-blue-800">
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Responsive Sidebar Button -->
+  <div class="md:hidden p-4">
+    <button id="menu-btn" class="text-blue-900 focus:outline-none">
+      <svg
+        id="hamburger-icon"
+        class="w-6 h-6 sm:w-8 sm:h-8"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+      <svg
+        id="close-icon"
+        class="w-6 h-6 sm:w-8 sm:h-8 hidden"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Main Content (Table) -->
+  <div class="flex-1 md:ml-40 p-8">
+    <div class="overflow-x-auto">
+      <div class="flex justify-between my-5">
+        <h1 class="text-3xl font-bold"><%= title %></h1>
+        <a href="/admin/dashboard/blogs/create"
+          class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center">
+          <img src="/addblog.png" class="h-6 w-6" alt="add" />
+        </a>
+      </div>
+      <table class="min-w-full bg-white border rounded-lg shadow-lg">
+        <thead class="bg-blue-100">
+          <tr>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">Picture</th>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">Description</th>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">Published</th>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">Premium</th>
+            <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (data.length > 0) { %> <% for (let i = 0; i < data.length; i++) { %>
+          <tr class="border border-gray-200">
+            <td class="py-2 px-4 w-24 border border-gray-200">
+              <div class="flex">
+                <img src="<%= data[i]?.dataValues?.bannerimg?.dataValues?.path %>"
+                  alt="<%= data[i]?.dataValues?.bannerimg?.dataValues?.originalname %>" class="min-h-48 min-w-48 object-cover rounded">
+              </div>
+            </td>
+            <td class="py-2 px-4 text-blue-900 border border-gray-200">
+              <div class="text-ellipsis overflow-hidden whitespace-nowrap"><%= data[i].dataValues.title %></div>
+            </td>
+            <td class="py-2 px-4 text-blue-900 border border-gray-200">
+              <div class="text-ellipsis overflow-hidden"><%= data[i].dataValues.short_description.slice(0, 100) %>...</div>
+            </td>
+            <td class="py-2 px-4 text-blue-900 border border-gray-200">
+              <div class="text-ellipsis overflow-hidden"> 
+                <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.is_published ? 'bg-green-500' : 'bg-red-500' %> rounded-full">
+                  <%= data[i].dataValues.is_published ? 'Published' : 'Unpublished' %>
+                </span>
+              </div>
+            </td>
+            <td class="py-2 px-4 text-blue-900 border border-gray-200">
+              <div class="text-ellipsis overflow-hidden">
+                <span class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded-full <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>">
+                    <%= data[i].dataValues.premium ? 'Premium' : 'Standard' %>
+                </span>
+              </div>
+            </td>
+            <td class="py-2 px-4 space-x-2 border border-gray-200">
+              <div class="flex gap-x-5">
+                <a href="blogs/update/<%= data[i].dataValues.id %>" class="bg-blue-500 p-2 rounded hover:text-blue-800">
                   <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
                 </a>
-                
-               <a href="blogs/delete/<%= data[i].dataValues.id %>" id="deletebtn" onclick="deleteBlog(1)" class="text-red-600 hover:text-red-800">
+                <a href="blogs/delete/<%= data[i].dataValues.id %>" id="deletebtn"
+                  class="bg-red-500 p-2 rounded text-red-600 hover:text-red-800">
                   <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
-                </a> 
-              </td>
-            </tr>
-            <% } %> <% } %>
-          </tbody>
-        </table>
-      </div>
+                </a>
+              </div>
+            </td>
+          </tr>
+          <% } %> <% } %>
+        </tbody>
+      </table>
     </div>
   </div>
-  
 
-  <!-- Icons (Heroicons) -->
-
+  <!-- Include Footer -->
   <%- include('wrapper/footer') %>
 
   <script>
     const menuBtn = document.getElementById("menu-btn");
-    const sidebar = document.querySelector("aside");
+    const sidebar = document.getElementById("sidebar");
+    const hamburgerIcon = document.getElementById("hamburger-icon");
+    const closeIcon = document.getElementById("close-icon");
+    const body = document.body;
 
     menuBtn.addEventListener("click", () => {
-      sidebar.classList.toggle("hidden");
+      sidebar.classList.toggle("transform");
+      sidebar.classList.toggle("-translate-x-full");
+      hamburgerIcon.classList.toggle("hidden");
+      closeIcon.classList.toggle("hidden");
+      body.classList.toggle("overflow-hidden");
     });
 
+    document.addEventListener("click", (e) => {
+      if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        if (!sidebar.classList.contains("-translate-x-full")) {
+          sidebar.classList.add("-translate-x-full");
+          hamburgerIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+          body.classList.remove("overflow-hidden");
+        }
+      }
+    });
   </script>
 </div>

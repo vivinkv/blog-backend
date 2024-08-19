@@ -146,6 +146,14 @@
         left: 50%;
         transform: translate(-50%, -50%);
       }
+      small {
+        color: red;
+        display: none;
+        margin-top: 5px;
+      }
+      .note-editable {
+        background-color: #ffffff; 
+    }
     </style>
   </head>
   <body>
@@ -160,6 +168,7 @@
           required
           placeholder="Enter title"
         />
+        <small id="titleError"> * Title </small>
       </div>
 
       <div class="form-group">
@@ -171,6 +180,7 @@
           required
           class="form-input"
         />
+        <small id="bannerError"> * Banner </small>
       </div>
 
       <div class="form-group">
@@ -179,15 +189,21 @@
           id="shortdescription"
           class="form-textarea"
           required
-          placeholder="Meta Description"
+          placeholder="Short Description"
         ></textarea>
+        <small id="shortdescriptionError"> * Short Description </small>
       </div>
       <div class="form-group">
         <label for="content" class="form-label">Content</label>
         <textarea id="summernote" required class="form-textarea"></textarea>
+        <small id="contentError"> * Content </small>
       </div>
 
       <div class="form-action">
+        <div style="display: flex; align-items: center">
+          <input type="checkbox" id="is_published" class="styled-checkbox" />
+          <label for="published" class="checkbox-label">Published</label>
+        </div>
         <div style="display: flex; align-items: center">
           <input type="checkbox" id="premium" class="styled-checkbox" />
           <label for="premium" class="checkbox-label">Premium</label>
@@ -197,7 +213,7 @@
     </form>
 
     <div id="alertMessage" class="alert-message" style="display: none">
-      Form submitted successfully!
+      Blog Create successfully
     </div>
 
     <script
@@ -217,18 +233,25 @@
         .getElementById("submitbtn")
         .addEventListener("click", async function (e) {
           e.preventDefault();
+          document.getElementById("titleError").style.display = "none";
+          document.getElementById("bannerError").style.display = "none";
+          document.getElementById("shortdescriptionError").style.display =
+            "none";
+          document.getElementById("contentError").style.display = "none";
+
           const title = document.getElementById("title").value;
           const bannerImg = document.getElementById("banner").files;
           const shortDescription =
             document.getElementById("shortdescription").value;
           const content = $("#summernote").summernote("code");
           const premium = document.getElementById("premium").checked;
-
+          const is_published = document.getElementById("is_published").checked;
           const formData = new FormData();
           formData.append("title", title);
           formData.append("description", content);
-          formData.append("meta_description", shortDescription);
+          formData.append("short_description", shortDescription);
           formData.append("premium", premium);
+          formData.append("is_published", is_published);
 
           for (let i = 0; i < bannerImg.length; i++) {
             formData.append("image", bannerImg[i]);
@@ -241,11 +264,11 @@
               body: formData,
             }
           );
-
+          console.log(response);
           const result = await response.json();
           console.log(result);
-
-          if (response.ok) {
+          console.log(result?.type);
+          if (response?.ok) {
             // Show the alert message
             const alertMessage = document.getElementById("alertMessage");
             alertMessage.innerText = result.msg;
@@ -254,7 +277,36 @@
             // Hide the alert after 3 seconds
             setTimeout(() => {
               alertMessage.style.display = "none";
-            }, 3000);
+              window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
+            }, 2000);
+          }
+
+          if (result?.type == "title") {
+            document.getElementById(
+              "titleError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("titleError").style.display = "block";
+            return;
+          } else if (result?.type == "banner") {
+            document.getElementById(
+              "bannerError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("bannerError").style.display = "block";
+            return;
+          } else if (result?.type == "short_description") {
+            document.getElementById(
+              "shortdescriptionError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("short_descriptionError").style.display =
+              "block";
+            return;
+          }
+          if (result?.err) {
+            document.getElementById(
+              "contentError"
+            ).innerText = `* ${result?.err}`;
+            document.getElementById("contentError").style.display = "block";
+            return;
           }
         });
     </script>

@@ -1,7 +1,7 @@
 <%- include('wrapper/header') %>
 <div class="flex items-center justify-center min-h-screen">
     <div
-      class="w-full max-w-3xl p-6"
+      class="w-full max-w-3xl p-6 max-sm:w-full max-sm:p-0"
       data-aos="zoom-in"
       data-aos-duration="2000"
       data-aos-delay="500"
@@ -95,6 +95,7 @@
               <option value="editor" <% if (data.role === 'editor') { %> selected <% } %>>Editor</option>
               <option value="author" <% if (data.role === 'author') { %> selected <% } %>>Author</option>
               <option value="seo" <% if (data.role === 'seo') { %> selected <% } %>>SEO</option>
+              <option value="member" <% if (data.role === 'member') { %> selected <% } %>>Member</option>
             </select>
           </div>
         </div>
@@ -123,6 +124,13 @@
       </form>
     </div>
   </div>
+  <div
+  id="alertMessage"
+  class="mt-5 p-4 bg-green-500 text-white text-center rounded-md text-lg absolute bottom-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2"
+  style="display: none"
+>
+  Form submitted successfully!
+</div>
 
 
   
@@ -139,7 +147,6 @@
       const phone = document.getElementById("phone").value;
       const bio = document.getElementById("bio").value;
       const id=document.getElementById('id').value;
-      console.log(name);
       try {
         const sendData = await fetch(`${window.location.origin}/admin/dashboard/user/update/${id}`, {
         method: "PUT",
@@ -150,7 +157,18 @@
       });
       const response = await sendData.json();
 
-      console.log(response);
+      if (sendData?.ok) {
+
+        const alertMessage = document.getElementById("alertMessage");
+        alertMessage.innerText = response.msg;
+        alertMessage.style.display = "block";
+
+        setTimeout(() => {
+          alertMessage.style.display = "none";
+          window.location.href = "/admin/dashboard";
+        }, 2000);
+      }
+
 
       if (response?.type == "email") {
         document.getElementById("emailError").innerText = `* ${response.err}`;
@@ -174,7 +192,6 @@
         document.getElementById("bioError").classList.remove("hidden");
         return;
       }
-      window.location.href = '/admin/dashboard';
       } catch (error) {
         console.log(error);
       }

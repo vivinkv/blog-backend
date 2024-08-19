@@ -9,20 +9,41 @@ const bannerImageModel = sequelizeConfig.define(
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
     },
-    alt: {
+    fieldname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    originalname: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    encoding: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    mimetype: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    destination: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    filename: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     path: {
       type: DataTypes.STRING,
-      allowNull: true,
+      allowNull: false,
     },
-    name: {
-      type: DataTypes.STRING,
+    size: {
+      type: DataTypes.FLOAT,
       allowNull: false,
     },
   },
   {
+    timestamps: true,
     freezeTableName: true,
   }
 );

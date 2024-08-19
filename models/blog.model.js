@@ -16,17 +16,21 @@ const blogModel = sequelizeConfig.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    short_description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    status: {
-      type: DataTypes.STRING,
-      allowNull: false,
+    is_published: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: "false",
     },
     publish_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       defaultValue: Date.now(),
     },
     premium: {
@@ -36,11 +40,11 @@ const blogModel = sequelizeConfig.define(
     },
     meta_title: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     meta_description: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     banner_id: {
       type: DataTypes.STRING,
@@ -71,9 +75,16 @@ const blogModel = sequelizeConfig.define(
       },
     },
     role: {
-      type:DataTypes.ENUM('user','admin','seo','author','member'), 
+      type: DataTypes.ENUM(
+        "user",
+        "admin",
+        "seo",
+        "author",
+        "member",
+        "editor"
+      ),
       allowNull: false,
-      defaultValue: "user", 
+      defaultValue: "user",
     },
   },
   {
