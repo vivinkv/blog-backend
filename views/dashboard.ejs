@@ -99,7 +99,7 @@
               </div>
             </td>
             <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.name %>
+              <%= data[i].dataValues.name?.charAt(0).toUpperCase() + data[i].dataValues.name?.slice(1) %>
             </td>
             <td class="py-2 px-4 text-blue-900 w-48 border border-gray-200">
               <%= data[i].dataValues.email %>
@@ -108,10 +108,10 @@
               <%= data[i].dataValues.phone %>
             </td>
             <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
-              <%= data[i].dataValues.bio == null ? null : data[i].dataValues.bio %>
+              <%= data[i].dataValues.bio?.charAt(0).toUpperCase() + data[i].dataValues.bio?.slice(1) %>
             </td>
             <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.role %>
+              <%= data[i].dataValues.role?.charAt(0).toUpperCase() + data[i].dataValues.role?.slice(1) %>
             </td>
             <td class="py-2 px-4 flex space-x-2 w-32 border border-gray-200">
               <a href="/admin/dashboard/user/update/<%= data[i].dataValues.id %>" class="bg-blue-500 p-2 rounded hover:text-blue-800">

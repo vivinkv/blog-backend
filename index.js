@@ -20,7 +20,12 @@ app.set("view engine", "ejs");
 app.set("views", "./views");
 
 //ejs setup
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    credentials: true,
+  })
+);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
@@ -70,15 +75,17 @@ app.get("/", async (req, res) => {
       },
     });
 
-
     res.json({
       currentPage: page,
       totalPages: Math.ceil(count / limit),
       totalResults: count,
-      nextPage: page < Math.ceil(count / limit) ?page + 1:null,
-      nextPageUrl: page < Math.ceil(count / limit) ? `${process.env.BACKEND_URL}/blogs?page=${
-        parseInt(page) + 1
-      }&limit=${limit}`:null,
+      nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
+      nextPageUrl:
+        page < Math.ceil(count / limit)
+          ? `${process.env.BACKEND_URL}/blogs?page=${
+              parseInt(page) + 1
+            }&limit=${limit}`
+          : null,
       previousePageUrl:
         page > 1
           ? `${process.env.BACKEND_URL}/blogs?page=${page - 1}&limit=${limit}`

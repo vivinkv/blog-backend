@@ -427,7 +427,7 @@ const getUpdateUser = async (req, res) => {
 
     res.render("updateuser", {
       data: findUser.dataValues,
-      title: "update user",
+      title: "Update User",
     });
   } catch (error) {
     res.status(500).json({ err: error.message });

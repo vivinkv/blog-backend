@@ -1,139 +1,225 @@
-<%- include('wrapper/header') %>
-<div class="flex items-center justify-center min-h-screen">
-    <div
-      class="w-full max-w-3xl p-6 max-sm:w-full max-sm:p-0"
-      data-aos="zoom-in"
-      data-aos-duration="2000"
-      data-aos-delay="500"
-    >
-      <form id="updateForm" class="bg-[#ffffff] rounded-lg shadow-lg p-8 space-y-4">
-        <div class="flex justify-center mb-2">
-          <img src="/profile.png" alt="User Icon" class="h-28 w-28" />
-        </div>
-        <div class="mb-4  flex flex-col md:flex-row md:space-x-4">
-        <!-- Name Field -->
-        <div class="mb-4 flex-1">
-          <label for="name" class="block text-lg font-medium mb-2">Name</label>
-          <div class="relative">
-            <input
-              type="text"
-              id="name"
-              placeholder="Enter Your Name"
-              value="<%= data.name %>"
-              required
-              class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <img
-              src="/user.png"
-              class="absolute right-2 top-3 h-5 w-5"
-              alt="user"
-            />
+
+
+
+
+
+
+
+<%- include('wrapper/header') %> <%- include('wrapper/footer') %> <%-
+include('wrapper/header') %>
+<div class="flex">
+  <aside
+    class="bg-gray-200 w-40 max-md:w-20 h-screen p-5 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:translate-x-0 z-20"
+    id="sidebar"
+  >
+    <div class="flex justify-center mb-5">
+      <img src="/logo.png" class="h-10 w-10 md:h-24 md:w-24" alt="blogs" />
+    </div>
+    <nav>
+      <ul>
+        <li>
+          <a
+            href="/admin/dashboard"
+            class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 max-md:w-10 px-3 py-2 rounded-lg"
+          >
+            <img src="/users.svg" class="h-7 w-7" alt="users" />
+            <span class="font-semibold text-md text-gray-500 hidden md:block"
+              >Users</span
+            >
+          </a>
+        </li>
+        <li>
+          <a
+            href="/admin/dashboard/blogs"
+            class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 w-32 px-3 py-2 rounded-lg"
+          >
+            <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
+            <span class="font-semibold text-md text-gray-500 hidden md:block"
+              >Blogs</span
+            >
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Responsive Sidebar Button -->
+  <div class="md:hidden p-4">
+    <button id="menu-btn" class="text-blue-900 focus:outline-none">
+      <svg
+        id="hamburger-icon"
+        class="w-8 h-8"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+      <svg
+        id="close-icon"
+        class="w-8 h-8 hidden"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M6 18L18 6M6 6l12 12"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Main Content (Table) -->
+  <div class="flex-1 md:ml-40 p-8">
+    <div class="overflow-x-auto">
+      <div class="flex justify-start my-5">
+        <h1 class="text-3xl font-bold"><%= title %></h1>
+      </div>
+      <div class="flex items-center justify-center">
+        <div
+          class="w-full max-w-xl p-6 max-sm:w-full max-sm:p-0"
+          data-aos="zoom-in"
+          data-aos-duration="2000"
+          data-aos-delay="500"
+        >
+        <form id="updateForm" class="bg-[#ffffff] rounded-lg shadow-lg p-8 space-y-4">
+          <div class="flex justify-center mb-2">
+            <img src="/profile.png" alt="User Icon" class="h-28 w-28" />
           </div>
-        </div>
-
-        <!-- Email Field -->
-        <div class="mb-4 flex-1">
-          <label for="email" class="block text-lg font-medium mb-2">Email</label>
-          <div class="relative">
-            <input
-              type="email"
-              id="email"
-              value="<%= data.email %>"
-              required
-              placeholder="Enter Your Email"
-              class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <img
-              src="/mail.png"
-              class="absolute right-2 top-3 h-5 w-5"
-              alt="mail"
-            />
-          </div>
-          <small id="emailError" class="text-red-500 mt-2 hidden">
-            * Wrong Email
-          </small>
-        </div>
-        </div>
-
-
-        <!-- Phone and Role Fields -->
-        <div class="mb-4 flex flex-col md:flex-row md:space-x-4">
-          <!-- Phone Number Field -->
-          <div class="flex-1 mb-4 md:mb-0">
-            <label for="phone" class="block text-lg font-medium mb-2">Phone Number</label>
+          <div class="mb-4  flex flex-col md:flex-row md:space-x-4">
+          <!-- Name Field -->
+          <div class="mb-4 flex-1">
+            <label for="name" class="block text-lg font-medium mb-2">Name</label>
             <div class="relative">
               <input
-                type="tel"
-                id="phone"
-                value="<%= data.phone %>"
+                type="text"
+                id="name"
+                placeholder="Enter Your Name"
+                value="<%= data.name %>"
                 required
-                placeholder="Enter Your Phone Number"
                 class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <input type="hidden" name="id" id="id" value="<%= data.id %>">
               <img
-                src="/phone.png"
+                src="/user.png"
                 class="absolute right-2 top-3 h-5 w-5"
-                alt="phone"
+                alt="user"
               />
-              <small id="phoneError" class="text-red-500 mt-2 hidden">
-                * Invalid Mobile
-              </small>
             </div>
           </div>
-
-          <!-- Role Dropdown -->
-          <div class="flex-1">
-            <label for="role" class="block text-lg font-medium mb-2">Role</label>
-            <select
-              id="role"
-              required
-              class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="" disabled>Select Your Role</option>
-              <option value="user" <% if (data.role === 'user') { %> selected <% } %>>User</option>
-              <option value="editor" <% if (data.role === 'editor') { %> selected <% } %>>Editor</option>
-              <option value="author" <% if (data.role === 'author') { %> selected <% } %>>Author</option>
-              <option value="seo" <% if (data.role === 'seo') { %> selected <% } %>>SEO</option>
-              <option value="member" <% if (data.role === 'member') { %> selected <% } %>>Member</option>
-            </select>
+  
+          <!-- Email Field -->
+          <div class="mb-4 flex-1">
+            <label for="email" class="block text-lg font-medium mb-2">Email</label>
+            <div class="relative">
+              <input
+                type="email"
+                id="email"
+                value="<%= data.email %>"
+                required
+                placeholder="Enter Your Email"
+                class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <img
+                src="/mail.png"
+                class="absolute right-2 top-3 h-5 w-5"
+                alt="mail"
+              />
+            </div>
+            <small id="emailError" class="text-red-500 mt-2 hidden">
+              * Wrong Email
+            </small>
           </div>
+          </div>
+  
+  
+          <!-- Phone and Role Fields -->
+          <div class="mb-4 flex flex-col md:flex-row md:space-x-4">
+            <!-- Phone Number Field -->
+            <div class="flex-1 mb-4 md:mb-0">
+              <label for="phone" class="block text-lg font-medium mb-2">Phone Number</label>
+              <div class="relative">
+                <input
+                  type="tel"
+                  id="phone"
+                  value="<%= data.phone %>"
+                  required
+                  placeholder="Enter Your Phone Number"
+                  class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input type="hidden" name="id" id="id" value="<%= data.id %>">
+                <img
+                  src="/phone.png"
+                  class="absolute right-2 top-3 h-5 w-5"
+                  alt="phone"
+                />
+                <small id="phoneError" class="text-red-500 mt-2 hidden">
+                  * Invalid Mobile
+                </small>
+              </div>
+            </div>
+  
+            <!-- Role Dropdown -->
+            <div class="flex-1">
+              <label for="role" class="block text-lg font-medium mb-2">Role</label>
+              <select
+                id="role"
+                required
+                class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="" disabled>Select Your Role</option>
+                <option value="user" <% if (data.role === 'user') { %> selected <% } %>>User</option>
+                <option value="editor" <% if (data.role === 'editor') { %> selected <% } %>>Editor</option>
+                <option value="author" <% if (data.role === 'author') { %> selected <% } %>>Author</option>
+                <option value="seo" <% if (data.role === 'seo') { %> selected <% } %>>SEO</option>
+                <option value="member" <% if (data.role === 'member') { %> selected <% } %>>Member</option>
+              </select>
+            </div>
+          </div>
+  
+          <!-- Bio Textarea -->
+          <div class="mb-4">
+            <label for="bio" class="block text-lg font-medium mb-2">Bio</label>
+            <textarea
+              id="bio"
+              rows="4"
+              placeholder="Tell us about yourself"
+              class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ><%= data.bio %></textarea>
+            <small id="bioError" class="text-red-500 mt-2 hidden">
+              * Bio Error
+            </small>
+          </div>
+  
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="w-full py-2 bg-[#3294de] text-md hover:bg-[#2178c0] rounded-lg font-semibold text-white"
+          >
+            Update Account
+          </button>
+        </form>
+        <div
+        id="alertMessage"
+        class="mt-5 p-4 bg-green-500 text-white text-center rounded-md text-lg absolute bottom-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2"
+        style="display: none"
+      >
+        Form submitted successfully!
+      </div>
         </div>
-
-        <!-- Bio Textarea -->
-        <div class="mb-4">
-          <label for="bio" class="block text-lg font-medium mb-2">Bio</label>
-          <textarea
-            id="bio"
-            rows="4"
-            placeholder="Tell us about yourself"
-            class="w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          ><%= data.bio %></textarea>
-          <small id="bioError" class="text-red-500 mt-2 hidden">
-            * Bio Error
-          </small>
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          class="w-full py-2 bg-[#3294de] text-md hover:bg-[#2178c0] rounded-lg font-semibold text-white"
-        >
-          Update Account
-        </button>
-      </form>
+      </div>
     </div>
   </div>
-  <div
-  id="alertMessage"
-  class="mt-5 p-4 bg-green-500 text-white text-center rounded-md text-lg absolute bottom-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2"
-  style="display: none"
->
-  Form submitted successfully!
 </div>
-
-
-  
 <script>
   // JavaScript to handle error display
   document
@@ -199,4 +285,30 @@
    
     });
 </script>
+<script>
+  const menuBtn = document.getElementById("menu-btn");
+  const sidebar = document.getElementById("sidebar");
+  const hamburgerIcon = document.getElementById("hamburger-icon");
+  const closeIcon = document.getElementById("close-icon");
+
+  menuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    sidebar.classList.toggle("-translate-x-full");
+    hamburgerIcon.classList.toggle("hidden");
+    closeIcon.classList.toggle("hidden");
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      !sidebar.contains(event.target) &&
+      !menuBtn.contains(event.target) &&
+      !sidebar.classList.contains("-translate-x-full")
+    ) {
+      sidebar.classList.add("-translate-x-full");
+      hamburgerIcon.classList.remove("hidden");
+      closeIcon.classList.add("hidden");
+    }
+  });
+</script>
 <%- include('wrapper/footer') %>
+
