@@ -49,7 +49,7 @@ router.post("/login", login);
 router.use(adminAuth);
 router.get("/dashboard", dashboard);
 router.get("/dashboard/blogs/create", (req, res) => {
-  res.render("createblog");
+  res.render("createblog",{title:'Create Blog'});
 });
 
 router.put("/blogs/update/:id", upload.array("image", 3), updateBlog);

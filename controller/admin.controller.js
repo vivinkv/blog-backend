@@ -176,9 +176,10 @@ const createBlog = async (req, res) => {
   console.log(req?.files);
   try {
     if (title?.length > 100 || title?.length < 10) {
-      return res
-        .status(400)
-        .json({ type:'title',err: "Title must be between 10 and 100 characters" });
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 10 and 100 characters",
+      });
     }
     console.log(req?.url);
     console.log(req?.headers);
@@ -236,16 +237,23 @@ const deleteBlog = async (req, res) => {
       return res.status(404).json({ err: "Blog notfound" });
     }
 
-    //delete images
-    fs.unlink(
-      `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-      (err) => {
-        if (err) {
-          return res.json({ err: err.message });
+    if (
+      fs.existsSync(
+        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+      )
+    ) {
+      //delete images
+      fs.unlink(
+        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+        (err) => {
+          if (err) {
+            return res.json({ err: err.message });
+          }
+          console.log("Deleted successfully");
         }
-        console.log("Deleted successfully");
-      }
-    );
+      );
+    }
+
     // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
     //   if (err) {
     //     return res.json({ err: err.message });
@@ -310,7 +318,7 @@ const getUpdateBlog = async (req, res) => {
     if (!blog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
-    res.render("updateblog", { data: blog.dataValues,title:"Update Blog" });
+    res.render("updateblog", { data: blog.dataValues, title: "Update Blog" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -363,15 +371,21 @@ const updateBlog = async (req, res) => {
 
       console.log(bannerImage);
       console.log("middle");
-      fs.unlink(
-        `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-        (err) => {
-          if (err) {
-            return res.json({ err: err.message });
+      if (
+        fs.existsSync(
+          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+        )
+      ) {
+        fs.unlink(
+          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          (err) => {
+            if (err) {
+              return res.json({ err: err.message });
+            }
+            console.log("Deleted successfully");
           }
-          console.log("Deleted successfully");
-        }
-      );
+        );
+      }
 
       const updateBlog = await blogModel.update(
         {
@@ -434,16 +448,38 @@ const getUpdateUser = async (req, res) => {
   }
 };
 const deleteUser = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.params; // Extract the ID from request parameters
+
   try {
+    // Log the ID for debugging purposes
+    console.log(`Attempting to delete user with ID: ${id}`);
+
+    // Find the user by primary key (ID)
     const findUser = await userModel.findByPk(id);
+    const findBlogs = await blogModel.findAll({
+      where: {
+        author: id,
+      },
+    });
+
     if (!findUser) {
+      // If the user is not found, return a 404 error
       return res.status(404).json({ err: "User not found" });
     }
+
+    // Log the user data for debugging purposes
+    console.log(`Found user: ${JSON.stringify(findUser.dataValues)}`);
+
+    // Delete the user from the database
     await findUser.destroy();
-    // res.json({ data: findUser.dataValues, msg: "Deleted Successfully" });
+
+    // Redirect to the dashboard after successful deletion
     res.redirect("/admin/dashboard");
   } catch (error) {
+    // Log the error for debugging purposes
+    console.error(`Error deleting user: ${error.message}`);
+
+    // Return a 500 error with the error message
     res.status(500).json({ err: error.message });
   }
 };

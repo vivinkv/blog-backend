@@ -119,8 +119,7 @@
                 <a href="blogs/update/<%= data[i].dataValues.id %>" class="bg-blue-500 p-2 rounded hover:text-blue-800">
                   <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
                 </a>
-                <a href="blogs/delete/<%= data[i].dataValues.id %>" id="deletebtn"
-                  class="bg-red-500 p-2 rounded text-red-600 hover:text-red-800">
+                <a href="javascript:void(0);" data-id="<%= data[i].dataValues.id %>" class="bg-red-500 p-2 rounded text-red-600 hover:text-red-800 delete-link">
                   <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
                 </a>
               </div>
@@ -132,8 +131,21 @@
     </div>
   </div>
 
+   <!-- Delete Confirmation Popup -->
+   <div id="delete-confirmation" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
+      <div class="flex justify-end gap-4">
+        <button id="confirm-delete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none">OK</button>
+        <button id="cancel-delete" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-500 focus:outline-none">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Include Footer -->
   <%- include('wrapper/footer') %>
+
+ 
 
   <script>
     const menuBtn = document.getElementById("menu-btn");
@@ -160,5 +172,35 @@
         }
       }
     });
+
+    // Delete Confirmation Popup Logic
+    const deleteLinks = document.querySelectorAll('.delete-link');
+    const confirmationPopup = document.getElementById('delete-confirmation');
+    const confirmDeleteBtn = document.getElementById('confirm-delete');
+    const cancelDeleteBtn = document.getElementById('cancel-delete');
+
+    let deleteUrl = '';
+
+    deleteLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        deleteUrl = link.getAttribute('data-id');
+        console.log(deleteUrl);
+        confirmationPopup.classList.remove('hidden')
+        console.log('yes');
+      });
+    });
+
+    confirmDeleteBtn.addEventListener('click', () => {
+      if (deleteUrl) {
+        window.location.href = `/admin/dashboard/blogs/delete/${deleteUrl}`;
+      }
+    });
+
+    cancelDeleteBtn.addEventListener('click', () => {
+      confirmationPopup.classList.add('hidden')
+    });
+
+    
   </script>
 </div>

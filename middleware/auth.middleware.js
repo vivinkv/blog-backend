@@ -6,7 +6,7 @@ const adminModel = require("../models/admin.model");
 const userAuth = async (req, res, next) => {
   try {
     if (req?.headers?.authorization) {
-      const token = req?.headers?.authorization?.split(" ")[1];
+      const token = req?.headers?.authorization?.split(" ")?.pop();
 
       if (token == null) {
         return res.status(401).json({ err: "UnAuthorized Acess" });

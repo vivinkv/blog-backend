@@ -1,6 +1,5 @@
 <%- include('wrapper/header') %>
 <div class="flex">
-
   <aside
     class="bg-gray-200 w-40 max-md:w-20 h-screen p-5 fixed inset-y-0 left-0 transform -translate-x-full transition-transform duration-300 md:translate-x-0 z-20"
     id="sidebar"
@@ -12,7 +11,7 @@
       <ul>
         <li>
           <a href="/admin/dashboard"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 max-md:w-10 px-3 py-2 rounded-lg"
+            class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 max-md:w-10 px-3 py-2 rounded-lg"
           >
             <img src="/users.svg" class="h-7 w-7" alt="users" />
             <span class="font-semibold text-md text-gray-500 hidden md:block">Users</span>
@@ -89,48 +88,78 @@
           </tr>
         </thead>
         <tbody>
-          <% if (data.length>0) { %> <% for( let i = 0; i < data.length; i++ ){%>
-          <tr class="border-b">
-            <td class="py-2 px-4 w-24 border border-gray-200">
-              <div class="flex items-center">
-                <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                  <%= data[i].dataValues.name.split('')[0].toUpperCase() %>
-                </div>
-              </div>
-            </td>
-            <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.name?.charAt(0).toUpperCase() + data[i].dataValues.name?.slice(1) %>
-            </td>
-            <td class="py-2 px-4 text-blue-900 w-48 border border-gray-200">
-              <%= data[i].dataValues.email %>
-            </td>
-            <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.phone %>
-            </td>
-            <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
-              <%= data[i].dataValues.bio?.charAt(0).toUpperCase() + data[i].dataValues.bio?.slice(1) %>
-            </td>
-            <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.role?.charAt(0).toUpperCase() + data[i].dataValues.role?.slice(1) %>
-            </td>
-            <td class="py-2 px-4 flex space-x-2 w-32 border border-gray-200">
-              <a href="/admin/dashboard/user/update/<%= data[i].dataValues.id %>" class="bg-blue-500 p-2 rounded hover:text-blue-800">
-                <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
-              </a>
-              <a href="/admin/dashboard/user/delete/<%= data[i].dataValues.id %>" class="bg-red-500 p-2 rounded hover:text-blue-800">
-                <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
-              </a>
-            </td>
-          </tr>
-          <% } %> <% } %>
+          <% if (data.length > 0) { %>
+            <% for (let i = 0; i < data.length; i++) { %>
+              <tr class="border-b">
+                <td class="py-2 px-4 w-24 border border-gray-200">
+                  <div class="flex items-center">
+                    <div class="h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
+                      <%= data[i].dataValues.name.split('')[0].toUpperCase() %>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
+                  <%= data[i].dataValues.name?.charAt(0).toUpperCase() + data[i].dataValues.name?.slice(1) %>
+                </td>
+                <td class="py-2 px-4 text-blue-900 w-48 border border-gray-200">
+                  <%= data[i].dataValues.email %>
+                </td>
+                <% if (data[i].dataValues.phone) { %>
+                  <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+                    <%= data[i].dataValues.phone %>
+                  </td>
+                <% }else{ %>
+                  <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+                    <img src="/close.png"
+                  alt="cross icon" class="h-10 w-10 ">
+                  </td>
+              <% } %>
+              
+                <% if (data[i].dataValues.bio) { %>
+                  <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+                    <%= data[i].dataValues.bio?.charAt(0).toUpperCase() + data[i].dataValues.bio?.slice(1) %>
+                  </td>
+                <% }else{ %>
+                  <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+                    <img src="/close.png"
+                  alt="cross icon" class="h-10 w-10 ">
+                  </td>
+              <% } %>
+                <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
+                  <%= data[i].dataValues.role?.charAt(0).toUpperCase() + data[i].dataValues.role?.slice(1) %>
+                </td>
+                <td class="py-2 px-4 flex space-x-2 w-32 border border-gray-200">
+                  <a href="/admin/dashboard/user/update/<%= data[i].dataValues.id %>" class="bg-blue-500 p-2 rounded hover:text-blue-800">
+                    <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
+                  </a>
+                  <a href="#" class="bg-red-500 p-2 rounded hover:text-blue-800 delete-link" data-id="<%= data[i].dataValues.id %>">
+                    <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
+                  </a>
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
         </tbody>
       </table>
     </div>
   </div>
 </div>
+
 <%- include('wrapper/footer') %>
 
+<!-- Delete Confirmation Popup -->
+<div id="delete-confirmation" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+    <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
+    <div class="flex justify-end gap-4">
+      <button id="confirm-delete" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 focus:outline-none">OK</button>
+      <button id="cancel-delete" class="bg-gray-300 px-4 py-2 rounded hover:bg-gray-500 focus:outline-none">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
+  // Sidebar Toggle
   const menuBtn = document.getElementById("menu-btn");
   const sidebar = document.getElementById("sidebar");
   const hamburgerIcon = document.getElementById("hamburger-icon");
@@ -149,5 +178,38 @@
       hamburgerIcon.classList.remove("hidden");
       closeIcon.classList.add("hidden");
     }
+  });
+
+  // Delete Confirmation Popup
+  document.addEventListener('DOMContentLoaded', () => {
+    const deleteLinks = document.querySelectorAll('.delete-link');
+    const confirmationPopup = document.getElementById('delete-confirmation');
+    const confirmButton = document.getElementById('confirm-delete');
+    const cancelButton = document.getElementById('cancel-delete');
+    let deleteUrl = '';
+
+    deleteLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        deleteUrl = link.getAttribute('data-id');
+        confirmationPopup.classList.remove('hidden');
+      });
+    });
+
+    confirmButton.addEventListener('click', () => {
+      if (deleteUrl) {
+        window.location.href = `/admin/dashboard/user/delete/${deleteUrl}`;
+      }
+    });
+
+    cancelButton.addEventListener('click', () => {
+      confirmationPopup.classList.add('hidden');
+    });
+
+    confirmationPopup.addEventListener('click', (e) => {
+      if (e.target === confirmationPopup) {
+        confirmationPopup.classList.add('hidden');
+      }
+    });
   });
 </script>
