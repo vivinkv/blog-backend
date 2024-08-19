@@ -373,7 +373,7 @@ const updateBlog = async (req, res) => {
       console.log("middle");
       if (
         fs.existsSync(
-          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
         )
       ) {
         fs.unlink(
