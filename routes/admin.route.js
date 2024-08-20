@@ -17,6 +17,7 @@ const {
 const multer = require("multer");
 
 const checkFileType = require("../utils/checkFileType");
+const userModel = require("../models/user.model");
 const storage = multer.diskStorage({
   destination: "./uploads",
   filename: (req, file, cb) => {
@@ -37,8 +38,18 @@ const upload = multer({
 });
 
 const router = express.Router();
-router.get("/create", (req, res) => {
-  res.render("create", { title: "Create" });
+router.get("/create", async (req, res) => {
+  const findAdmin = await userModel.findOne({
+    where: {
+      role: "admin",
+    },
+  });
+
+  if (findAdmin) {
+    res.redirect("/admin/login");
+  } else {
+    res.render("create", { title: "Create" });
+  }
 });
 router.post("/create", createAdmin);
 
@@ -49,7 +60,7 @@ router.post("/login", login);
 router.use(adminAuth);
 router.get("/dashboard", dashboard);
 router.get("/dashboard/blogs/create", (req, res) => {
-  res.render("createblog",{title:'Create Blog'});
+  res.render("createblog", { title: "Create Blog" });
 });
 
 router.put("/blogs/update/:id", upload.array("image", 3), updateBlog);
