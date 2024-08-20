@@ -13,6 +13,7 @@ const {
   updateBlog,
   getUpdateUser,
   updateUser,
+  duplicateBlog,
 } = require("../controller/admin.controller");
 const multer = require("multer");
 
@@ -68,6 +69,7 @@ router.post("/dashboard/blogs/create", upload.array("image", 3), createBlog);
 router.get("/dashboard/blogs", getAllBlogs);
 router.get("/dashboard/blogs/update/:id", getUpdateBlog);
 router.get("/dashboard/blogs/delete/:id", deleteBlog);
+router.get("/dashboard/blogs/duplicate/:id", duplicateBlog);
 
 router.get("/users", getAllUsers);
 router.post("/users/create", createUser);

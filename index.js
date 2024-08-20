@@ -4,6 +4,8 @@ const path = require("path");
 const sequelizeConfig = require("./config/sequelize.config");
 const app = express();
 const cookieParser = require("cookie-parser");
+const { rateLimit } = require("express-rate-limit");
+
 //routes
 const userRoute = require("./routes/user.route");
 const blogRoute = require("./routes/blog.route");
@@ -16,13 +18,31 @@ const featuredImageModel = require("./models/featuredImage.model");
 const bannerImageModel = require("./models/bannerImage.model");
 const ogImageModel = require("./models/ogImage.model");
 
+// const limiter = rateLimit({
+//   windowMs: 60 * 1000,
+//   limit: 200,
+//   message: "Limit Exceeded, Try again later",
+//   standardHeaders: "draft-6",
+//   legacyHeaders: false,
+//   handler: (req, res) => {
+//     res.status(429).json({
+//       error: "Too many requests",
+//       message:
+//         "You have exceeded the number of allowed requests. Please try again later.",
+//       resetAfter: req.rateLimit.resetTime, // Optional: time when the rate limit will reset
+//     });
+//   },
+// });
+
 app.set("view engine", "ejs");
 app.set("views", "./views");
 
 //ejs setup
+
+// app.use(limiter);
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );

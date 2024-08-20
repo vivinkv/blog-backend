@@ -140,30 +140,61 @@ const login = async (req, res) => {
 };
 
 const getAllBlogs = async (req, res) => {
+  console.log(req?.query);
   try {
-    const blogs = await blogModel.findAll({
-      order: [["createdAt", "DESC"]],
-      include: [
-        {
-          model: userModel,
-          foreignKey: "author",
-          attributes: ["id", "name", "email", "bio"],
+    if (req?.query?.premium && req?.query?.published) {
+      const blogs = await blogModel.findAll({
+        where: {
+          premium: req?.query?.premium,
+          is_published: req?.query?.published,
         },
-        {
-          model: bannerImageModel,
-          foreignKey: "banner_id",
-        },
-        {
-          model: featuredImageModel,
-          foreignKey: "featured_id",
-        },
-        {
-          model: ogImageModel,
-          foreignKey: "og_id",
-        },
-      ],
-    });
-    res.render("blogs", { data: blogs, title: "Blogs List" });
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: userModel,
+            foreignKey: "author",
+            attributes: ["id", "name", "email", "bio"],
+          },
+          {
+            model: bannerImageModel,
+            foreignKey: "banner_id",
+          },
+          {
+            model: featuredImageModel,
+            foreignKey: "featured_id",
+          },
+          {
+            model: ogImageModel,
+            foreignKey: "og_id",
+          },
+        ],
+      });
+      res.render("blogs", { data: blogs, title: "Blogs List" });
+    } else {
+      const blogs = await blogModel.findAll({
+        order: [["createdAt", "DESC"]],
+        include: [
+          {
+            model: userModel,
+            foreignKey: "author",
+            attributes: ["id", "name", "email", "bio"],
+          },
+          {
+            model: bannerImageModel,
+            foreignKey: "banner_id",
+          },
+          {
+            model: featuredImageModel,
+            foreignKey: "featured_id",
+          },
+          {
+            model: ogImageModel,
+            foreignKey: "og_id",
+          },
+        ],
+      });
+      res.render("blogs", { data: blogs, title: "Blogs List" });
+    }
   } catch (error) {
     res.json({ err: error.message });
   }
@@ -217,7 +248,10 @@ const deleteBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const findBlog = await blogModel.findByPk(id, {
+    const findBlog = await blogModel.findOne({
+      where: {
+        id: id,
+      },
       include: [
         {
           model: bannerImageModel,
@@ -233,25 +267,61 @@ const deleteBlog = async (req, res) => {
         },
       ],
     });
+    console.log(findBlog);
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
 
-    if (
-      fs.existsSync(
-        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
-      )
-    ) {
-      //delete images
-      fs.unlink(
-        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-        (err) => {
-          if (err) {
-            return res.json({ err: err.message });
+    const findBlogs = await blogModel.findAll({
+      where: {
+        banner_id: findBlog.dataValues.banner_id,
+      },
+    });
+
+    console.log(findBlogs.length);
+    if (findBlogs.length == 1) {
+      if (
+        fs.existsSync(
+          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+        )
+      ) {
+        //delete images
+        fs.unlink(
+          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          (err) => {
+            if (err) {
+              return res.json({ err: err.message });
+            }
+            console.log("Deleted successfully");
           }
-          console.log("Deleted successfully");
-        }
-      );
+        );
+      }
+
+      if (!findBlog.dataValues?.title?.startsWith("Draft")) {
+        const [banner, featured, og] = await Promise.all([
+          bannerImageModel.findByPk(findBlog.dataValues.banner_id),
+          featuredImageModel.findByPk(findBlog.dataValues.featured_id),
+          ogImageModel.findByPk(findBlog.dataValues.og_id),
+        ]);
+
+        await Promise.all([
+          findBlog.destroy(),
+          banner?.destroy(),
+          featured?.destroy(),
+          og?.destroy(),
+        ]);
+
+        // res
+        //   .status(200)
+        //   .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
+        res.redirect("/admin/dashboard/blogs");
+      } else {
+        findBlog.destroy();
+        res.redirect("/admin/dashboard/blogs");
+      }
+    } else {
+      await findBlog.destroy();
+      res.redirect("/admin/dashboard/blogs");
     }
 
     // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
@@ -266,24 +336,6 @@ const deleteBlog = async (req, res) => {
     //   }
     //   console.log("Deleted successfully");
     // });
-
-    const [banner, featured, og] = await Promise.all([
-      bannerImageModel.findByPk(findBlog.dataValues.banner_id),
-      featuredImageModel.findByPk(findBlog.dataValues.featured_id),
-      ogImageModel.findByPk(findBlog.dataValues.og_id),
-    ]);
-
-    await Promise.all([
-      findBlog.destroy(),
-      banner?.destroy(),
-      featured?.destroy(),
-      og?.destroy(),
-    ]);
-
-    // res
-    //   .status(200)
-    //   .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
-    res.redirect("/admin/dashboard/blogs");
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -331,6 +383,12 @@ const updateBlog = async (req, res) => {
   const { id } = req.params;
   console.log(req.body);
   try {
+    if (title?.length > 100 || title?.length < 10) {
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 10 and 100 characters",
+      });
+    }
     const blog = await blogModel.findByPk(id, {
       include: [
         {
@@ -356,6 +414,12 @@ const updateBlog = async (req, res) => {
       return res.status(404).json({ err: "Blog notfound" });
     }
 
+    const findBlogs = await blogModel.findAll({
+      where: {
+        banner_id: blog.dataValues.banner_id,
+      },
+    });
+
     if (req?.files.length > 0) {
       console.log("start");
       const bannerImage = await bannerImageModel.create({
@@ -371,20 +435,22 @@ const updateBlog = async (req, res) => {
 
       console.log(bannerImage);
       console.log("middle");
-      if (
-        fs.existsSync(
-          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
-        )
-      ) {
-        fs.unlink(
-          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-          (err) => {
-            if (err) {
-              return res.json({ err: err.message });
+      if (findBlogs.length == 1) {
+        if (
+          fs.existsSync(
+            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+          )
+        ) {
+          fs.unlink(
+            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+            (err) => {
+              if (err) {
+                return res.json({ err: err.message });
+              }
+              console.log("Deleted successfully");
             }
-            console.log("Deleted successfully");
-          }
-        );
+          );
+        }
       }
 
       const updateBlog = await blogModel.update(
@@ -407,25 +473,25 @@ const updateBlog = async (req, res) => {
       return res
         .status(200)
         .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
-    } else {
-      const updateBlog = await blogModel.update(
-        {
-          title: title,
-          description: description,
-          short_description: short_description,
-          is_published: is_published,
-          premium: premium,
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
-      );
-      res
-        .status(200)
-        .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
     }
+
+    const updateBlog = await blogModel.update(
+      {
+        title: title,
+        description: description,
+        short_description: short_description,
+        is_published: is_published,
+        premium: premium,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res
+      .status(200)
+      .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -536,19 +602,63 @@ const updateUser = async (req, res) => {
 
 const dashboard = async (req, res) => {
   try {
-    const users = await userModel.findAll({
-      where: {
-        role: {
-          [Op.ne]: "admin",
+    if (req?.query?.role) {
+      const users = await userModel.findAll({
+        where: {
+          role: req?.query?.role,
         },
-      },
-      attributes: {
-        exclude: ["password"],
-      },
-    });
-    // res.status(200).json({ data: users });
-    console.log({ data: users });
-    res.render("dashboard", { title: "Users List", data: users });
+        attributes: {
+          exclude: ["password"],
+        },
+      });
+      // res.status(200).json({ data: users });
+      console.log({ data: users });
+      res.render("dashboard", { title: "Users List", data: users });
+    } else {
+      const users = await userModel.findAll({
+        where: {
+          role: {
+            [Op.ne]: "admin",
+          },
+        },
+        attributes: {
+          exclude: ["password"],
+        },
+      });
+      // res.status(200).json({ data: users });
+      console.log({ data: users });
+      res.render("dashboard", { title: "Users List", data: users });
+    }
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const duplicateBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+    if (findBlog) {
+      const createDuplicateBlog = await blogModel.create({
+        title: `Draft - ${findBlog.dataValues.title}`,
+        short_description: findBlog.dataValues.short_description,
+        description: findBlog.dataValues.description,
+        is_published: findBlog.dataValues.is_published,
+        publish_date: findBlog.dataValues.publish_date,
+        premium: findBlog.dataValues.premium,
+        meta_title: findBlog.dataValues.meta_title,
+        meta_description: findBlog.dataValues.meta_description,
+        banner_id: findBlog.dataValues.banner_id,
+        featured_id: findBlog.dataValues.featured_id,
+        og_id: findBlog.dataValues.og_id,
+        author: findBlog.dataValues.author,
+        role: findBlog.dataValues.role,
+      });
+      res.redirect("/admin/dashboard/blogs");
+    } else {
+      res.status(404).json({ err: "Blog not-found" });
+    }
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -558,6 +668,7 @@ module.exports = {
   createAdmin,
   login,
   getAllBlogs,
+  duplicateBlog,
   deleteBlog,
   deleteUser,
   dashboard,
