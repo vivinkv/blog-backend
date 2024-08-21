@@ -144,11 +144,18 @@ const createBlog = async (req, res) => {
 
 //update existing blog
 const updateBlog = async (req, res) => {
-  const { title, description, is_published, premium, short_description } =
+  const { title, description, premium, short_description, is_published } =
     req.body;
+  console.log(req.body);
   const { id } = req.params;
   console.log(req.body);
   try {
+    if (title?.length > 100 || title?.length < 10) {
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 10 and 100 characters",
+      });
+    }
     const blog = await blogModel.findByPk(id, {
       include: [
         {
@@ -174,7 +181,14 @@ const updateBlog = async (req, res) => {
       return res.status(404).json({ err: "Blog notfound" });
     }
 
-    if (req?.files) {
+    const findBlogs = await blogModel.findAll({
+      where: {
+        banner_id: blog.dataValues.banner_id,
+      },
+    });
+
+    if (req?.files.length > 0) {
+      console.log("start");
       const bannerImage = await bannerImageModel.create({
         path: `${process.env.BACKEND_URL}/uploads/${req?.files[0]?.filename}`,
         fieldname: req?.files[0]?.fieldname,
@@ -185,27 +199,34 @@ const updateBlog = async (req, res) => {
         filename: req?.files[0]?.filename,
         size: req?.files[0]?.size,
       });
-      if (
-        fs.existsSync(
-          `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
-        )
-      ) {
-        fs.unlink(
-          `/uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-          (err) => {
-            if (err) {
-              return res.json({ err: err.message });
+
+      console.log(bannerImage);
+      console.log("middle");
+      if (findBlogs.length == 1) {
+        if (
+          fs.existsSync(
+            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+          )
+        ) {
+          fs.unlink(
+            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+            (err) => {
+              if (err) {
+                return res.json({ err: err.message });
+              }
+              console.log("Deleted successfully");
             }
-          }
-        );
+          );
+        }
       }
+
       const updateBlog = await blogModel.update(
         {
           title: title,
           description: description,
+          short_description: short_description,
           is_published: is_published,
           premium: premium,
-          short_description: short_description,
           author: req.user.id,
           banner_id: bannerImage.dataValues.id,
         },
@@ -215,30 +236,29 @@ const updateBlog = async (req, res) => {
           },
         }
       );
-
-      res
-        .status(200)
-        .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
-    } else {
-      const updateBlog = await blogModel.update(
-        {
-          title: title,
-          description: description,
-          is_published: is_published,
-          premium: premium,
-          short_description: short_description,
-          author: req.user.id,
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
-      );
-      res
+      console.log("end");
+      return res
         .status(200)
         .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
     }
+
+    const updateBlog = await blogModel.update(
+      {
+        title: title,
+        description: description,
+        short_description: short_description,
+        is_published: is_published,
+        premium: premium,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res
+      .status(200)
+      .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
