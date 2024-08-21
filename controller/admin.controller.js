@@ -169,7 +169,7 @@ const getAllBlogs = async (req, res) => {
           },
         ],
       });
-      res.render("blogs", { data: blogs, title: "Blogs List" });
+      res.render("blogs", { data: blogs, title: "Blogs List",query:{premium:req?.query?.premium,publish:req?.query?.published} });
     } else {
       const blogs = await blogModel.findAll({
         order: [["createdAt", "DESC"]],
@@ -193,10 +193,28 @@ const getAllBlogs = async (req, res) => {
           },
         ],
       });
-      res.render("blogs", { data: blogs, title: "Blogs List" });
+      res.render("blogs", { data: blogs, title: "Blogs List",query:{}});
     }
   } catch (error) {
     res.json({ err: error.message });
+  }
+};
+
+const getBlogDetail = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+    res.render("blogdetail", {
+      blog: findBlog.dataValues,
+      title: findBlog.dataValues.title,
+    });
+  } catch (err) {
+    res.json({ err: err.message });
   }
 };
 
@@ -343,13 +361,13 @@ const deleteBlog = async (req, res) => {
 
 const getUpdateBlog = async (req, res) => {
   const { id } = req.params;
-  console.log({query:req?.query});
+  console.log({ query: req?.query });
   try {
     if (req?.query?.publish) {
-      console.log('yes');
+      console.log("yes");
       const updateBlog = await blogModel.update(
         {
-          is_published: req?.query?.publish=='true' ? false:true,
+          is_published: req?.query?.publish == "true" ? false : true,
         },
         {
           where: {
@@ -357,15 +375,14 @@ const getUpdateBlog = async (req, res) => {
           },
         }
       );
-      res.redirect('/admin/dashboard/blogs')
+      res.redirect("/admin/dashboard/blogs");
       return;
-      
     }
     if (req?.query?.premium) {
-      console.log('yes');
+      console.log("yes");
       const updateBlog = await blogModel.update(
         {
-          premium: req?.query?.premium=='true' ? false:true,
+          premium: req?.query?.premium == "true" ? false : true,
         },
         {
           where: {
@@ -373,9 +390,8 @@ const getUpdateBlog = async (req, res) => {
           },
         }
       );
-      res.redirect('/admin/dashboard/blogs')
+      res.redirect("/admin/dashboard/blogs");
       return;
-      
     }
     const blog = await blogModel.findByPk(id, {
       include: [
@@ -708,5 +724,6 @@ module.exports = {
   getUpdateBlog,
   updateBlog,
   getUpdateUser,
+  getBlogDetail,
   updateUser,
 };

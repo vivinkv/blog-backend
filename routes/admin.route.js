@@ -14,6 +14,7 @@ const {
   getUpdateUser,
   updateUser,
   duplicateBlog,
+  getBlogDetail,
 } = require("../controller/admin.controller");
 const multer = require("multer");
 
@@ -67,6 +68,7 @@ router.get("/dashboard/blogs/create", (req, res) => {
 router.put("/dashboard/blogs/update/:id", upload.array("image", 3), updateBlog);
 router.post("/dashboard/blogs/create", upload.array("image", 3), createBlog);
 router.get("/dashboard/blogs", getAllBlogs);
+// router.get('/dashboard/blogs/:id',getBlogDetail)
 router.get("/dashboard/blogs/update/:id", getUpdateBlog);
 router.get("/dashboard/blogs/delete/:id", deleteBlog);
 router.get("/dashboard/blogs/duplicate/:id", duplicateBlog);
