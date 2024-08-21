@@ -269,7 +269,10 @@ const deleteBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const findBlog = await blogModel.findByPk(id, {
+    const findBlog = await blogModel.findOne({
+      where: {
+        id: id,
+      },
       include: [
         {
           model: bannerImageModel,
@@ -285,46 +288,75 @@ const deleteBlog = async (req, res) => {
         },
       ],
     });
+    console.log(findBlog);
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
-    if (!findBlog.dataValues.author == req.user.id) {
-      return res.status(403).json({ data: "Delete Permission Denied" });
-    }
 
-    //delete images
+    const findBlogs = await blogModel.findAll({
+      where: {
+        banner_id: findBlog.dataValues.banner_id,
+      },
+    });
 
-    if (
-      fs.existsSync(
-        `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
-      )
-    ) {
-      fs.unlink(
-        `/uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-        (err) => {
-          if (err) {
-            return res.json({ err: err.message });
+    console.log(findBlogs.length);
+    if (findBlogs.length == 1) {
+      if (
+        fs.existsSync(
+          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+        )
+      ) {
+        //delete images
+        fs.unlink(
+          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          (err) => {
+            if (err) {
+              return res.json({ err: err.message });
+            }
+            console.log("Deleted successfully");
           }
-        }
-      );
+        );
+      }
+
+      if (!findBlog.dataValues?.title?.startsWith("Draft")) {
+        const [banner, featured, og] = await Promise.all([
+          bannerImageModel.findByPk(findBlog.dataValues.banner_id),
+          featuredImageModel.findByPk(findBlog.dataValues.featured_id),
+          ogImageModel.findByPk(findBlog.dataValues.og_id),
+        ]);
+
+        await Promise.all([
+          findBlog.destroy(),
+          banner?.destroy(),
+          featured?.destroy(),
+          og?.destroy(),
+        ]);
+
+        // res
+        //   .status(200)
+        //   .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
+      return  res.status(200).json({msg:"Deleted Successfully"})
+      } else {
+        findBlog.destroy();
+       return res.status(200).json({msg:"Deleted Successfully"})
+      }
+    } else {
+      await findBlog.destroy();
+     return res.status(200).json({msg:"Deleted Successfully"})
     }
 
-    const [banner, featured, og] = await Promise.all([
-      bannerImageModel.findByPk(findBlog.dataValues.banner_id),
-      featuredImageModel.findByPk(findBlog.dataValues.featured_id),
-      ogImageModel.findByPk(findBlog.dataValues.og_id),
-    ]);
-
-    await Promise.all([
-      findBlog.destroy(),
-      banner?.destroy(),
-      featured?.destroy(),
-      og?.destroy(),
-    ]);
-
-    res
-      .status(200)
-      .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
+    // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
+    //   if (err) {
+    //     return res.json({ err: err.message });
+    //   }
+    //   console.log("Deleted successfully");
+    // });
+    // fs.unlink(findBlog?.dataValues?.ogimg?.path?.split("/")[1], (err) => {
+    //   if (err) {
+    //     return res.json({ err: err.message });
+    //   }
+    //   console.log("Deleted successfully");
+    // });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
