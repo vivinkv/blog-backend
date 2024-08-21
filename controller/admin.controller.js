@@ -641,7 +641,7 @@ const duplicateBlog = async (req, res) => {
     const findBlog = await blogModel.findByPk(id);
     if (findBlog) {
       const createDuplicateBlog = await blogModel.create({
-        title: `Draft - ${findBlog.dataValues.title}`,
+        title:  req?.query?.title,
         short_description: findBlog.dataValues.short_description,
         description: findBlog.dataValues.description,
         is_published: findBlog.dataValues.is_published,
