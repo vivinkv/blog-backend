@@ -343,8 +343,40 @@ const deleteBlog = async (req, res) => {
 
 const getUpdateBlog = async (req, res) => {
   const { id } = req.params;
-
+  console.log({query:req?.query});
   try {
+    if (req?.query?.publish) {
+      console.log('yes');
+      const updateBlog = await blogModel.update(
+        {
+          is_published: req?.query?.publish=='true' ? false:true,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.redirect('/admin/dashboard/blogs')
+      return;
+      
+    }
+    if (req?.query?.premium) {
+      console.log('yes');
+      const updateBlog = await blogModel.update(
+        {
+          premium: req?.query?.premium=='true' ? false:true,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.redirect('/admin/dashboard/blogs')
+      return;
+      
+    }
     const blog = await blogModel.findByPk(id, {
       include: [
         {
@@ -641,7 +673,7 @@ const duplicateBlog = async (req, res) => {
     const findBlog = await blogModel.findByPk(id);
     if (findBlog) {
       const createDuplicateBlog = await blogModel.create({
-        title:  req?.query?.title,
+        title: req?.query?.title,
         short_description: findBlog.dataValues.short_description,
         description: findBlog.dataValues.description,
         is_published: findBlog.dataValues.is_published,

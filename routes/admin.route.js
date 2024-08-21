@@ -64,7 +64,7 @@ router.get("/dashboard/blogs/create", (req, res) => {
   res.render("createblog", { title: "Create Blog" });
 });
 
-router.put("/blogs/update/:id", upload.array("image", 3), updateBlog);
+router.put("/dashboard/blogs/update/:id", upload.array("image", 3), updateBlog);
 router.post("/dashboard/blogs/create", upload.array("image", 3), createBlog);
 router.get("/dashboard/blogs", getAllBlogs);
 router.get("/dashboard/blogs/update/:id", getUpdateBlog);

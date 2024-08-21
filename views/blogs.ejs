@@ -134,16 +134,19 @@
             Picture
           </th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
+          <!--
+         
           <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
             Description
           </th>
+           -->
           <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
             Published
           </th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
             Premium
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">
             Action
           </th>
         </tr>
@@ -157,7 +160,7 @@
               <img
                 src="<%= data[i]?.dataValues?.bannerimg?.dataValues?.path %>"
                 alt="<%= data[i]?.dataValues?.bannerimg?.dataValues?.originalname %>"
-                class="min-h-64 min-w-64 object-cover rounded"
+                class="min-h-46 min-w-46 object-cover rounded"
               />
             </div>
           </td>
@@ -166,28 +169,39 @@
               <%= data[i].dataValues.title?.slice(0, 180) %>...
             </div>
           </td>
-          <td class="py-2 px-4 text-blue-900 border border-gray-200">
-            <div class="text-ellipsis overflow-hidden">
+        <!--
+          
+        
+       <td class="py-2 px-4 text-blue-900 border border-gray-200">
+         <div class="text-ellipsis overflow-hidden">
               <%= data[i].dataValues.short_description.slice(0, 250) %>...
-            </div>
-          </td>
+             </div>
+        </td> 
+      -->
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
-              <span
+              <a 
+              href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.is_published%>"
+                id="published-btn"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.is_published ? 'bg-green-500' : 'bg-red-500' %> rounded"
+                data-id="<%= data[i].dataValues.id %>"
+                data-publish="<%= data[i].dataValues.is_published%>"
               >
                 <%= data[i].dataValues.is_published ? 'Published' :
                 'Unpublished' %>
-              </span>
+              </a>
             </div>
           </td>
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
-              <span
+              <a
+              href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
+              id="premium-btn"
+              data-premium="<%= data[i].dataValues.premium%>"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>"
               >
                 <%= data[i].dataValues.premium ? 'Premium' : 'Standard' %>
-              </span>
+              </a>
             </div>
           </td>
           <td class="py-2 px-4 space-x-2 border border-gray-200">
@@ -206,12 +220,14 @@
                 />
               </a>
               <a
-                href="blogs/update/<%= data[i].dataValues.id %>"
+                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"
               >
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
               </a>
-              <a
+              
+              <% if(!data[i].dataValues.is_published) {%>
+                <a
                 href="javascript:void(0);"
                 data-id="<%= data[i].dataValues.id %>"
                 data-title="<%= data[i].dataValues.title%>"
@@ -219,6 +235,8 @@
               >
                 <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
               </a>
+             <% } %>
+            
             </div>
           </td>
         </tr>
@@ -262,8 +280,8 @@
   class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden"
 >
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
-    <h2 class="text-xl font-semibold mb-4">Change Blog Title</h2>
-    <p class="text-gray-600 mb-4">Enter a new title for the blog:</p>
+    <h2 class="text-xl font-semibold mb-4">Copy Blog</h2>
+    <p class="text-gray-600 mb-4">Enter The New Title:</p>
     <input
       type="text"
       id="new-blog-title"
@@ -288,6 +306,7 @@
     </div>
   </div>
 </div>
+
 
 <script>
   const menuBtn = document.getElementById("menu-btn");
@@ -314,6 +333,8 @@
       }
     }
   });
+
+  
 
   // Delete Confirmation Popup Logic
   const deleteLinks = document.querySelectorAll(".delete-link");
@@ -369,9 +390,13 @@
 
   saveDuplicateBtn.addEventListener("click", async () => {
     changeTitleModal.classList.add("remove");
-
     window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${id}?title=${newTitle.value}`;
   });
+
+
+  
+
+
 </script>
 
 <script>
