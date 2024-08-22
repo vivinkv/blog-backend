@@ -55,12 +55,12 @@ app.use(cookieParser());
 //associations
 userModel.hasMany(blogModel, { foreignKey: "author" });
 blogModel.belongsTo(userModel, { foreignKey: "author" });
-featuredImageModel.hasOne(blogModel, { foreignKey: "featured_id" });
-bannerImageModel.hasOne(blogModel, { foreignKey: "banner_id" });
-ogImageModel.hasOne(blogModel, { foreignKey: "og_id" });
-blogModel.belongsTo(featuredImageModel, { foreignKey: "featured_id" });
-blogModel.belongsTo(bannerImageModel, { foreignKey: "banner_id" });
-blogModel.belongsTo(ogImageModel, { foreignKey: "og_id" });
+bannerImageModel.hasOne(blogModel, { foreignKey: "featured_id",as:'featured' });
+bannerImageModel.hasOne(blogModel, { foreignKey: "banner_id",as:'banner' });
+bannerImageModel.hasOne(blogModel, { foreignKey: "og_id",as:'og' });
+blogModel.belongsTo(bannerImageModel, { foreignKey: "featured_id",as:'featured' });
+blogModel.belongsTo(bannerImageModel, { foreignKey: "banner_id",as:'banner' });
+blogModel.belongsTo(bannerImageModel, { foreignKey: "og_id",as:'og' });
 
 app.get("/", async (req, res) => {
   try {
@@ -80,14 +80,17 @@ app.get("/", async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
       where: {

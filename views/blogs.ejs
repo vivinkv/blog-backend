@@ -81,12 +81,9 @@
         <label
           class="flex items-center space-x-2 bg-blue-100 text-blue-800 px-2 py-1 rounded"
         >
-          <input
-            id="check-published"
-            type="checkbox"
-            <%= query?.publish=='true'? 'checked' : '' %>
-            class="form-checkbox h-5 w-5 text-blue-600"
-          />
+          <input id="check-published" type="checkbox" <%=
+          query?.publish=='true'? 'checked' : '' %> class="form-checkbox h-5 w-5
+          text-blue-600" />
           <span class="font-semibold">Published</span>
         </label>
 
@@ -94,12 +91,8 @@
         <label
           class="flex items-center space-x-2 bg-blue-100 text-blue-800 px-2 py-1 rounded"
         >
-          <input
-            id="check-premium"
-            type="checkbox"
-            <%= query?.premium=='true' ? 'checked' : '' %>
-            class="form-checkbox h-5 w-5 text-blue-600"
-          />
+          <input id="check-premium" type="checkbox" <%= query?.premium=='true' ?
+          'checked' : '' %> class="form-checkbox h-5 w-5 text-blue-600" />
           <span class="font-semibold">Premium</span>
         </label>
         <button
@@ -160,8 +153,8 @@
           <td class="py-2 px-4 w-24 border border-gray-200">
             <div class="flex">
               <img
-                src="<%= data[i]?.dataValues?.bannerimg?.dataValues?.path %>"
-                alt="<%= data[i]?.dataValues?.bannerimg?.dataValues?.originalname %>"
+                src="<%= data[i]?.dataValues?.banner?.dataValues?.path %>"
+                alt="<%= data[i]?.dataValues?.banner?.dataValues?.originalname %>"
                 class="min-h-46 min-w-46 object-cover rounded"
               />
             </div>
@@ -171,7 +164,7 @@
               <%= data[i].dataValues.title?.slice(0, 180) %>...
             </a>
           </td>
-        <!--
+          <!--
           
         
        <td class="py-2 px-4 text-blue-900 border border-gray-200">
@@ -182,8 +175,8 @@
       -->
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
-              <a 
-              href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.is_published%>"
+              <a
+                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.is_published%>"
                 id="published-btn"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.is_published ? 'bg-green-500' : 'bg-red-500' %> rounded"
                 data-id="<%= data[i].dataValues.id %>"
@@ -197,9 +190,9 @@
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
-              href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
-              id="premium-btn"
-              data-premium="<%= data[i].dataValues.premium%>"
+                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
+                id="premium-btn"
+                data-premium="<%= data[i].dataValues.premium%>"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>"
               >
                 <%= data[i].dataValues.premium ? 'Premium' : 'Standard' %>
@@ -227,9 +220,9 @@
               >
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
               </a>
-              
+
               <% if(!data[i].dataValues.is_published) {%>
-                <a
+              <a
                 href="javascript:void(0);"
                 data-id="<%= data[i].dataValues.id %>"
                 data-title="<%= data[i].dataValues.title%>"
@@ -237,8 +230,7 @@
               >
                 <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
               </a>
-             <% } %>
-            
+              <% } %>
             </div>
           </td>
         </tr>
@@ -292,6 +284,7 @@
       class="w-full px-4 py-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
       placeholder="New Blog Title"
     />
+    <p class="text-red-600 mb-4" id="titleError"></p>
     <div class="flex justify-end gap-4">
       <button
         id="cancel-change-title"
@@ -308,7 +301,6 @@
     </div>
   </div>
 </div>
-
 
 <script>
   const menuBtn = document.getElementById("menu-btn");
@@ -335,8 +327,6 @@
       }
     }
   });
-
-  
 
   // Delete Confirmation Popup Logic
   const deleteLinks = document.querySelectorAll(".delete-link");
@@ -373,6 +363,7 @@
   const changeTitleModal = document.getElementById("change-title-modal");
   const newTitle = document.getElementById("new-blog-title");
   const duplicateBtn = document.getElementById("duplicate-btn");
+  const titleError = document.getElementById("titleError");
   const currentTitle = document
     .getElementById("duplicate-btn")
     .getAttribute("data-title");
@@ -381,6 +372,7 @@
   const saveDuplicateBtn = document.getElementById("confirm-change-title");
 
   duplicateBtn.addEventListener("click", () => {
+    titleError.innerText=''
     console.log(currentTitle);
     newTitle.value = `Copy of ${currentTitle}`;
     changeTitleModal.classList.remove("hidden");
@@ -391,14 +383,18 @@
   });
 
   saveDuplicateBtn.addEventListener("click", async () => {
-    changeTitleModal.classList.add("remove");
-    window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${id}?title=${newTitle.value}`;
+    console.log(newTitle.value.length);
+    if (
+      newTitle.value.length < 10 ||
+      newTitle.value.length > 100
+    ) {
+      titleError.innerText = "Title must be between 10 and 100 characters";
+      return
+    } else {
+      changeTitleModal.classList.add("remove");
+      window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${id}?title=${newTitle.value}`;
+    }
   });
-
-
-  
-
-
 </script>
 
 <script>

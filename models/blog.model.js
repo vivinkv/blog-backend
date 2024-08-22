@@ -56,14 +56,14 @@ const blogModel = sequelizeConfig.define(
     featured_id: {
       type: DataTypes.STRING,
       references: {
-        model: "featuredimg",
+        model: "bannerimg",
         key: "id",
       },
     },
     og_id: {
       type: DataTypes.STRING,
       references: {
-        model: "ogimg",
+        model: "bannerimg",
         key: "id",
       },
     },

@@ -1,7 +1,5 @@
 const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
-const featuredImageModel = require("../models/featuredImage.model");
-const ogImageModel = require("../models/ogImage.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
 require("dotenv").config();
@@ -25,14 +23,17 @@ const getAllBlogs = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -79,14 +80,17 @@ const getBlogDetail = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -166,14 +170,17 @@ const updateBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -277,14 +284,17 @@ const deleteBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -321,8 +331,8 @@ const deleteBlog = async (req, res) => {
       if (!findBlog.dataValues?.title?.startsWith("Draft")) {
         const [banner, featured, og] = await Promise.all([
           bannerImageModel.findByPk(findBlog.dataValues.banner_id),
-          featuredImageModel.findByPk(findBlog.dataValues.featured_id),
-          ogImageModel.findByPk(findBlog.dataValues.og_id),
+          bannerImageModel.findByPk(findBlog.dataValues.featured_id),
+          bannerImageModel.findByPk(findBlog.dataValues.og_id),
         ]);
 
         await Promise.all([

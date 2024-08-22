@@ -6,8 +6,6 @@ var { passwordStrength } = require("check-password-strength");
 const userModel = require("../models/user.model");
 const blogModel = require("../models/blog.model");
 const bannerImageModel = require("../models/bannerImage.model");
-const featuredImageModel = require("../models/featuredImage.model");
-const ogImageModel = require("../models/ogImage.model");
 const { Op } = require("sequelize");
 const fs = require("fs");
 
@@ -158,14 +156,17 @@ const getAllBlogs = async (req, res) => {
           {
             model: bannerImageModel,
             foreignKey: "banner_id",
+            as:'banner'
           },
           {
-            model: featuredImageModel,
+            model: bannerImageModel,
             foreignKey: "featured_id",
+            as:'featured'
           },
           {
-            model: ogImageModel,
+            model: bannerImageModel,
             foreignKey: "og_id",
+            as:'og'
           },
         ],
       });
@@ -182,17 +183,21 @@ const getAllBlogs = async (req, res) => {
           {
             model: bannerImageModel,
             foreignKey: "banner_id",
+            as:'banner'
           },
           {
-            model: featuredImageModel,
+            model: bannerImageModel,
             foreignKey: "featured_id",
+            as:'featured'
           },
           {
-            model: ogImageModel,
+            model: bannerImageModel,
             foreignKey: "og_id",
+            as:'og'
           },
         ],
       });
+      console.log(blogs);
       res.render("blogs", { data: blogs, title: "Blogs List",query:{}});
     }
   } catch (error) {
@@ -274,14 +279,17 @@ const deleteBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -300,12 +308,12 @@ const deleteBlog = async (req, res) => {
     if (findBlogs.length == 1) {
       if (
         fs.existsSync(
-          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+          `uploads/${findBlog?.dataValues?.banner?.path?.split("/")?.pop()}`
         )
       ) {
         //delete images
         fs.unlink(
-          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          `uploads/${findBlog?.dataValues?.banner?.path?.split("/")?.pop()}`,
           (err) => {
             if (err) {
               return res.json({ err: err.message });
@@ -318,8 +326,8 @@ const deleteBlog = async (req, res) => {
       if (!findBlog.dataValues?.title?.startsWith("Draft")) {
         const [banner, featured, og] = await Promise.all([
           bannerImageModel.findByPk(findBlog.dataValues.banner_id),
-          featuredImageModel.findByPk(findBlog.dataValues.featured_id),
-          ogImageModel.findByPk(findBlog.dataValues.og_id),
+          bannerImageModel.findByPk(findBlog.dataValues.featured_id),
+          bannerImageModel.findByPk(findBlog.dataValues.og_id),
         ]);
 
         await Promise.all([
@@ -403,14 +411,17 @@ const getUpdateBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -447,14 +458,17 @@ const updateBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
+          as:'banner'
         },
         {
-          model: featuredImageModel,
+          model: bannerImageModel,
           foreignKey: "featured_id",
+          as:'featured'
         },
         {
-          model: ogImageModel,
+          model: bannerImageModel,
           foreignKey: "og_id",
+          as:'og'
         },
       ],
     });
@@ -486,11 +500,11 @@ const updateBlog = async (req, res) => {
       if (findBlogs.length == 1) {
         if (
           fs.existsSync(
-            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+            `uploads/${blog?.dataValues?.banner?.path?.split("/")?.pop()}`
           )
         ) {
           fs.unlink(
-            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+            `uploads/${blog?.dataValues?.banner?.path?.split("/")?.pop()}`,
             (err) => {
               if (err) {
                 return res.json({ err: err.message });
