@@ -150,7 +150,7 @@
         <% if (data.length > 0) { %> <% for (let i = 0; i < data.length; i++) {
         %>
         <tr class="border border-gray-200">
-          <td class="py-2 px-4 w-24 border border-gray-200">
+          <td class="py-2 px-4 w-24 border border-gray-200 max-w-72">
             <div class="flex">
               <img
                 src="<%= data[i]?.dataValues?.banner?.dataValues?.path %>"
@@ -200,11 +200,9 @@
             </div>
           </td>
           <td class="py-2 px-4 space-x-2 border border-gray-200">
-            <div class="flex justify-center gap-x-5">
-              <a
-                href="javascript:void(0);"
-                id="duplicate-btn"
-                class="bg-[#333333] p-2 rounded hover:text-blue-800"
+            <div class="flex justify-center gap-x-5 max-xl:w-52">
+              <button
+                class="duplicate-btn bg-[#333333] p-2 rounded hover:text-blue-800"
                 data-title="<%= data[i].dataValues.title%>"
                 data-id="<%= data[i].dataValues.id%>"
               >
@@ -213,7 +211,7 @@
                   class="w-7 h-7"
                   alt="duplicate icon"
                 />
-              </a>
+              </button>
               <a
                 href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"
@@ -361,40 +359,46 @@
 
   //change title
   const changeTitleModal = document.getElementById("change-title-modal");
-  const newTitle = document.getElementById("new-blog-title");
-  const duplicateBtn = document.getElementById("duplicate-btn");
-  const titleError = document.getElementById("titleError");
-  const currentTitle = document
-    .getElementById("duplicate-btn")
-    .getAttribute("data-title");
-  const id = document.getElementById("duplicate-btn").getAttribute("data-id");
-  const cancelDuplicateBtn = document.getElementById("cancel-change-title");
-  const saveDuplicateBtn = document.getElementById("confirm-change-title");
+const newTitle = document.getElementById("new-blog-title");
+const duplicateBtns = document.querySelectorAll(".duplicate-btn");
+const titleError = document.getElementById("titleError");
+const cancelDuplicateBtn = document.getElementById("cancel-change-title");
+const saveDuplicateBtn = document.getElementById("confirm-change-title");
 
+let currentId = null; // Initialize a variable to store the current ID
+
+duplicateBtns.forEach(duplicateBtn => {
   duplicateBtn.addEventListener("click", () => {
-    titleError.innerText=''
-    console.log(currentTitle);
+    titleError.innerText = '';
+    const currentTitle = duplicateBtn.getAttribute("data-title");
+    currentId = duplicateBtn.getAttribute("data-id"); // Update the current ID
+
     newTitle.value = `Copy of ${currentTitle}`;
     changeTitleModal.classList.remove("hidden");
   });
+});
+
+saveDuplicateBtn.addEventListener("click", async () => {
+  console.log(newTitle.value.length);
+
+  if (newTitle.value.length < 10 || newTitle.value.length > 100) {
+    titleError.innerText = "Title must be between 10 and 100 characters";
+    return;
+  } else if (!currentId) {
+    titleError.innerText = "No blog ID found. Please select a blog to duplicate.";
+    return;
+  }
+
+  changeTitleModal.classList.add("hidden");
+  window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${currentId}?title=${encodeURIComponent(newTitle.value)}`;
+});
+
 
   cancelDuplicateBtn.addEventListener("click", () => {
     changeTitleModal.classList.add("hidden");
   });
 
-  saveDuplicateBtn.addEventListener("click", async () => {
-    console.log(newTitle.value.length);
-    if (
-      newTitle.value.length < 10 ||
-      newTitle.value.length > 100
-    ) {
-      titleError.innerText = "Title must be between 10 and 100 characters";
-      return
-    } else {
-      changeTitleModal.classList.add("remove");
-      window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${id}?title=${newTitle.value}`;
-    }
-  });
+  
 </script>
 
 <script>

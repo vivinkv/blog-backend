@@ -74,6 +74,16 @@ const blogModel = sequelizeConfig.define(
         key: "id",
       },
     },
+    top_description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+    },
+    bottom_description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      defaultValue: null,
+    },
     role: {
       type: DataTypes.ENUM(
         "user",

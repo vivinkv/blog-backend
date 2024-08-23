@@ -17,6 +17,7 @@ const cors = require("cors");
 const featuredImageModel = require("./models/featuredImage.model");
 const bannerImageModel = require("./models/bannerImage.model");
 const ogImageModel = require("./models/ogImage.model");
+const blogSectionModel = require("./models/blogSection.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -55,12 +56,30 @@ app.use(cookieParser());
 //associations
 userModel.hasMany(blogModel, { foreignKey: "author" });
 blogModel.belongsTo(userModel, { foreignKey: "author" });
-bannerImageModel.hasOne(blogModel, { foreignKey: "featured_id",as:'featured' });
-bannerImageModel.hasOne(blogModel, { foreignKey: "banner_id",as:'banner' });
-bannerImageModel.hasOne(blogModel, { foreignKey: "og_id",as:'og' });
-blogModel.belongsTo(bannerImageModel, { foreignKey: "featured_id",as:'featured' });
-blogModel.belongsTo(bannerImageModel, { foreignKey: "banner_id",as:'banner' });
-blogModel.belongsTo(bannerImageModel, { foreignKey: "og_id",as:'og' });
+
+bannerImageModel.hasOne(blogModel, {
+  foreignKey: "featured_id",
+  as: "featured",
+});
+blogModel.belongsTo(bannerImageModel, {
+  foreignKey: "featured_id",
+  as: "featured",
+});
+
+bannerImageModel.hasOne(blogModel, { foreignKey: "banner_id", as: "banner" });
+blogModel.belongsTo(bannerImageModel, {
+  foreignKey: "banner_id",
+  as: "banner",
+});
+
+bannerImageModel.hasOne(blogModel, { foreignKey: "og_id", as: "og" });
+blogModel.belongsTo(bannerImageModel, { foreignKey: "og_id", as: "og" });
+
+blogModel.hasMany(blogSectionModel, { foreignKey: "blog_id", as: "sections" });
+blogSectionModel.belongsTo(blogModel, {
+  foreignKey: "blog_id",
+  as: "sections",
+});
 
 app.get("/", async (req, res) => {
   try {
@@ -80,18 +99,23 @@ app.get("/", async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
-          as:'banner'
+          as: "banner",
         },
         {
           model: bannerImageModel,
           foreignKey: "featured_id",
-          as:'featured'
+          as: "featured",
         },
         {
           model: bannerImageModel,
           foreignKey: "og_id",
-          as:'og'
+          as: "og",
         },
+        {
+          model:blogSectionModel,
+          foreignKey:'blog_id',
+          as:'sections'
+        }
       ],
       where: {
         premium: false,
