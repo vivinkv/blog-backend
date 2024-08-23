@@ -4,12 +4,12 @@ $("#summernote").summernote({
     height: "30vh",
   });
   $(".top_description_summernote").summernote({
-    placeholder: "Enter your description here...",
+    placeholder: "Enter Section Content",
     tabsize: 2,
     height: "30vh",
   });
   $(".bottom_description_summernote").summernote({
-    placeholder: "Enter your description here...",
+    placeholder: "Enter Section Content",
     tabsize: 2,
     height: "30vh",
   });
