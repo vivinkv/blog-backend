@@ -19,6 +19,9 @@ const bannerImageModel = require("./models/bannerImage.model");
 const ogImageModel = require("./models/ogImage.model");
 const blogSectionModel = require("./models/blogSection.model");
 const blogCommentModel = require("./models/blogComment.model");
+const forumModel = require("./models/forum/forum.model");
+const forumReplyModel = require("./models/forum/replies.model");
+const forumImgModel = require("./models/forum/forumImage.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -90,6 +93,20 @@ blogCommentModel.belongsTo(blogModel, {
 
 userModel.hasMany(blogCommentModel, { foreignKey: "user_id", as: "user" });
 blogCommentModel.belongsTo(userModel, { foreignKey: "user_id", as: "user" });
+
+userModel.hasMany(forumModel,{foreignKey:'author',as:'forum_user'})
+forumModel.belongsTo(userModel,{foreignKey:'author',as:'forum_user'});
+
+forumImgModel.hasOne(forumModel,{foreignKey:'forum_img',as:'forumimages'});
+forumModel.belongsTo(forumImgModel,{foreignKey:'forum_img',as:'forumimages'});
+
+forumModel.hasMany(forumReplyModel,{foreignKey:'forum_id',as:'replies'});
+forumReplyModel.belongsTo(forumModel,{foreignKey:'forum_id',as:'replies'});
+
+userModel.hasMany(forumReplyModel,{foreignKey:'user_id',as:'repliers'});
+forumReplyModel.belongsTo(userModel,{foreignKey:'user_id',as:'repliers'});
+
+
 
 app.get("/", async (req, res) => {
   try {

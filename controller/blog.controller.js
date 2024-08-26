@@ -256,7 +256,7 @@ const updateBlog = async (req, res) => {
     if (req?.files.length > 0) {
       console.log("start");
       const bannerImage = await bannerImageModel.create({
-        path: `${process.env.BACKEND_URL}/uploads/${req?.files[0]?.filename}`,
+        path: `/uploads/${req?.files[0]?.filename}`,
         fieldname: req?.files[0]?.fieldname,
         originalname: req?.files[0]?.originalname,
         encoding: req?.files[0]?.encoding,

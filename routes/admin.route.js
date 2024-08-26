@@ -20,6 +20,7 @@ const multer = require("multer");
 
 const checkFileType = require("../utils/checkFileType");
 const userModel = require("../models/user.model");
+const { getAllForums, createForum, getUpdateForum, updateForum, deleteForum } = require("../controller/forum.controller");
 const storage = multer.diskStorage({
   destination: "./uploads",
   filename: (req, file, cb) => {
@@ -81,6 +82,16 @@ router.put("/dashboard/user/update/:id", updateUser);
 router.get("/dashboard/user/create", (req, res) => {
   res.render("createuser", { title: "Create User" });
 });
+
+// forums
+router.get("/dashboard/forums", getAllForums);
+router.get("/dashboard/forums/create", (req, res) => {
+  res.render("forum/createforum", { title: "Create Forum" });
+});
+router.post("/dashboard/forums/create", upload.array("image", 3), createForum);
+router.get("/dashboard/forums/update/:id", getUpdateForum);
+router.put("/dashboard/forums/update/:id", upload.array("image", 3), updateForum);
+router.get("/dashboard/forums/delete/:id", deleteForum);
 
 // router.delete("/blogs/:id", deleteBlog);
 
