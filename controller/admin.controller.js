@@ -295,7 +295,7 @@ const createBlog = async (req, res) => {
       });
     }
     const bannerImage = await bannerImageModel.create({
-      path: `${process.env.BACKEND_URL}/uploads/${req?.files[0]?.filename}`,
+      path: `/uploads/${req?.files[0]?.filename}`,
       fieldname: req?.files[0]?.fieldname,
       originalname: req?.files[0]?.originalname,
       encoding: req?.files[0]?.encoding,
@@ -487,7 +487,7 @@ const getUpdateBlog = async (req, res) => {
         {
           model: userModel,
           foreignKey: "author",
-          as:'created_by',
+          as: "created_by",
           attributes: ["id", "name", "email", "bio"],
         },
         {
@@ -619,7 +619,59 @@ const updateBlog = async (req, res) => {
       });
     }
 
-    // Update the blog details
+    // Handle file upload and update blog details
+    if (req?.files.length > 0) {
+      const bannerImage = await bannerImageModel.create({
+        path: `/uploads/${req?.files[0]?.filename}`,
+        fieldname: req?.files[0]?.fieldname,
+        originalname: req?.files[0]?.originalname,
+        encoding: req?.files[0]?.encoding,
+        mimetype: req?.files[0]?.mimetype,
+        destination: req?.files[0]?.destination,
+        filename: req?.files[0]?.filename,
+        size: req?.files[0]?.size,
+      });
+
+      const findBlogs = await blogModel.findAll({
+        where: {
+          banner_id: blog.dataValues.banner_id,
+        },
+      });
+
+      if (findBlogs.length === 1) {
+        const oldBannerPath = `uploads/${blog?.dataValues?.banner?.path
+          ?.split("/")
+          ?.pop()}`;
+        if (fs.existsSync(oldBannerPath)) {
+          try {
+            await fs.promises.unlink(oldBannerPath);
+            console.log("Deleted successfully");
+          } catch (err) {
+            return res.json({ err: err.message });
+          }
+        }
+      }
+
+      await blogModel.update(
+        {
+          title,
+          description,
+          short_description,
+          is_published,
+          premium,
+          top_description,
+          bottom_description,
+          banner_id: bannerImage.dataValues.id,
+        },
+        {
+          where: { id },
+        }
+      );
+
+      return res.status(200).json({ msg: "Blog updated successfully" });
+    }
+
+    // Update the blog details without changing the banner
     await blogModel.update(
       {
         title,
@@ -631,9 +683,7 @@ const updateBlog = async (req, res) => {
         bottom_description,
       },
       {
-        where: {
-          id: id,
-        },
+        where: { id },
       }
     );
 
