@@ -188,13 +188,13 @@
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
-                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.is_published%>"
+                href="/admin/dashboard/forums/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.published%>"
                 id="published-btn"
-                class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.is_published ? 'bg-green-500' : 'bg-red-500' %> rounded"
+                class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.published ? 'bg-green-500' : 'bg-red-500' %> rounded"
                 data-id="<%= data[i].dataValues.id %>"
-                data-publish="<%= data[i].dataValues.is_published%>"
+                data-publish="<%= data[i].dataValues.published%>"
               >
-                <%= data[i].dataValues.is_published ? 'Published' :
+                <%= data[i].dataValues.published ? 'Published' :
                 'Unpublished' %>
               </a>
             </div>
@@ -202,7 +202,7 @@
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
-                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
+                href="/admin/dashboard/forums/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
                 id="premium-btn"
                 data-premium="<%= data[i].dataValues.premium%>"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>"
@@ -231,7 +231,7 @@
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
               </a>
 
-              <% if(!data[i].dataValues.is_published) {%>
+              <% if(!data[i].dataValues.published) {%>
               <a
                 href="javascript:void(0);"
                 data-id="<%= data[i].dataValues.id %>"

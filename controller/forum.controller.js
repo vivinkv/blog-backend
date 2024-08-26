@@ -18,8 +18,10 @@ const getAllForums = async (req, res) => {
   try {
     if (req?.query?.premium && req?.query?.published) {
       const forums = await forumModel.findAll({
-        offset: offset,
-        limit: limit,
+        where: {
+          premium: req?.query?.premium,
+          published: req?.query?.published,
+        },
         order: [["createdAt", "DESC"]],
         include: [
           {
@@ -162,7 +164,41 @@ const createForum = async (req, res) => {
 const getUpdateForum = async (req, res) => {
   const { id } = req.params;
 
+  console.log(req?.query);
+
   try {
+
+    if (req?.query?.publish) {
+      console.log("yes");
+      await forumModel.update(
+        {
+          published: req?.query?.publish == "true" ? false : true,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.redirect("/admin/dashboard/forums");
+      return;
+    }
+    if (req?.query?.premium) {
+      console.log("yes");
+      await forumModel.update(
+        {
+          premium: req?.query?.premium == "true" ? false : true,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+      res.redirect("/admin/dashboard/forums");
+      return;
+    }
+
     const findForum = await forumModel.findByPk(id, {
       include: [
         {
@@ -176,6 +212,7 @@ const getUpdateForum = async (req, res) => {
     if (!findForum) {
       return res.status(404).json({ err: "Forum not-found" });
     }
+
 
     res.render("forum/updateforum", {
       title: "Update Forum",
@@ -212,12 +249,25 @@ const updateForum = async (req, res) => {
         filename: req?.files[0]?.filename,
         size: req?.files[0]?.size,
       });
+      console.log(
+        `uploads/${findForum?.dataValues?.forumimages?.path?.split("/")?.pop()}`
+      );
 
       if (
-        fs.existsSync(findForum.dataValues.forumimg.path?.split("/")?.pop())
+        fs.existsSync(
+          `uploads/${findForum.dataValues.forumimages.path?.split("/")?.pop()}`
+        )
       ) {
+        console.log(
+          `uploads/${findForum?.dataValues?.forumimages?.path
+            ?.split("/")
+            ?.pop()}`
+        );
         fs.unlink(
-          `uploads/${findForum?.dataValues?.forumimg?.path?.split("/")?.pop()}`,
+          `uploads/${findForum?.dataValues?.forumimages?.path
+            ?.split("/")
+            ?.pop()}`,
+
           (err) => {
             if (err) {
               return res.json({ err: err.message });
@@ -293,12 +343,16 @@ const deleteForum = async (req, res) => {
     if (findForums.length == 1) {
       if (
         fs.existsSync(
-          `uploads/${findForum?.dataValues?.banner?.path?.split("/")?.pop()}`
+          `uploads/${findForum?.dataValues?.forumimages?.path
+            ?.split("/")
+            ?.pop()}`
         )
       ) {
         //delete images
         fs.unlink(
-          `uploads/${findForum?.dataValues?.banner?.path?.split("/")?.pop()}`,
+          `uploads/${findForum?.dataValues?.forumimages?.path
+            ?.split("/")
+            ?.pop()}`,
           (err) => {
             if (err) {
               return res.json({ err: err.message });

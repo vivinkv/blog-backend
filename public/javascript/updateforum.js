@@ -3,16 +3,7 @@ $("#summernote").summernote({
     tabsize: 2,
     height: "30vh",
   });
-  $(".top_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
-  $(".bottom_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
+
   
   document
     .getElementById("submitbtn")
@@ -21,22 +12,14 @@ $("#summernote").summernote({
       const title = document.getElementById("title").value;
       const bannerImg = document.getElementById("banner").files;
       const shortDescription = document.getElementById("shortdescription").value;
-      const content = $("#descripton").summernote("code");
+      const content = $("#summernote").summernote("code");
       const premium = document.getElementById("premium").checked;
       const is_published = document.getElementById("is_published").checked;
       const id = document.getElementById("id").value;
       document.getElementById("titleError").style.display = "none";
       document.getElementById("contentError").style.display = "none";
-      const sections = Array.from(document.querySelectorAll(".section-item"));
-      const sectionData = sections.map((section) => {
-        const heading = section.querySelector('input[name="heading"]').value;
-        const content = section.querySelector('textarea[name="content"]').value;
-        return { heading, content };
-      });
-      const top_description = $(".top_description_summernote").summernote("code");
-      const bottom_description = $(".bottom_description_summernote").summernote(
-        "code"
-      );
+    
+    
   
       const formData = new FormData();
       formData.append("title", title);
@@ -44,9 +27,6 @@ $("#summernote").summernote({
       formData.append("short_description", shortDescription);
       formData.append("premium", premium);
       formData.append("published", is_published);
-      formData.append("sections", JSON.stringify(sectionData));
-      formData.append("top_description", top_description);
-      formData.append("bottom_description", bottom_description);
   
       for (let i = 0; i < bannerImg.length; i++) {
         formData.append("image", bannerImg[i]);
@@ -59,6 +39,8 @@ $("#summernote").summernote({
           body: formData,
         }
       );
+
+      console.log(formData.get('description'),formData.get('published'));
   
       const result = await response.json();
       console.log(result);

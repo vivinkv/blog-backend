@@ -16,7 +16,33 @@
   <body>
     <div class="container">
       <!-- Sidebar -->
-      <%- include('../components/sidenav') %>
+      <aside id="sidebar">
+        <div class="logo">
+          <img src="/logo.png" alt="logo" />
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="/admin/dashboard" class="nav-link">
+                <img src="/users.svg" alt="users" />
+                <span class="nav-text">Users</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/dashboard/blogs" class="nav-link ">
+                <img src="/blogs.svg" alt="blogs" />
+                <span class="nav-text">Blogs</span>
+              </a>
+            </li>
+            <li>
+                <a href="/admin/dashboard/forms" class="nav-link active">
+                  <img src="/blogs.svg" alt="blogs" />
+                  <span class="nav-text">Forum</span>
+                </a>
+              </li>
+          </ul>
+        </nav>
+      </aside>
       <main>
         <button id="toggle-button">
           <svg
@@ -106,7 +132,7 @@
 
           <div class="form-group">
             <label for="content" class="form-label">Content</label>
-            <textarea id="description" required class="form-textarea top_description_summernote">
+            <textarea id="summernote" required class="form-textarea">
 <%= data.description %></textarea
             >
             <small id="contentError"> * Content </small>
@@ -114,7 +140,7 @@
 
           <div class="form-action">
             <div style="display: flex; align-items: center">
-              <input type="checkbox" id="is_published" <%= data.is_published ?
+              <input type="checkbox" id="is_published" <%= data.published ?
               'checked': '' %> class="styled-checkbox" />
               <label for="is_published" class="checkbox-label">Publish</label>
             </div>
