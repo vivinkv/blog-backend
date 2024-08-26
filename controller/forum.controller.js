@@ -13,6 +13,8 @@ const getAllForums = async (req, res) => {
   const page = req?.query?.page || 1;
   const offset = limit * (page - 1);
 
+  console.log(req.query);
+
   // try {
 
   try {

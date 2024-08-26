@@ -420,11 +420,11 @@
     const isPublished = document.getElementById("check-published").checked;
     const isPremium = document.getElementById("check-premium").checked;
 
-    window.location.href = `/admin/dashboard/blogs?published=${isPublished}&premium=${isPremium}`;
+    window.location.href = `/admin/dashboard/forums?published=${isPublished}&premium=${isPremium}`;
   });
 
   document.getElementById("clear-filter").addEventListener("click", () => {
-    window.location.href = "/admin/dashboard/blogs";
+    window.location.href = "/admin/dashboard/forums";
   });
 </script>
 
