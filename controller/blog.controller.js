@@ -1,5 +1,7 @@
 const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
+const blogCommentModel = require("../models/blogComment.model");
+const blogSectionModel = require("../models/blogSection.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
 require("dotenv").config();
@@ -11,31 +13,59 @@ const getAllBlogs = async (req, res) => {
     const limit = req?.query?.limit || 15;
     const offset = (page - 1) * limit;
     const { count, rows } = await blogModel.findAndCountAll({
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "DESC"]], // Order blogs by latest first
       limit: limit,
       offset: offset,
       include: [
         {
           model: userModel,
           foreignKey: "author",
-          attributes: ["id", "name", "email", "bio"],
+          as: "created_by",
+          attributes: {
+            exclude: ["password"],
+          },
         },
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
-          as:'banner'
+          as: "banner",
         },
         {
           model: bannerImageModel,
           foreignKey: "featured_id",
-          as:'featured'
+          as: "featured",
         },
         {
           model: bannerImageModel,
           foreignKey: "og_id",
-          as:'og'
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "user",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
         },
       ],
+      where: {
+        premium: false,
+      },
     });
 
     res.json({
@@ -75,22 +105,40 @@ const getBlogDetail = async (req, res) => {
         {
           model: userModel,
           foreignKey: "author",
+          as:'created_by',
           attributes: ["id", "name", "email", "bio"],
         },
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
-          as:'banner'
+          as: "banner",
         },
         {
           model: bannerImageModel,
           foreignKey: "featured_id",
-          as:'featured'
+          as: "featured",
         },
         {
           model: bannerImageModel,
           foreignKey: "og_id",
-          as:'og'
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include:[{
+            model:userModel,
+            foreignKey:'user_id',
+            as:'user'
+          }],
+          separate:true,
+          order:[['createdAt','DESC']]
         },
       ],
     });
@@ -165,22 +213,33 @@ const updateBlog = async (req, res) => {
         {
           model: userModel,
           foreignKey: "author",
+          as: "created_by",
           attributes: ["id", "name", "email", "bio"],
         },
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
-          as:'banner'
+          as: "banner",
         },
         {
           model: bannerImageModel,
           foreignKey: "featured_id",
-          as:'featured'
+          as: "featured",
         },
         {
           model: bannerImageModel,
           foreignKey: "og_id",
-          as:'og'
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
         },
       ],
     });
@@ -284,17 +343,27 @@ const deleteBlog = async (req, res) => {
         {
           model: bannerImageModel,
           foreignKey: "banner_id",
-          as:'banner'
+          as: "banner",
         },
         {
           model: bannerImageModel,
           foreignKey: "featured_id",
-          as:'featured'
+          as: "featured",
         },
         {
           model: bannerImageModel,
           foreignKey: "og_id",
-          as:'og'
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
         },
       ],
     });
@@ -329,10 +398,20 @@ const deleteBlog = async (req, res) => {
       }
 
       if (!findBlog.dataValues?.title?.startsWith("Draft")) {
-        const [banner, featured, og] = await Promise.all([
+        const [banner, featured, og, sections, comments] = await Promise.all([
           bannerImageModel.findByPk(findBlog.dataValues.banner_id),
           bannerImageModel.findByPk(findBlog.dataValues.featured_id),
           bannerImageModel.findByPk(findBlog.dataValues.og_id),
+          blogSectionModel.destroy({
+            where: {
+              blog_id: findBlog?.dataValues?.id,
+            },
+          }),
+          blogCommentModel.destroy({
+            where: {
+              blog_id: findBlog?.dataValues?.id,
+            },
+          }),
         ]);
 
         await Promise.all([
@@ -345,14 +424,14 @@ const deleteBlog = async (req, res) => {
         // res
         //   .status(200)
         //   .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
-      return  res.status(200).json({msg:"Deleted Successfully"})
+        return res.status(200).json({ msg: "Deleted Successfully" });
       } else {
         findBlog.destroy();
-       return res.status(200).json({msg:"Deleted Successfully"})
+        return res.status(200).json({ msg: "Deleted Successfully" });
       }
     } else {
       await findBlog.destroy();
-     return res.status(200).json({msg:"Deleted Successfully"})
+      return res.status(200).json({ msg: "Deleted Successfully" });
     }
 
     // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
@@ -372,10 +451,95 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+const createComment = async (req, res) => {
+  const { comment } = req.body;
+  const { id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+
+    const addComment = await blogCommentModel.create({
+      comment: comment,
+      user_id: req.user?.id,
+      blog_id: id,
+    });
+
+    res.status(200).json({ msg: "Comment Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const updateComment = async (req, res) => {
+  const { comment_id, id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+    const findComment = await blogCommentModel.findOne({
+      id: comment_id,
+      user_id: req.user?.id,
+    });
+
+    if (!findComment) {
+      return res.status(404).json({ err: "Comment not-found" });
+    }
+    console.log(req.body);
+
+    await blogCommentModel.update(req.body, {
+      where: {
+        id: comment_id,
+        blog_id: id,
+        user_id: req?.user?.id,
+      },
+    });
+
+    res.status(200).json({ msg: "Comment Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteComment = async (req, res) => {
+  const { comment_id, id } = req.params;
+  try {
+    const findBlog = await blogModel.findByPk(id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+    const findComment = await blogCommentModel.findOne({
+      id: comment_id,
+      blog_id:id,
+      user_id: req.user?.id,
+    });
+
+    if (!findComment) {
+      return res.status(404).json({ err: "Comment not-found" });
+    }
+
+    await findComment.destroy();
+
+    res.status(200).json({ msg: "Comment Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
 module.exports = {
   getAllBlogs,
   getBlogDetail,
   createBlog,
   updateBlog,
   deleteBlog,
+  updateComment,
+  createComment,
+  deleteComment,
 };

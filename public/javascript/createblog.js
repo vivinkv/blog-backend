@@ -5,16 +5,15 @@ $(".summernote").summernote({
 });
 
 $(".top_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
-  $(".bottom_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
-    
+  placeholder: "Enter Section Content",
+  tabsize: 2,
+  height: "30vh",
+});
+$(".bottom_description_summernote").summernote({
+  placeholder: "Enter Section Content",
+  tabsize: 2,
+  height: "30vh",
+});
 
 document
   .getElementById("submitbtn")
@@ -34,48 +33,50 @@ document
     const sections = Array.from(document.querySelectorAll(".section-item"));
     const sectionData = sections.map((section) => {
       const heading = section.querySelector('input[name="heading"]').value;
-      const content= section.querySelector('textarea[name="content"]').value;
-      return { heading,content };
+      const content = section.querySelector('textarea[name="content"]').value;
+      return { heading, content };
     });
-    const top_description=$(".top_description_summernote").summernote("code");
-    const bottom_description=$(".bottom_description_summernote").summernote("code");
+    const top_description = $(".top_description_summernote").summernote("code");
+    const bottom_description = $(".bottom_description_summernote").summernote(
+      "code"
+    );
     const formData = new FormData();
-      formData.append("title", title);
-      formData.append("description", content);
-      formData.append("short_description", shortDescription);
-      formData.append("premium", premium);
-      formData.append("is_published", is_published);
-      formData.append('sections',JSON.stringify(sectionData));
-      formData.append('top_description',top_description);
-      formData.append('bottom_description',bottom_description);
-      console.log(formData.getAll('sections'));
-      for (let i = 0; i < bannerImg.length; i++) {
-        formData.append("image", bannerImg[i]);
-      }
+    formData.append("title", title);
+    formData.append("description", content);
+    formData.append("short_description", shortDescription);
+    formData.append("premium", premium);
+    formData.append("is_published", is_published);
+    formData.append("sections", JSON.stringify(sectionData));
+    formData.append("top_description", top_description);
+    formData.append("bottom_description", bottom_description);
+    console.log(formData.getAll("sections"));
+    for (let i = 0; i < bannerImg.length; i++) {
+      formData.append("image", bannerImg[i]);
+    }
 
-      const response = await fetch(
-        `${window.location.origin}/admin/dashboard/blogs/create`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      console.log(response);
-      const result = await response.json();
-      console.log(result);
-      console.log(result?.type);
-      if (response?.ok) {
-        // Show the alert message
-        const alertMessage = document.getElementById("alertMessage");
-        alertMessage.innerText = result.msg;
-        alertMessage.style.display = "block";
-
-        // Hide the alert after 3 seconds
-        setTimeout(() => {
-          alertMessage.style.display = "none";
-          window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
-        }, 2000);
+    const response = await fetch(
+      `${window.location.origin}/admin/dashboard/blogs/create`,
+      {
+        method: "POST",
+        body: formData,
       }
+    );
+    console.log(response);
+    const result = await response.json();
+    console.log(result);
+    console.log(result?.type);
+    if (response?.ok) {
+      // Show the alert message
+      const alertMessage = document.getElementById("alertMessage");
+      alertMessage.innerText = result.msg;
+      alertMessage.style.display = "block";
+
+      // Hide the alert after 3 seconds
+      setTimeout(() => {
+        alertMessage.style.display = "none";
+        window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
+      }, 2000);
+    }
 
     if (result?.type == "title") {
       document.getElementById("titleError").innerText = `* ${result?.err}`;
@@ -194,9 +195,18 @@ document.addEventListener("DOMContentLoaded", function () {
   // Function to attach event listener to "-" buttons
   function attachDeleteSectionListener(button) {
     button.addEventListener("click", function () {
-      button.closest(".section-item").remove();
+      document.getElementById("delete-confirmation-modal").style.display =
+        "flex";
     });
   }
+
+  document.getElementById("cancel-delete").addEventListener("click", () => {
+    document.getElementById("delete-confirmation-modal").style.display = "none";
+  });
+  document.getElementById("confirm-delete").addEventListener("click", () => {
+    document.getElementById("delete-confirmation-modal").style.display = "none";
+    document.querySelector(".deleteSection").closest(".section-item").remove();
+  });
 
   // Attach listener to the initial "+" and "-" buttons
   attachAddSectionListener(document.querySelector(".addSection"));

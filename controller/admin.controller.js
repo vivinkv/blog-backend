@@ -9,6 +9,7 @@ const bannerImageModel = require("../models/bannerImage.model");
 const { Op } = require("sequelize");
 const fs = require("fs");
 const blogSectionModel = require("../models/blogSection.model");
+const blogCommentModel = require("../models/blogComment.model");
 
 //Create a new User
 const createAdmin = async (req, res) => {
@@ -152,7 +153,10 @@ const getAllBlogs = async (req, res) => {
           {
             model: userModel,
             foreignKey: "author",
-            attributes: ["id", "name", "email", "bio"],
+            as: "created_by",
+            attributes: {
+              exclude: ["password"],
+            },
           },
           {
             model: bannerImageModel,
@@ -173,6 +177,20 @@ const getAllBlogs = async (req, res) => {
             model: blogSectionModel,
             foreignKey: "blog_id",
             as: "sections",
+          },
+          {
+            model: blogCommentModel,
+            foreignKey: "blog_id",
+            as: "comments",
+            include: [
+              {
+                model: userModel,
+                foreignKey: "user_id",
+                as: "user",
+              },
+            ],
+            separate: true,
+            order: [["createdAt", "DESC"]],
           },
         ],
       });
@@ -188,7 +206,10 @@ const getAllBlogs = async (req, res) => {
           {
             model: userModel,
             foreignKey: "author",
-            attributes: ["id", "name", "email", "bio"],
+            as: "created_by",
+            attributes: {
+              exclude: ["password"],
+            },
           },
           {
             model: bannerImageModel,
@@ -209,6 +230,20 @@ const getAllBlogs = async (req, res) => {
             model: blogSectionModel,
             foreignKey: "blog_id",
             as: "sections",
+          },
+          {
+            model: blogCommentModel,
+            foreignKey: "blog_id",
+            as: "comments",
+            include: [
+              {
+                model: userModel,
+                foreignKey: "user_id",
+                as: "user",
+              },
+            ],
+            separate: true,
+            order: [["createdAt", "DESC"]],
           },
         ],
       });
@@ -360,11 +395,10 @@ const deleteBlog = async (req, res) => {
       }
 
       if (!findBlog.dataValues?.title?.startsWith("Draft")) {
-        const [banner, featured, og, sections] = await Promise.all([
+        const [banner, featured, og] = await Promise.all([
           bannerImageModel.findByPk(findBlog.dataValues.banner_id),
           bannerImageModel.findByPk(findBlog.dataValues.featured_id),
           bannerImageModel.findByPk(findBlog.dataValues.og_id),
-          blogSectionModel.findByPk(findBlog.dataValues.id),
         ]);
 
         await Promise.all([
@@ -372,7 +406,16 @@ const deleteBlog = async (req, res) => {
           banner?.destroy(),
           featured?.destroy(),
           og?.destroy(),
-          sections?.destroy(),
+          blogSectionModel.destroy({
+            where: {
+              blog_id: findBlog.dataValues.id,
+            },
+          }),
+          blogCommentModel.destroy({
+            where: {
+              blog_id: findBlog.dataValues.id,
+            },
+          }),
         ]);
 
         // res
@@ -444,6 +487,7 @@ const getUpdateBlog = async (req, res) => {
         {
           model: userModel,
           foreignKey: "author",
+          as:'created_by',
           attributes: ["id", "name", "email", "bio"],
         },
         {
@@ -465,6 +509,11 @@ const getUpdateBlog = async (req, res) => {
           model: blogSectionModel,
           foreignKey: "blog_id",
           as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
         },
       ],
     });
@@ -527,7 +576,9 @@ const updateBlog = async (req, res) => {
 
       // Find a matching section in the existing sections by heading or some unique property
       const existingSection = existingSections.find(
-        (existing) => existing.heading === section.heading && !processedSectionIds.includes(existing.id)
+        (existing) =>
+          existing.heading === section.heading &&
+          !processedSectionIds.includes(existing.id)
       );
 
       if (existingSection) {
@@ -591,7 +642,6 @@ const updateBlog = async (req, res) => {
     res.status(500).json({ err: error.message });
   }
 };
-
 
 const getUpdateUser = async (req, res) => {
   const { id } = req.params;

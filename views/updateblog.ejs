@@ -16,27 +16,7 @@
   <body>
     <div class="container">
       <!-- Sidebar -->
-      <aside id="sidebar">
-        <div class="logo">
-          <img src="/logo.png" alt="logo" />
-        </div>
-        <nav>
-          <ul>
-            <li>
-              <a href="/admin/dashboard" class="nav-link">
-                <img src="/users.svg" alt="users" />
-                <span class="nav-text">Users</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/dashboard/blogs" class="nav-link active">
-                <img src="/blogs.svg" alt="blogs" />
-                <span class="nav-text">Blogs</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </aside>
+      <%- include('components/sidenav') %>
       <main>
         <button id="toggle-button">
           <svg
@@ -219,7 +199,24 @@
           </div>
         </form>
       </main>
+
+      
+
     </div>
+
+    <!-- Modal -->
+  <div id="delete-confirmation-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2>Are you sure?</h2>
+      <p>Do you really want to delete this section?</p>
+      <div class="modal-actions">
+        <button id="cancel-delete" class="btn-cancel">Cancel</button>
+        <button id="confirm-delete" class="btn-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  
 
     <script
       src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

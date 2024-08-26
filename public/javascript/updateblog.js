@@ -1,157 +1,148 @@
 $("#summernote").summernote({
-    placeholder: "Enter your content here...",
-    tabsize: 2,
-    height: "30vh",
-  });
-  $(".top_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
-  $(".bottom_description_summernote").summernote({
-    placeholder: "Enter Section Content",
-    tabsize: 2,
-    height: "30vh",
-  });
-    
+  placeholder: "Enter your content here...",
+  tabsize: 2,
+  height: "30vh",
+});
+$(".top_description_summernote").summernote({
+  placeholder: "Enter Section Content",
+  tabsize: 2,
+  height: "30vh",
+});
+$(".bottom_description_summernote").summernote({
+  placeholder: "Enter Section Content",
+  tabsize: 2,
+  height: "30vh",
+});
 
-
-  document
-    .getElementById("submitbtn")
-    .addEventListener("click", async function (e) {
-      e.preventDefault();
-      const title = document.getElementById("title").value;
-      const bannerImg = document.getElementById("banner").files;
-      const shortDescription =
-        document.getElementById("shortdescription").value;
-      const content = $("#summernote").summernote("code");
-      const premium = document.getElementById("premium").checked;
-      const is_published = document.getElementById("is_published").checked;
-      const id = document.getElementById("id").value;
-      document.getElementById("titleError").style.display = "none";
-      document.getElementById("contentError").style.display = "none";
-      const sections = Array.from(document.querySelectorAll(".section-item"));
-      const sectionData = sections.map((section) => {
-        const heading = section.querySelector('input[name="heading"]').value;
-        const content= section.querySelector('textarea[name="content"]').value;
-        return { heading,content };
-      });
-      const top_description=$(".top_description_summernote").summernote("code");
-      const bottom_description=$(".bottom_description_summernote").summernote("code");
-
-      const formData = new FormData();
-        formData.append("title", title);
-        formData.append("description", content);
-        formData.append("short_description", shortDescription);
-        formData.append("premium", premium);
-        formData.append("is_published", is_published);
-        formData.append('sections',JSON.stringify(sectionData));
-        formData.append('top_description',top_description);
-        formData.append('bottom_description',bottom_description);
-
-      for (let i = 0; i < bannerImg.length; i++) {
-        formData.append("image", bannerImg[i]);
-      }
-
-      const response = await fetch(
-        `${window.location.origin}/admin/dashboard/blogs/update/${id}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-
-      const result = await response.json();
-      console.log(result);
-      if (response.ok) {
-        // Show the alert message
-        const alertMessage = document.getElementById("alertMessage");
-        alertMessage.innerText = result.msg;
-        alertMessage.style.display = "block";
-
-        // Hide the alert after 3 seconds
-        setTimeout(() => {
-          alertMessage.style.display = "none";
-          window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
-        }, 3000);
-      }
-      if (result?.type == "title") {
-        document.getElementById(
-          "titleError"
-        ).innerText = `* ${result?.err}`;
-        document.getElementById("titleError").style.display = "block";
-        return;
-      }
-      if (result?.err) {
-        document.getElementById(
-          "contentError"
-        ).innerText = `* ${result?.err}`;
-        document.getElementById("contentError").style.display = "block";
-        return;
-      }
+document
+  .getElementById("submitbtn")
+  .addEventListener("click", async function (e) {
+    e.preventDefault();
+    const title = document.getElementById("title").value;
+    const bannerImg = document.getElementById("banner").files;
+    const shortDescription = document.getElementById("shortdescription").value;
+    const content = $("#summernote").summernote("code");
+    const premium = document.getElementById("premium").checked;
+    const is_published = document.getElementById("is_published").checked;
+    const id = document.getElementById("id").value;
+    document.getElementById("titleError").style.display = "none";
+    document.getElementById("contentError").style.display = "none";
+    const sections = Array.from(document.querySelectorAll(".section-item"));
+    const sectionData = sections.map((section) => {
+      const heading = section.querySelector('input[name="heading"]').value;
+      const content = section.querySelector('textarea[name="content"]').value;
+      return { heading, content };
     });
+    const top_description = $(".top_description_summernote").summernote("code");
+    const bottom_description = $(".bottom_description_summernote").summernote(
+      "code"
+    );
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const sidebar = document.getElementById("sidebar");
-    const toggleButton = document.getElementById("toggle-button");
-    const body = document.body; // Get the body element
-    let isSidebarVisible = false;
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", content);
+    formData.append("short_description", shortDescription);
+    formData.append("premium", premium);
+    formData.append("is_published", is_published);
+    formData.append("sections", JSON.stringify(sectionData));
+    formData.append("top_description", top_description);
+    formData.append("bottom_description", bottom_description);
 
-    function showSidebar() {
-      sidebar.style.transform = "translateX(0%)";
-      toggleButton.style.display = "none"; // Hide button when sidebar is visible
-      body.classList.add("sidebar-visible");
-      isSidebarVisible = true;
+    for (let i = 0; i < bannerImg.length; i++) {
+      formData.append("image", bannerImg[i]);
     }
 
-    function hideSidebar() {
-      sidebar.style.transform = "translateX(-100%)";
-      toggleButton.style.display = "block"; // Show button when sidebar is hidden
-      body.classList.remove("sidebar-visible");
-      isSidebarVisible = false;
+    const response = await fetch(
+      `${window.location.origin}/admin/dashboard/blogs/update/${id}`,
+      {
+        method: "PUT",
+        body: formData,
+      }
+    );
+
+    const result = await response.json();
+    console.log(result);
+    if (response.ok) {
+      // Show the alert message
+      const alertMessage = document.getElementById("alertMessage");
+      alertMessage.innerText = result.msg;
+      alertMessage.style.display = "block";
+
+      // Hide the alert after 3 seconds
+      setTimeout(() => {
+        alertMessage.style.display = "none";
+        window.location.href = `${window.location.origin}/admin/dashboard/blogs`;
+      }, 3000);
     }
-
-    toggleButton.addEventListener("click", (e) => {
-      e.stopPropagation(); // Prevent click event from bubbling up
-      if (isSidebarVisible) {
-        hideSidebar();
-      } else {
-        showSidebar();
-      }
-    });
-
-    // Hide sidebar when clicking outside of it
-    document.addEventListener("click", (e) => {
-      if (
-        isSidebarVisible &&
-        !sidebar.contains(e.target) &&
-        !toggleButton.contains(e.target)
-      ) {
-        hideSidebar();
-      }
-    });
-
-    // Stop propagation when clicking inside the sidebar to prevent it from closing
-    sidebar.addEventListener("click", (e) => {
-      e.stopPropagation();
-    });
+    if (result?.type == "title") {
+      document.getElementById("titleError").innerText = `* ${result?.err}`;
+      document.getElementById("titleError").style.display = "block";
+      return;
+    }
+    if (result?.err) {
+      document.getElementById("contentError").innerText = `* ${result?.err}`;
+      document.getElementById("contentError").style.display = "block";
+      return;
+    }
   });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const sidebar = document.getElementById("sidebar");
+  const toggleButton = document.getElementById("toggle-button");
+  const body = document.body; // Get the body element
+  let isSidebarVisible = false;
 
-  //   add new sections
+  function showSidebar() {
+    sidebar.style.transform = "translateX(0%)";
+    toggleButton.style.display = "none"; // Hide button when sidebar is visible
+    body.classList.add("sidebar-visible");
+    isSidebarVisible = true;
+  }
 
-  
+  function hideSidebar() {
+    sidebar.style.transform = "translateX(-100%)";
+    toggleButton.style.display = "block"; // Show button when sidebar is hidden
+    body.classList.remove("sidebar-visible");
+    isSidebarVisible = false;
+  }
 
+  toggleButton.addEventListener("click", (e) => {
+    e.stopPropagation(); // Prevent click event from bubbling up
+    if (isSidebarVisible) {
+      hideSidebar();
+    } else {
+      showSidebar();
+    }
+  });
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const formSections = document.getElementById("formSections");
+  // Hide sidebar when clicking outside of it
+  document.addEventListener("click", (e) => {
+    if (
+      isSidebarVisible &&
+      !sidebar.contains(e.target) &&
+      !toggleButton.contains(e.target)
+    ) {
+      hideSidebar();
+    }
+  });
 
-    // Function to add a new section
-    function addNewSection() {
-        const newSection = document.createElement("div");
-        newSection.classList.add("section-item");
+  // Stop propagation when clicking inside the sidebar to prevent it from closing
+  sidebar.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+});
 
-        newSection.innerHTML = `
+//   add new sections
+
+document.addEventListener("DOMContentLoaded", function () {
+  const formSections = document.getElementById("formSections");
+
+  // Function to add a new section
+  function addNewSection() {
+    const newSection = document.createElement("div");
+    newSection.classList.add("section-item");
+
+    newSection.innerHTML = `
             <div class="header">
                 <button type="button" class="add-btn addSection"><img src="/add.png" width="30" height="30" alt="add"></button>
                 <button type="button" class="delete-btn deleteSection"><img src="/delete.svg" width="30" height="30" alt="delete"></button>
@@ -171,31 +162,44 @@ $("#summernote").summernote({
             </div>
         `;
 
-        formSections.appendChild(newSection);
+    formSections.appendChild(newSection);
 
-        // Attach event listeners to the new buttons
-        attachAddSectionListener(newSection.querySelector(".addSection"));
-        attachDeleteSectionListener(newSection.querySelector(".deleteSection"));
-    }
+    // Attach event listeners to the new buttons
+    attachAddSectionListener(newSection.querySelector(".addSection"));
+    attachDeleteSectionListener(newSection.querySelector(".deleteSection"));
+  }
 
-    // Function to attach event listener to "+" buttons
-    function attachAddSectionListener(button) {
-        button.addEventListener("click", addNewSection);
-        $(".summernote-section").summernote({
-            placeholder: "Enter Section here...",
-            tabsize: 2,
-            height: "30vh",
-          });
-    }
+  // Function to attach event listener to "+" buttons
+  function attachAddSectionListener(button) {
+    button.addEventListener("click", addNewSection);
+    $(".summernote-section").summernote({
+      placeholder: "Enter Section here...",
+      tabsize: 2,
+      height: "30vh",
+    });
+  }
 
-    // Function to attach event listener to "-" buttons
-    function attachDeleteSectionListener(button) {
-        button.addEventListener("click", function () {
-            button.closest(".section-item").remove();
-        });
-    }
+  // Function to attach event listener to "-" buttons
+  function attachDeleteSectionListener(button) {
+    button.addEventListener("click", function () {
+      document.getElementById("delete-confirmation-modal").style.display =
+        "flex";
+    });
+  }
 
-    // Attach listeners to the initial "+" and "-" buttons
-    formSections.querySelectorAll(".addSection").forEach(button => attachAddSectionListener(button));
-    formSections.querySelectorAll(".deleteSection").forEach(button => attachDeleteSectionListener(button));
+  document.getElementById("cancel-delete").addEventListener("click", () => {
+    document.getElementById("delete-confirmation-modal").style.display = "none";
+  });
+  document.getElementById("confirm-delete").addEventListener("click", () => {
+    document.getElementById("delete-confirmation-modal").style.display = "none";
+    document.querySelector(".deleteSection").closest(".section-item").remove();
+  });
+
+  // Attach listeners to the initial "+" and "-" buttons
+  formSections
+    .querySelectorAll(".addSection")
+    .forEach((button) => attachAddSectionListener(button));
+  formSections
+    .querySelectorAll(".deleteSection")
+    .forEach((button) => attachDeleteSectionListener(button));
 });

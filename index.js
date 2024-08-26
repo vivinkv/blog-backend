@@ -18,6 +18,7 @@ const featuredImageModel = require("./models/featuredImage.model");
 const bannerImageModel = require("./models/bannerImage.model");
 const ogImageModel = require("./models/ogImage.model");
 const blogSectionModel = require("./models/blogSection.model");
+const blogCommentModel = require("./models/blogComment.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -54,8 +55,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //associations
-userModel.hasMany(blogModel, { foreignKey: "author" });
-blogModel.belongsTo(userModel, { foreignKey: "author" });
+userModel.hasMany(blogModel, { foreignKey: "author", as: "created_by" });
+blogModel.belongsTo(userModel, { foreignKey: "author", as: "created_by" });
 
 bannerImageModel.hasOne(blogModel, {
   foreignKey: "featured_id",
@@ -81,20 +82,33 @@ blogSectionModel.belongsTo(blogModel, {
   as: "sections",
 });
 
+blogModel.hasMany(blogCommentModel, { foreignKey: "blog_id", as: "comments" });
+blogCommentModel.belongsTo(blogModel, {
+  foreignKey: "blog_id",
+  as: "comments",
+});
+
+userModel.hasMany(blogCommentModel, { foreignKey: "user_id", as: "user" });
+blogCommentModel.belongsTo(userModel, { foreignKey: "user_id", as: "user" });
+
 app.get("/", async (req, res) => {
   try {
     const page = req?.query?.page || 1;
     const limit = req?.query?.limit || 15;
     const offset = (page - 1) * limit;
+
     const { count, rows } = await blogModel.findAndCountAll({
-      order: [["createdAt", "DESC"]],
+      order: [["createdAt", "DESC"]], // Order blogs by latest first
       limit: limit,
       offset: offset,
       include: [
         {
           model: userModel,
           foreignKey: "author",
-          attributes: ["id", "name", "email", "bio"],
+          as: "created_by",
+          attributes: {
+            exclude: ["password"],
+          },
         },
         {
           model: bannerImageModel,
@@ -112,10 +126,27 @@ app.get("/", async (req, res) => {
           as: "og",
         },
         {
-          model:blogSectionModel,
-          foreignKey:'blog_id',
-          as:'sections'
-        }
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "user",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
       ],
       where: {
         premium: false,
