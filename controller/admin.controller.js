@@ -844,7 +844,7 @@ const postComment=async(req,res)=>{
   try {
 
     if(comment?.length<5){
-      return res.status(409).json({err:'Must be atleast 5 characters'})
+      return res.status(409).json({err:'Comment must be at least 5 characters long.'})
     }
 
     const findBlog=await blogModel.findByPk(id);
