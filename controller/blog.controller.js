@@ -154,19 +154,26 @@ const getBlogDetail = async (req, res) => {
 //creat new blog
 
 const createBlog = async (req, res) => {
-  const { title, description, is_published, premium, short_description } =
-    req.body;
+  const {
+    title,
+    is_published,
+    premium,
+    short_description,
+    top_description,
+    bottom_description,
+    sections,
+  } = req.body;
+  const parseSection = JSON.parse(sections);
   console.log(req?.headers?.host);
-  console.log(req?.body);
+  console.log(req?.files);
+  console.log(JSON.parse(req?.body?.sections));
   try {
     if (title?.length > 100 || title?.length < 10) {
-      return res
-        .status(400)
-        .json({ err: "Title must be between 10 and 100 characters" });
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 10 and 100 characters",
+      });
     }
-
-    console.log(req?.headers);
-    console.log(req.files);
     const bannerImage = await bannerImageModel.create({
       path: `/uploads/${req?.files[0]?.filename}`,
       fieldname: req?.files[0]?.fieldname,
@@ -177,15 +184,32 @@ const createBlog = async (req, res) => {
       filename: req?.files[0]?.filename,
       size: req?.files[0]?.size,
     });
+
     const createBlog = await blogModel.create({
       title: title,
-      description: description,
+      description: top_description,
       is_published: is_published,
       premium: premium,
       short_description: short_description,
+      top_description: top_description,
+      bottom_description: bottom_description,
       author: req.user.id,
       banner_id: bannerImage.dataValues.id,
     });
+
+    for (const section of parseSection) {
+      try {
+        const sectionData = await blogSectionModel.create({
+          blog_id: createBlog.dataValues.id,
+          heading: section?.heading,
+          content: section?.content,
+          section_name: section?.heading,
+        });
+        console.log(sectionData);
+      } catch (error) {
+        res.status(500).json({ err: error.message });
+      }
+    }
 
     res
       .status(200)
@@ -197,11 +221,19 @@ const createBlog = async (req, res) => {
 
 //update existing blog
 const updateBlog = async (req, res) => {
-  const { title, description, premium, short_description, is_published } =
-    req.body;
-  console.log(req.body);
+  const {
+    title,
+    premium,
+    short_description,
+    is_published,
+    top_description,
+    bottom_description,
+    sections,
+  } = req.body;
+
   const { id } = req.params;
-  console.log(req.body);
+  const parseSection = JSON.parse(sections);
+
   try {
     if (title?.length > 100 || title?.length < 10) {
       return res.status(400).json({
@@ -209,53 +241,79 @@ const updateBlog = async (req, res) => {
         err: "Title must be between 10 and 100 characters",
       });
     }
+
+    // Load the existing blog and its sections
     const blog = await blogModel.findByPk(id, {
       include: [
-        {
-          model: userModel,
-          foreignKey: "author",
-          as: "created_by",
-          attributes: ["id", "name", "email", "bio"],
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "banner_id",
-          as: "banner",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "featured_id",
-          as: "featured",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "og_id",
-          as: "og",
-        },
         {
           model: blogSectionModel,
           foreignKey: "blog_id",
           as: "sections",
         },
-        {
-          model: blogCommentModel,
-          foreignKey: "blog_id",
-          as: "comments",
-        },
       ],
     });
+
     if (!blog) {
-      return res.status(404).json({ err: "Blog notfound" });
+      return res.status(404).json({ err: "Blog not found" });
     }
 
-    const findBlogs = await blogModel.findAll({
-      where: {
-        banner_id: blog.dataValues.banner_id,
-      },
-    });
+    const existingSections = blog.sections;
 
+    // Track sections to delete and those already processed
+    const sectionsToDelete = [...existingSections];
+    const processedSectionIds = [];
+
+    // Iterate over incoming sections to create or update
+    for (let i = 0; i < parseSection.length; i++) {
+      const section = parseSection[i];
+
+      // Find a matching section in the existing sections by heading or some unique property
+      const existingSection = existingSections.find(
+        (existing) =>
+          existing.heading === section.heading &&
+          !processedSectionIds.includes(existing.id)
+      );
+
+      if (existingSection) {
+        // Update existing section
+        await blogSectionModel.update(
+          {
+            heading: section.heading,
+            content: section.content,
+            section_name: section.heading,
+          },
+          {
+            where: {
+              id: existingSection.id,
+            },
+          }
+        );
+        // Mark this section as processed
+        processedSectionIds.push(existingSection.id);
+        // Remove from deletion list
+        sectionsToDelete.splice(sectionsToDelete.indexOf(existingSection), 1);
+      } else {
+        // Create a new section
+        await blogSectionModel.create({
+          blog_id: id,
+          heading: section.heading,
+          content: section.content,
+          section_name: section.heading,
+        });
+      }
+    }
+
+    // Delete sections that were not processed (i.e., they are not in the incoming data)
+    for (const section of sectionsToDelete) {
+      await blogSectionModel.destroy({
+        where: {
+          id: section.id,
+        },
+      });
+    }
+
+    // Handle file upload and update blog details
     if (req?.files.length > 0) {
-      console.log("start");
       const bannerImage = await bannerImageModel.create({
         path: `/uploads/${req?.files[0]?.filename}`,
         fieldname: req?.files[0]?.fieldname,
@@ -267,60 +325,58 @@ const updateBlog = async (req, res) => {
         size: req?.files[0]?.size,
       });
 
-      console.log(bannerImage);
-      console.log("middle");
-      if (findBlogs.length == 1) {
-        if (
-          fs.existsSync(
-            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
-          )
-        ) {
-          fs.unlink(
-            `uploads/${blog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
-            (err) => {
-              if (err) {
-                return res.json({ err: err.message });
-              }
-              console.log("Deleted successfully");
-            }
-          );
+      const findBlogs = await blogModel.findAll({
+        where: {
+          banner_id: blog.dataValues.banner_id,
+        },
+      });
+
+      if (findBlogs.length === 1) {
+        const oldBannerPath = `uploads/${blog?.dataValues?.banner?.path
+          ?.split("/")
+          ?.pop()}`;
+        if (fs.existsSync(oldBannerPath)) {
+          try {
+            await fs.promises.unlink(oldBannerPath);
+            console.log("Deleted successfully");
+          } catch (err) {
+            return res.json({ err: err.message });
+          }
         }
       }
 
-      const updateBlog = await blogModel.update(
+      await blogModel.update(
         {
-          title: title,
-          description: description,
-          short_description: short_description,
-          is_published: is_published,
-          premium: premium,
-          author: req.user.id,
+          title,
+          description:top_description,
+          short_description,
+          is_published,
+          premium,
+          top_description,
+          bottom_description,
           banner_id: bannerImage.dataValues.id,
         },
         {
-          where: {
-            id: id,
-          },
+          where: { id },
         }
       );
-      console.log("end");
-      return res
-        .status(200)
-        .json({ data: updateBlog.dataValues, msg: "Updated Successfully" });
+
+      return res.status(200).json({ msg: "Blog updated successfully" });
     }
 
-    const updateBlog = await blogModel.update(
+    // Update the blog details without changing the banner
+    await blogModel.update(
       {
-        title: title,
-        description: description,
-        short_description: short_description,
-        is_published: is_published,
-        premium: premium,
+        title,
+        description:top_description,
+        short_description,
+        is_published,
+        premium,
+        top_description,
+        bottom_description,
       },
       {
-        where: {
-          id: id,
-        },
+        where: { id },
       }
     );
     res
@@ -356,19 +412,8 @@ const deleteBlog = async (req, res) => {
           foreignKey: "og_id",
           as: "og",
         },
-        {
-          model: blogSectionModel,
-          foreignKey: "blog_id",
-          as: "sections",
-        },
-        {
-          model: blogCommentModel,
-          foreignKey: "blog_id",
-          as: "comments",
-        },
       ],
     });
-    console.log(findBlog);
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
@@ -379,16 +424,15 @@ const deleteBlog = async (req, res) => {
       },
     });
 
-    console.log(findBlogs.length);
     if (findBlogs.length == 1) {
       if (
         fs.existsSync(
-          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`
+          `uploads/${findBlog?.dataValues?.banner?.path?.split("/")?.pop()}`
         )
       ) {
         //delete images
         fs.unlink(
-          `uploads/${findBlog?.dataValues?.bannerimg?.path?.split("/")?.pop()}`,
+          `uploads/${findBlog?.dataValues?.banner?.path?.split("/")?.pop()}`,
           (err) => {
             if (err) {
               return res.json({ err: err.message });
@@ -399,20 +443,10 @@ const deleteBlog = async (req, res) => {
       }
 
       if (!findBlog.dataValues?.title?.startsWith("Draft")) {
-        const [banner, featured, og, sections, comments] = await Promise.all([
+        const [banner, featured, og] = await Promise.all([
           bannerImageModel.findByPk(findBlog.dataValues.banner_id),
           bannerImageModel.findByPk(findBlog.dataValues.featured_id),
           bannerImageModel.findByPk(findBlog.dataValues.og_id),
-          blogSectionModel.destroy({
-            where: {
-              blog_id: findBlog?.dataValues?.id,
-            },
-          }),
-          blogCommentModel.destroy({
-            where: {
-              blog_id: findBlog?.dataValues?.id,
-            },
-          }),
         ]);
 
         await Promise.all([
@@ -420,11 +454,17 @@ const deleteBlog = async (req, res) => {
           banner?.destroy(),
           featured?.destroy(),
           og?.destroy(),
+          blogSectionModel.destroy({
+            where: {
+              blog_id: findBlog.dataValues.id,
+            },
+          }),
+          blogCommentModel.destroy({
+            where: {
+              blog_id: findBlog.dataValues.id,
+            },
+          }),
         ]);
-
-        // res
-        //   .status(200)
-        //   .json({ data: findBlog.dataValues, msg: "Deleted Successfully" });
         return res.status(200).json({ msg: "Deleted Successfully" });
       } else {
         findBlog.destroy();
