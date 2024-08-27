@@ -495,6 +495,7 @@ const deleteBlog = async (req, res) => {
 const createComment = async (req, res) => {
   const { comment } = req.body;
   const { id } = req.params;
+  console.log(req?.params);
 
   try {
     const findBlog = await blogModel.findByPk(id);
