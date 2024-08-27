@@ -494,11 +494,11 @@ const deleteBlog = async (req, res) => {
 
 const createComment = async (req, res) => {
   const { comment } = req.body;
-  const { slug } = req.params;
+  const { id } = req.params;
   console.log(req?.params);
 
   try {
-    const findBlog = await blogModel.findByPk(slug);
+    const findBlog = await blogModel.findByPk(id);
 
     if (!findBlog) {
       return res.status(404).json({ err: "Blog not-found" });
@@ -507,7 +507,7 @@ const createComment = async (req, res) => {
     const addComment = await blogCommentModel.create({
       comment: comment,
       user_id: req.user?.id,
-      blog_id: slug,
+      blog_id: id,
     });
 
     res.status(200).json({ msg: "Comment Created Successfully" });
