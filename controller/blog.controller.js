@@ -164,6 +164,9 @@ const createBlog = async (req, res) => {
     bottom_description,
     sections,
   } = req.body;
+
+  console.log(req?.body);
+
   const parseSection = JSON.parse(sections);
   console.log(req?.headers?.host);
   console.log(req?.files);
