@@ -527,21 +527,21 @@ const getUpdateBlog = async (req, res) => {
 };
 
 const updateBlog = async (req, res) => {
+  const { id } = req.params;
   const {
     title,
     description,
+    is_published,
     premium,
     short_description,
-    is_published,
     top_description,
     bottom_description,
     sections,
   } = req.body;
-
-  const { id } = req.params;
   const parseSection = JSON.parse(sections);
 
   try {
+    // Validate title length
     if (title?.length > 100 || title?.length < 10) {
       return res.status(400).json({
         type: "title",
@@ -549,58 +549,46 @@ const updateBlog = async (req, res) => {
       });
     }
 
-    // Load the existing blog and its sections
-    const blog = await blogModel.findByPk(id, {
-      include: [
-        {
-          model: blogSectionModel,
-          foreignKey: "blog_id",
-          as: "sections",
-        },
-      ],
+    // Find the blog to update
+    const findBlog = await blogModel.findByPk(id, {
+      include: [{ model: blogSectionModel, as: "sections" }],
     });
 
-    if (!blog) {
+    if (!findBlog) {
       return res.status(404).json({ err: "Blog not found" });
     }
 
-    const existingSections = blog.sections;
+    // Update the blog details
+    await findBlog.update({
+      title,
+      description,
+      is_published,
+      premium,
+      short_description,
+      top_description,
+      bottom_description,
+      author: req.user.id,
+      role: "admin",
+    });
 
-    // Track sections to delete and those already processed
-    const sectionsToDelete = [...existingSections];
-    const processedSectionIds = [];
+    // Update sections
+    const existingSectionIds = findBlog.sections.map((section) => section.id);
 
-    // Iterate over incoming sections to create or update
-    for (let i = 0; i < parseSection.length; i++) {
-      const section = parseSection[i];
-
-      // Find a matching section in the existing sections by heading or some unique property
-      const existingSection = existingSections.find(
-        (existing) =>
-          existing.heading === section.heading &&
-          !processedSectionIds.includes(existing.id)
-      );
-
-      if (existingSection) {
+    for (const section of parseSection) {
+      if (section.id) {
         // Update existing section
-        await blogSectionModel.update(
-          {
-            heading: section.heading,
-            content: section.content,
-            section_name: section.heading,
-          },
-          {
-            where: {
-              id: existingSection.id,
+        if (existingSectionIds.includes(section.id)) {
+          await blogSectionModel.update(
+            {
+              heading: section.heading,
+              content: section.content,
+              section_name: section.heading,
             },
-          }
-        );
-        // Mark this section as processed
-        processedSectionIds.push(existingSection.id);
-        // Remove from deletion list
-        sectionsToDelete.splice(sectionsToDelete.indexOf(existingSection), 1);
+            { where: { id: section.id, blog_id: id } }
+          );
+        }
       } else {
-        // Create a new section
+        // Create new section
         await blogSectionModel.create({
           blog_id: id,
           heading: section.heading,
@@ -610,88 +598,25 @@ const updateBlog = async (req, res) => {
       }
     }
 
-    // Delete sections that were not processed (i.e., they are not in the incoming data)
-    for (const section of sectionsToDelete) {
+    // Delete sections that were removed
+    const newSectionIds = parseSection.filter((section) => section.id).map((section) => section.id);
+    const sectionsToDelete = existingSectionIds.filter((sectionId) => !newSectionIds.includes(sectionId));
+
+    if (sectionsToDelete.length > 0) {
       await blogSectionModel.destroy({
         where: {
-          id: section.id,
+          id: sectionsToDelete,
+          blog_id: id,
         },
       });
     }
-
-    // Handle file upload and update blog details
-    if (req?.files.length > 0) {
-      const bannerImage = await bannerImageModel.create({
-        path: `/uploads/${req?.files[0]?.filename}`,
-        fieldname: req?.files[0]?.fieldname,
-        originalname: req?.files[0]?.originalname,
-        encoding: req?.files[0]?.encoding,
-        mimetype: req?.files[0]?.mimetype,
-        destination: req?.files[0]?.destination,
-        filename: req?.files[0]?.filename,
-        size: req?.files[0]?.size,
-      });
-
-      const findBlogs = await blogModel.findAll({
-        where: {
-          banner_id: blog.dataValues.banner_id,
-        },
-      });
-
-      if (findBlogs.length === 1) {
-        const oldBannerPath = `uploads/${blog?.dataValues?.banner?.path
-          ?.split("/")
-          ?.pop()}`;
-        if (fs.existsSync(oldBannerPath)) {
-          try {
-            await fs.promises.unlink(oldBannerPath);
-            console.log("Deleted successfully");
-          } catch (err) {
-            return res.json({ err: err.message });
-          }
-        }
-      }
-
-      await blogModel.update(
-        {
-          title,
-          description,
-          short_description,
-          is_published,
-          premium,
-          top_description,
-          bottom_description,
-          banner_id: bannerImage.dataValues.id,
-        },
-        {
-          where: { id },
-        }
-      );
-
-      return res.status(200).json({ msg: "Blog updated successfully" });
-    }
-
-    // Update the blog details without changing the banner
-    await blogModel.update(
-      {
-        title,
-        description,
-        short_description,
-        is_published,
-        premium,
-        top_description,
-        bottom_description,
-      },
-      {
-        where: { id },
-      }
-    );
 
     res.status(200).json({ msg: "Blog updated successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
+
 
 const getUpdateUser = async (req, res) => {
   const { id } = req.params;
@@ -833,13 +758,25 @@ const duplicateBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const findBlog = await blogModel.findByPk(id);
+    const findBlog = await blogModel.findByPk(id, {
+      include: [
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+      ],
+    });
+
     if (findBlog) {
+      // Create the duplicate blog
       const createDuplicateBlog = await blogModel.create({
         title: req?.query?.title,
         short_description: findBlog.dataValues.short_description,
         description: findBlog.dataValues.description,
         is_published: findBlog.dataValues.is_published,
+        top_description: findBlog?.dataValues?.top_description,
+        bottom_description: findBlog?.dataValues?.bottom_description,
         publish_date: findBlog.dataValues.publish_date,
         premium: findBlog.dataValues.premium,
         meta_title: findBlog.dataValues.meta_title,
@@ -850,34 +787,101 @@ const duplicateBlog = async (req, res) => {
         author: findBlog.dataValues.author,
         role: findBlog.dataValues.role,
       });
+
+      // Duplicate sections
+      if (findBlog.sections && findBlog.sections.length > 0) {
+        const sectionPromises = findBlog.sections.map((section) =>
+          blogSectionModel.create({
+            blog_id: createDuplicateBlog.id, 
+            heading: section.heading,
+            content: section.content,
+            section_name:section.heading
+          })
+        );
+        await Promise.all(sectionPromises);
+      }
+
       res.redirect("/admin/dashboard/blogs");
     } else {
-      res.status(404).json({ err: "Blog not-found" });
+      res.status(404).json({ err: "Blog not found" });
     }
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
 
-const getComments=async(req,res)=>{
-  const {id}=req.params;
+const getComments = async (req, res) => {
+  const { id } = req.params;
 
   try {
-    const findComments=await blogCommentModel.findAll({
-      where:{
-        blog_id:id
-      }
+    const findComments = await blogCommentModel.findAll({
+      where: {
+        blog_id: id,
+      },
+      include:[{
+        model:userModel,
+        foreignKey:'user_id',
+        as:'user'
+      }]
     });
 
-    if(!findComments){
-      return res.status(404).json({err:'Comments not-found'})
+    console.log(findComments);
+
+    if (!findComments) {
+      return res.status(404).json({ err: "Comments not-found" });
     }
 
+    res.render('comments',{title:'Comments',data:findComments})
   } catch (err) {
-    res.status(500).json({err:err.message})
+    res.status(500).json({ err: err.message });
+  }
+};
+
+const postComment=async(req,res)=>{
+  const {id}=req.params;
+  const {comment}=req.body;
+
+  try {
+
+    if(comment?.length<5){
+      return res.status(409).json({err:'Must be atleast 5 characters'})
+    }
+
+    const findBlog=await blogModel.findByPk(id);
+    if(!findBlog){
+      return res.status(404).json({err:"Blog notfound"});
+    }
+    const addComment = await blogCommentModel.create({
+      comment: comment,
+      user_id: req.user?.id,
+      blog_id: id,
+    });
+
+    res.status(200).json({msg:'Comment Created Successfully'});
+
+  } catch (error) {
+    res.status(500).json({err:error.message})
   }
 
+ 
+
+
+
 }
+
+const deleteComment=async(req,res)=>{
+  const {id,comment_id}=req.params;
+
+  const findComment=await blogCommentModel.findByPk(comment_id);
+  if(!findComment){
+   return res.status(404).json({err:'Comment not-found'})
+  }
+
+  await findComment.destroy();
+  res.redirect(`/admin/dashboard/blog/${id}/comments`)
+}
+
+
 
 module.exports = {
   createAdmin,
@@ -893,4 +897,9 @@ module.exports = {
   getUpdateUser,
   getBlogDetail,
   updateUser,
+  getComments,
+  deleteComment,
+  postComment
 };
+
+

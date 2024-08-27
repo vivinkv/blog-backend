@@ -15,6 +15,9 @@ const {
   updateUser,
   duplicateBlog,
   getBlogDetail,
+  getComments,
+  deleteComment,
+  postComment,
 } = require("../controller/admin.controller");
 const multer = require("multer");
 
@@ -73,7 +76,9 @@ router.get("/dashboard/blogs", getAllBlogs);
 router.get("/dashboard/blogs/update/:id", getUpdateBlog);
 router.get("/dashboard/blogs/delete/:id", deleteBlog);
 router.get("/dashboard/blogs/duplicate/:id", duplicateBlog);
-
+router.get('/dashboard/blog/:id/comments',getComments);
+router.post('/dashboard/blog/:id/comments',postComment);
+router.get('/dashboard/blog/:id/comments/:comment_id/delete',deleteComment);
 router.get("/users", getAllUsers);
 router.post("/users/create", createUser);
 router.get("/dashboard/user/delete/:id", deleteUser);
