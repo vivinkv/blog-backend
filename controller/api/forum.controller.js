@@ -52,8 +52,7 @@ const getAllForums = async (req, res) => {
           },
         ],
       });
-      res.status(200).json({data:forums})
-      
+      res.status(200).json({ data: forums });
     } else {
       const forums = await forumModel.findAll({
         offset: offset,
@@ -90,7 +89,7 @@ const getAllForums = async (req, res) => {
           },
         ],
       });
-     res.status(200).json({data:forums});
+      res.status(200).json({ data: forums });
     }
   } catch (error) {
     res.status(500).json({ err: error.message });
@@ -146,13 +145,14 @@ const createForum = async (req, res) => {
 
     console.log(create);
 
-    res.status(201).json({ msg: "Forum Created Successfully",data:createForum.dataValues });
+    res.status(201).json({
+      msg: "Forum Created Successfully",
+      data: createForum.dataValues,
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
-
-
 
 const updateForum = async (req, res) => {
   const { id } = req.params;
@@ -295,14 +295,14 @@ const deleteForum = async (req, res) => {
 
       if (!findForum.dataValues?.title?.startsWith("Draft")) {
         findForum.destroy();
-      return  res.status(204).json({msg:'Deleted Successfully'})
+        return res.status(204).json({ msg: "Deleted Successfully" });
       } else {
         findForum.destroy();
-        return  res.status(204).json({msg:'Deleted Successfully'})
+        return res.status(204).json({ msg: "Deleted Successfully" });
       }
     } else {
       await findForum.destroy();
-      return  res.status(204).json({msg:'Deleted Successfully'})
+      return res.status(204).json({ msg: "Deleted Successfully" });
     }
 
     // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
@@ -322,9 +322,74 @@ const deleteForum = async (req, res) => {
   }
 };
 
+const createReply = async (req, res) => {
+  const { blog_id } = req.params;
+  const { reply } = req.body;
+
+  try {
+    const findForum = await forumModel.findByPk(blog_id);
+
+    if (!findForum) {
+      return res.status(404).json({ err: "Forum not-found" });
+    }
+    const createReply = await forumReplyModel.create({
+      reply: reply,
+      forum_id: blog_id,
+      user_id: req?.user?.id,
+    });
+    res.status(201).json({ msg: "Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const updateReply = async (req, res) => {
+  const { id } = req.params;
+  const { reply } = req.body;
+  try {
+    const findForumReply = await forumReplyModel.findByPk(id);
+
+    if (!findForumReply) {
+      return res.status(404).json({ err: "Forum not-found" });
+    }
+    const updateReply = await forumReplyModel.update(
+      {
+        reply: reply,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res.status(200).json({ msg: "Updated Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteReply = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findForumReply = await forumReplyModel.findByPk(id);
+
+    if (!findForumReply) {
+      return res.status(404).json({ err: "Forum not-found" });
+    }
+    await findForumReply.destroy();
+
+    res.status(200).json({ msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
 module.exports = {
   getAllForums,
   createForum,
   updateForum,
   deleteForum,
+  createReply,
+  deleteReply,
+  updateReply,
 };
