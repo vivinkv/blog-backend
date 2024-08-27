@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
     if (req?.headers?.authorization) {
       const token = req?.headers?.authorization?.split(" ")?.pop();
 
-      if (token == null) {
+      if (token == null || token == undefined || token == '') {
         return res.status(401).json({ err: "UnAuthorized Acess" });
       } else {
         const id = jwt.verify(token, process.env.JWT_SECRET_TOKEN);
