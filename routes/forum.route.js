@@ -6,9 +6,9 @@ const express=require('express');
 const router=express.Router();
 
 
-router.get('/forums',getAllForums);
-router.post('/forums',createForum);
-router.put('/forum/:id',updateForum)
-router.delete('/forum/:id',deleteForum);
+router.get('/',getAllForums);
+router.post('/',createForum);
+router.put('/:id',updateForum)
+router.delete('/:id',deleteForum);
 
 module.exports=router
