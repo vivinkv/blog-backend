@@ -859,6 +859,26 @@ const duplicateBlog = async (req, res) => {
   }
 };
 
+const getComments=async(req,res)=>{
+  const {id}=req.params;
+
+  try {
+    const findComments=await blogCommentModel.findAll({
+      where:{
+        blog_id:id
+      }
+    });
+
+    if(!findComments){
+      return res.status(404).json({err:'Comments not-found'})
+    }
+
+  } catch (err) {
+    res.status(500).json({err:err.message})
+  }
+
+}
+
 module.exports = {
   createAdmin,
   login,

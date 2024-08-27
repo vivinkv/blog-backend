@@ -43,7 +43,6 @@
           >
         </a>
       </li>
-      
     </ul>
   </nav>
 </aside>
@@ -224,6 +223,20 @@
                   alt="duplicate icon"
                 />
               </button>
+              <button
+                class="duplicate-btn bg-[#f5f5f5] p-2 rounded relative hover:text-blue-800"
+                data-title="<%= data[i].dataValues.title%>"
+                data-id="<%= data[i].dataValues.id%>"
+              >
+                <img src="/comment.svg" class="w-7 h-7" alt="comment icon" />
+                <!-- Badge for comment count -->
+                <span
+                  class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2"
+                >
+                  <%= data[i].dataValues.comments?.length %>
+                </span>
+              </button>
+
               <a
                 href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"
@@ -371,46 +384,48 @@
 
   //change title
   const changeTitleModal = document.getElementById("change-title-modal");
-const newTitle = document.getElementById("new-blog-title");
-const duplicateBtns = document.querySelectorAll(".duplicate-btn");
-const titleError = document.getElementById("titleError");
-const cancelDuplicateBtn = document.getElementById("cancel-change-title");
-const saveDuplicateBtn = document.getElementById("confirm-change-title");
+  const newTitle = document.getElementById("new-blog-title");
+  const duplicateBtns = document.querySelectorAll(".duplicate-btn");
+  const titleError = document.getElementById("titleError");
+  const cancelDuplicateBtn = document.getElementById("cancel-change-title");
+  const saveDuplicateBtn = document.getElementById("confirm-change-title");
 
-let currentId = null; // Initialize a variable to store the current ID
+  let currentId = null; // Initialize a variable to store the current ID
 
-duplicateBtns.forEach(duplicateBtn => {
-  duplicateBtn.addEventListener("click", () => {
-    titleError.innerText = '';
-    const currentTitle = duplicateBtn.getAttribute("data-title");
-    currentId = duplicateBtn.getAttribute("data-id"); // Update the current ID
+  duplicateBtns.forEach((duplicateBtn) => {
+    duplicateBtn.addEventListener("click", () => {
+      titleError.innerText = "";
+      const currentTitle = duplicateBtn.getAttribute("data-title");
+      currentId = duplicateBtn.getAttribute("data-id"); // Update the current ID
 
-    newTitle.value = `Copy of ${currentTitle}`;
-    changeTitleModal.classList.remove("hidden");
+      newTitle.value = `Copy of ${currentTitle}`;
+      changeTitleModal.classList.remove("hidden");
+    });
   });
-});
 
-saveDuplicateBtn.addEventListener("click", async () => {
-  console.log(newTitle.value.length);
+  saveDuplicateBtn.addEventListener("click", async () => {
+    console.log(newTitle.value.length);
 
-  if (newTitle.value.length < 10 || newTitle.value.length > 100) {
-    titleError.innerText = "Title must be between 10 and 100 characters";
-    return;
-  } else if (!currentId) {
-    titleError.innerText = "No blog ID found. Please select a blog to duplicate.";
-    return;
-  }
+    if (newTitle.value.length < 10 || newTitle.value.length > 100) {
+      titleError.innerText = "Title must be between 10 and 100 characters";
+      return;
+    } else if (!currentId) {
+      titleError.innerText =
+        "No blog ID found. Please select a blog to duplicate.";
+      return;
+    }
 
-  changeTitleModal.classList.add("hidden");
-  window.location.href = `${window.location.origin}/admin/dashboard/blogs/duplicate/${currentId}?title=${encodeURIComponent(newTitle.value)}`;
-});
-
+    changeTitleModal.classList.add("hidden");
+    window.location.href = `${
+      window.location.origin
+    }/admin/dashboard/blogs/duplicate/${currentId}?title=${encodeURIComponent(
+      newTitle.value
+    )}`;
+  });
 
   cancelDuplicateBtn.addEventListener("click", () => {
     changeTitleModal.classList.add("hidden");
   });
-
-  
 </script>
 
 <script>
