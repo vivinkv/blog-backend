@@ -48,7 +48,10 @@ app.set("views", "./views");
 // app.use(limiter);
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://swblogs.vercel.app'
+  'https://swblogs.vercel.app',
+  'http://localhost:5000',
+  'https://blogs-23vc.onrender.com'
+
 ];
 
 app.use(
