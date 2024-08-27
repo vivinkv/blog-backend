@@ -10,6 +10,7 @@ const { rateLimit } = require("express-rate-limit");
 const userRoute = require("./routes/user.route");
 const blogRoute = require("./routes/blog.route");
 const adminRoute = require("./routes/admin.route");
+const forumRoute=require('./routes/forum.route');
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -201,6 +202,7 @@ app.get("/", async (req, res) => {
 app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
 app.use("/admin", adminRoute);
+app.use('/api/forum',forumRoute)
 
 sequelizeConfig.authenticate();
 sequelizeConfig
