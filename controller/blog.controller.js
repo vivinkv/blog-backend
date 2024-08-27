@@ -157,6 +157,7 @@ const createBlog = async (req, res) => {
   const { title, description, is_published, premium, short_description } =
     req.body;
   console.log(req?.headers?.host);
+  console.log(req?.body);
   try {
     if (title?.length > 100 || title?.length < 10) {
       return res
