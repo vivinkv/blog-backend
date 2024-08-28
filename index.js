@@ -10,7 +10,7 @@ const { rateLimit } = require("express-rate-limit");
 const userRoute = require("./routes/user.route");
 const blogRoute = require("./routes/blog.route");
 const adminRoute = require("./routes/admin.route");
-const forumRoute=require('./routes/forum.route');
+const forumRoute = require("./routes/forum.route");
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -47,11 +47,10 @@ app.set("views", "./views");
 
 // app.use(limiter);
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://swblogs.vercel.app',
-  'http://localhost:5000',
-  'https://blogs-23vc.onrender.com'
-
+  "http://localhost:3000",
+  "https://swblogs.vercel.app",
+  "http://localhost:5000",
+  "https://blogs-23vc.onrender.com",
 ];
 
 app.use(
@@ -60,7 +59,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
@@ -109,19 +108,26 @@ blogCommentModel.belongsTo(blogModel, {
 userModel.hasMany(blogCommentModel, { foreignKey: "user_id", as: "user" });
 blogCommentModel.belongsTo(userModel, { foreignKey: "user_id", as: "user" });
 
-userModel.hasMany(forumModel,{foreignKey:'author',as:'forum_user'})
-forumModel.belongsTo(userModel,{foreignKey:'author',as:'forum_user'});
+userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
+forumModel.belongsTo(userModel, { foreignKey: "author", as: "forum_user" });
 
-forumImgModel.hasOne(forumModel,{foreignKey:'forum_img',as:'forumimages'});
-forumModel.belongsTo(forumImgModel,{foreignKey:'forum_img',as:'forumimages'});
+forumImgModel.hasOne(forumModel, {
+  foreignKey: "forum_img",
+  as: "forumimages",
+});
+forumModel.belongsTo(forumImgModel, {
+  foreignKey: "forum_img",
+  as: "forumimages",
+});
 
-forumModel.hasMany(forumReplyModel,{foreignKey:'forum_id',as:'replies'});
-forumReplyModel.belongsTo(forumModel,{foreignKey:'forum_id',as:'replies'});
+forumModel.hasMany(forumReplyModel, { foreignKey: "forum_id", as: "replies" });
+forumReplyModel.belongsTo(forumModel, {
+  foreignKey: "forum_id",
+  as: "replies",
+});
 
-userModel.hasMany(forumReplyModel,{foreignKey:'user_id',as:'repliers'});
-forumReplyModel.belongsTo(userModel,{foreignKey:'user_id',as:'repliers'});
-
-
+userModel.hasMany(forumReplyModel, { foreignKey: "user_id", as: "repliers" });
+forumReplyModel.belongsTo(userModel, { foreignKey: "user_id", as: "repliers" });
 
 app.get("/", async (req, res) => {
   try {
@@ -213,10 +219,74 @@ app.get("/", async (req, res) => {
   }
 });
 
+app.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const blogDetail = await blogModel.findByPk(id, {
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          as: "created_by",
+          attributes: {
+            exclude: ["password"],
+          },
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+          as: "banner",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "featured_id",
+          as: "featured",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "og_id",
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "user",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
+      ],
+      where: {
+        premium: false,
+      },
+    });
+
+    res.json({
+      data: blogDetail,
+    });
+  } catch (error) {
+    res.json({ err: error });
+  }
+});
+
 app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
 app.use("/admin", adminRoute);
-app.use('/api/forum',forumRoute)
+app.use("/api/forum", forumRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig
