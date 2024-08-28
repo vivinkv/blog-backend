@@ -1,6 +1,7 @@
 const forumModel = require("../../models/forum/forum.model");
 const forumImgModel = require("../../models/forum/forumImage.model");
 const forumReplyModel = require("../../models/forum/replies.model");
+const forumViewModel = require("../../models/forum/views.model");
 const userModel = require("../../models/user.model");
 const fs = require("fs");
 
@@ -47,6 +48,51 @@ const getAllForums = async (req, res) => {
     res.status(500).json({ err: error.message });
   }
 };
+
+const getForumDetail = async (req, res) => {
+
+ const {id}=req.params;
+
+  try {
+    const findForum = await forumModel.findByPk(id,{
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          as: "forum_user",
+          attributes: {
+            exclude: ["password"],
+          },
+        },
+        {
+          model: forumReplyModel,
+          foreignKey: "forum_id",
+          as: "replies",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "repliers",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    if(!findForum){
+      return res.status(404).json({err:'Forum not-found'})
+    }
+
+    res.status(200).json({ data: findForum.dataValues});
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
 
 const createForum = async (req, res) => {
   const { title, description } = req.body;
@@ -181,8 +227,46 @@ const deleteReply = async (req, res) => {
   }
 };
 
+//forum views controller
+
+// const createView=async(req,res)=>{
+//   const {forum_id}=req.params;
+//   try {
+
+//     const findForum=await forumViewModel.findOne({
+//       where:{
+//         forum_id:forum_id
+//       }
+//     })
+
+//     if(!findForum){
+//       return res.status(404).json({err:'Forum not-found'})
+//     }
+//     const isViewed=await forumViewModel.findOne({
+//       where:{
+//         user_id:req?.user?.id,
+//         forum_id:forum_id
+//       }
+//     });
+
+//     if(isViewed){
+//       return res.status(400).json({err:'Already Viewed'})
+//     }
+
+//     await forumViewModel.create({
+//       user_id:req?.user?.id,
+//       forum_id:forum_id
+//     })
+    
+
+//   } catch (error) {
+//     res.status(500).json({err:error.message})
+//   }
+// }
+
 module.exports = {
   getAllForums,
+  getForumDetail,
   createForum,
   updateForum,
   deleteForum,
