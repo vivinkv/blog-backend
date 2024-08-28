@@ -10,6 +10,8 @@ const { Op } = require("sequelize");
 const fs = require("fs");
 const blogSectionModel = require("../models/blogSection.model");
 const blogCommentModel = require("../models/blogComment.model");
+const blogLikeModel = require("../models/blogLike.model");
+const blogReplyModel = require("../models/blogReply.model");
 
 //Create a new User
 const createAdmin = async (req, res) => {
@@ -142,104 +144,61 @@ const login = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   console.log(req?.query);
   try {
-    if (req?.query?.premium && req?.query?.published) {
+
       const blogs = await blogModel.findAll({
-        where: {
-          premium: req?.query?.premium,
-          is_published: req?.query?.published,
-        },
         order: [["createdAt", "DESC"]],
         include: [
           {
             model: userModel,
-            foreignKey: "author",
             as: "created_by",
-            attributes: {
-              exclude: ["password"],
-            },
+            attributes: { exclude: ["password"] },
           },
           {
             model: bannerImageModel,
-            foreignKey: "banner_id",
             as: "banner",
           },
           {
             model: bannerImageModel,
-            foreignKey: "featured_id",
             as: "featured",
           },
           {
             model: bannerImageModel,
-            foreignKey: "og_id",
             as: "og",
           },
           {
             model: blogSectionModel,
-            foreignKey: "blog_id",
             as: "sections",
           },
           {
             model: blogCommentModel,
-            foreignKey: "blog_id",
             as: "comments",
             include: [
               {
                 model: userModel,
-                foreignKey: "user_id",
-                as: "user",
+                as: "commented_by",
+                attributes: { exclude: ["password"] },
               },
-            ],
-            separate: true,
-            order: [["createdAt", "DESC"]],
-          },
-        ],
-      });
-      res.render("blogs", {
-        data: blogs,
-        title: "Blogs List",
-        query: { premium: req?.query?.premium, publish: req?.query?.published },
-      });
-    } else {
-      const blogs = await blogModel.findAll({
-        order: [["createdAt", "DESC"]],
-        include: [
-          {
-            model: userModel,
-            foreignKey: "author",
-            as: "created_by",
-            attributes: {
-              exclude: ["password"],
-            },
-          },
-          {
-            model: bannerImageModel,
-            foreignKey: "banner_id",
-            as: "banner",
-          },
-          {
-            model: bannerImageModel,
-            foreignKey: "featured_id",
-            as: "featured",
-          },
-          {
-            model: bannerImageModel,
-            foreignKey: "og_id",
-            as: "og",
-          },
-          {
-            model: blogSectionModel,
-            foreignKey: "blog_id",
-            as: "sections",
-          },
-          {
-            model: blogCommentModel,
-            foreignKey: "blog_id",
-            as: "comments",
-            include: [
               {
-                model: userModel,
-                foreignKey: "user_id",
-                as: "user",
+                model: blogLikeModel,
+                as: "likes",
+                include: [
+                  {
+                    model: userModel,
+                    as: "liked_by",
+                    attributes: { exclude: ["password"] },
+                  },
+                ],
+              },
+              {
+                model: blogReplyModel,
+                as: "comment_replies",
+                include: [
+                  {
+                    model: userModel,
+                    as: "replied_by",
+                    attributes: { exclude: ["password"] },
+                  },
+                ],
               },
             ],
             separate: true,
@@ -248,7 +207,7 @@ const getAllBlogs = async (req, res) => {
         ],
       });
       res.render("blogs", { data: blogs, title: "Blogs List", query: {} });
-    }
+    
   } catch (error) {
     res.json({ err: error.message });
   }
@@ -304,7 +263,7 @@ const createBlog = async (req, res) => {
       filename: req?.files[0]?.filename,
       size: req?.files[0]?.size,
     });
-
+  
     const createBlog = await blogModel.create({
       title: title,
       description: description,

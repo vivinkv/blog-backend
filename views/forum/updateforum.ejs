@@ -106,49 +106,16 @@
           </div>
 
           <div class="form-group">
-            <label for="banner" class="form-label">Banner Image</label>
-            <input
-              type="file"
-              name="image"
-              id="banner"
-              value="<%= data.title %>"
-              class="form-input"
-              multiple
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="content" class="form-label">Short Description</label>
-            <input type="hidden" name="id" id="id" value="<%= data.id %>" />
-            <textarea
-              id="shortdescription"
-              class="form-textarea"
-              required
-              placeholder="Meta Description"
-            >
-<%= data.short_description %></textarea
-            >
-          </div>
-
-          <div class="form-group">
             <label for="content" class="form-label">Content</label>
-            <textarea id="summernote" required class="form-textarea">
+            <input type="hidden" name="id" id="id" value="<%= data.id %>" />
+            <textarea id="description" required class="form-textarea">
 <%= data.description %></textarea
             >
             <small id="contentError"> * Content </small>
           </div>
 
           <div class="form-action">
-            <div style="display: flex; align-items: center">
-              <input type="checkbox" id="is_published" <%= data.published ?
-              'checked': '' %> class="styled-checkbox" />
-              <label for="is_published" class="checkbox-label">Publish</label>
-            </div>
-            <div style="display: flex; align-items: center">
-              <input type="checkbox" id="premium" <%= data.premium ? 'checked':
-              '' %> class="styled-checkbox" />
-              <label for="premium" class="checkbox-label">Premium</label>
-            </div>
+           
             <button type="button" id="submitbtn" class="form-button">
               Update
             </button>

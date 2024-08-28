@@ -7,8 +7,9 @@ const { userAuth } = require("../middleware/auth.middleware");
 const router=express.Router();
 
 //forum
-router.use(userAuth);
+
 router.get('/',getAllForums);
+router.use(userAuth);
 router.post('/',createForum);
 router.put('/:id',updateForum)
 router.delete('/:id',deleteForum);

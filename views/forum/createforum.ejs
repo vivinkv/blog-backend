@@ -26,17 +26,17 @@
               </a>
             </li>
             <li>
-              <a href="/admin/dashboard/blogs" class="nav-link ">
+              <a href="/admin/dashboard/blogs" class="nav-link">
                 <img src="/blogs.svg" alt="blogs" />
                 <span class="nav-text">Blogs</span>
               </a>
             </li>
             <li>
-                <a href="/admin/dashboard/forms" class="nav-link active">
-                  <img src="/blogs.svg" alt="blogs" />
-                  <span class="nav-text">Forum</span>
-                </a>
-              </li>
+              <a href="/admin/dashboard/forms" class="nav-link active">
+                <img src="/blogs.svg" alt="blogs" />
+                <span class="nav-text">Forum</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </aside>
@@ -103,57 +103,16 @@
           </div>
 
           <div class="form-group">
-            <label for="banner" class="form-label">Banner Image</label>
-            <input
-              type="file"
-              name="image"
-              id="banner"
-              required
-              class="form-input"
-              accept="image/*"
-            />
-            <small id="bannerError"> * Banner </small>
-            <!-- Image preview -->
-            <!-- <div id="image-preview-container" style="margin-top: 10px; position: relative;">
-            <img id="image-preview" src="" alt="Image Preview" />
-          </div> -->
-          </div>
-
-          <div class="form-group">
-            <label for="shortdescription" class="form-label"
-              >Short Description</label
-            >
-            <textarea
-              id="shortdescription"
-              class="form-textarea"
-              required
-              placeholder="Short Description"
-            ></textarea>
-            <small id="shortdescriptionError"> * Short Description </small>
-          </div>
-          <div class="form-group">
             <label for="top-description" class="form-label">Content</label>
             <textarea
               id="description"
               required
-              class="form-textarea top_description_summernote"
+              class="form-textarea"
             ></textarea>
             <small id="contentError"> * Content </small>
           </div>
 
           <div class="form-action">
-            <div style="display: flex; align-items: center">
-              <input
-                type="checkbox"
-                id="is_published"
-                class="styled-checkbox"
-              />
-              <label for="is_published" class="checkbox-label">Publish</label>
-            </div>
-            <div style="display: flex; align-items: center">
-              <input type="checkbox" id="premium" class="styled-checkbox" />
-              <label for="premium" class="checkbox-label">Premium</label>
-            </div>
             <button type="button" id="submitbtn" class="form-button">
               Create
             </button>

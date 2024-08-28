@@ -89,70 +89,24 @@
   <div class="overflow-x-auto">
     <div class="flex justify-between my-5">
       <h1 class="text-3xl font-bold"><%= title %></h1>
-      <div class="flex gap-5">
-        <label
-          class="flex items-center space-x-2 bg-blue-100 text-blue-800 px-2 py-1 rounded"
-        >
-          <input id="check-published" type="checkbox" <%=
-          query?.publish=='true'? 'checked' : '' %> class="form-checkbox h-5 w-5
-          text-blue-600" />
-          <span class="font-semibold">Published</span>
-        </label>
-
-        <!-- Checkbox 2 -->
-        <label
-          class="flex items-center space-x-2 bg-blue-100 text-blue-800 px-2 py-1 rounded"
-        >
-          <input id="check-premium" type="checkbox" <%= query?.premium=='true' ?
-          'checked' : '' %> class="form-checkbox h-5 w-5 text-blue-600" />
-          <span class="font-semibold">Premium</span>
-        </label>
-        <button
-          id="filter"
-          class="bg-blue-500 text-white px-3 py-1 rounded flex gap-2 items-center"
-        >
-          <img src="/filter.png" class="h-5 w-5" alt="filter" /><span
-            class="font-semibold"
-            >Filter</span
-          >
-        </button>
-        <button
-          id="clear-filter"
-          class="bg-red-100 text-red-800 px-3 py-1 rounded flex gap-1 items-center"
-        >
-          <img src="/close.png" class="h-5 w-5" alt="close" /><span
-            class="font-semibold"
-            >Clear</span
-          >
-        </button>
-
-        <a
-          href="/admin/dashboard/forums/create"
-          class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
-        >
-          <img src="/addblog.png" class="h-6 w-6" alt="add" />
-        </a>
-      </div>
+      <a
+        href="/admin/dashboard/forums/create"
+        class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
+      >
+        <img src="/addblog.png" class="h-6 w-6" alt="add" />
+      </a>
     </div>
     <table class="min-w-full bg-white border rounded-lg shadow-lg">
       <thead class="bg-blue-100">
         <tr>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">
-            Picture
-          </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[60rem]">Title</th>
           <!--
          
           <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
             Description
           </th>
            -->
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
-            Published
-          </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
-            Premium
-          </th>
+
           <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">
             Action
           </th>
@@ -162,55 +116,12 @@
         <% if (data.length > 0) { %> <% for (let i = 0; i < data.length; i++) {
         %>
         <tr class="border border-gray-200">
-          <td class="py-2 px-4 w-24 border border-gray-200 max-w-72">
-            <div class="flex">
-              <img
-                src="<%= data[i]?.dataValues?.forumimages?.dataValues?.path %>"
-                alt="<%= data[i]?.dataValues?.forumimages?.dataValues?.originalname %>"
-                class="min-h-46 min-w-46 object-cover rounded"
-              />
-            </div>
-          </td>
           <td class="py-2 px-4 text-blue-900 border border-gray-200 w-72">
             <a href="" class="text-ellipsis">
-              <%= data[i].dataValues.title?.slice(0, 180) %>...
+              <%= data[i].dataValues.title %>
             </a>
           </td>
-          <!--
-          
-        
-       <td class="py-2 px-4 text-blue-900 border border-gray-200">
-         <div class="text-ellipsis overflow-hidden">
-              <%= data[i].dataValues.short_description.slice(0, 250) %>...
-             </div>
-        </td> 
-      -->
-          <td class="py-2 px-4 text-blue-900 border border-gray-200">
-            <div class="text-ellipsis overflow-hidden">
-              <a
-                href="/admin/dashboard/forums/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.published%>"
-                id="published-btn"
-                class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.published ? 'bg-green-500' : 'bg-red-500' %> rounded"
-                data-id="<%= data[i].dataValues.id %>"
-                data-publish="<%= data[i].dataValues.published%>"
-              >
-                <%= data[i].dataValues.published ? 'Published' :
-                'Unpublished' %>
-              </a>
-            </div>
-          </td>
-          <td class="py-2 px-4 text-blue-900 border border-gray-200">
-            <div class="text-ellipsis overflow-hidden">
-              <a
-                href="/admin/dashboard/forums/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
-                id="premium-btn"
-                data-premium="<%= data[i].dataValues.premium%>"
-                class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>"
-              >
-                <%= data[i].dataValues.premium ? 'Premium' : 'Standard' %>
-              </a>
-            </div>
-          </td>
+
           <td class="py-2 px-4 space-x-2 border border-gray-200">
             <div class="flex justify-center gap-x-5 max-xl:w-52">
               <button
