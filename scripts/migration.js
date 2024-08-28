@@ -43,21 +43,14 @@ const queryInterface = sequelizeConfig.getQueryInterface();
 
 // changeColumn();
 
-const addColumn=async()=>{
-  await queryInterface.addColumn('blog','top_description',{
-    type:DataTypes.TEXT,
-    allowNull:true,
-    defaultValue:null
+const removeColumn = async () => {
+  await queryInterface.removeColumn("forums", "short_description");
+  await queryInterface.removeColumn("forums", "published");
+  await queryInterface.removeColumn("forums", "premium");
+  await queryInterface.removeColumn("forums", "forum_img");
+};
 
-  })
-  await queryInterface.addColumn('blog','bottom_description',{
-    type:DataTypes.TEXT,
-    allowNull:true,
-    defaultValue:null
-  })
-}
-
-addColumn()
+removeColumn();
 
 // const changeColumn = async () => {
 //   await queryInterface.changeColumn("blog", "top_description", {

@@ -14,31 +14,9 @@ const forumModel = sequelizeConfig.define(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    short_description: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     description: {
       type: DataTypes.TEXT,
       allowNull: false,
-    },
-    published:{
-      type:DataTypes.BOOLEAN,
-      allowNull:false,
-      defaultValue:'false'
-    },
-    premium:{
-      type:DataTypes.BOOLEAN,
-      allowNull:false,
-      defaultValue:'false'
-    },
-    forum_img: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      references: {
-        model: "forumimg",
-        key: "id",
-      },
     },
     author: {
       type: DataTypes.STRING,

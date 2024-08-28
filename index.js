@@ -147,15 +147,6 @@ blogReplyModel.belongsTo(userModel, {
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
 forumModel.belongsTo(userModel, { foreignKey: "author", as: "forum_user" });
 
-forumImgModel.hasOne(forumModel, {
-  foreignKey: "forum_img",
-  as: "forumimages",
-});
-forumModel.belongsTo(forumImgModel, {
-  foreignKey: "forum_img",
-  as: "forumimages",
-});
-
 forumModel.hasMany(forumReplyModel, { foreignKey: "forum_id", as: "replies" });
 forumReplyModel.belongsTo(forumModel, {
   foreignKey: "forum_id",

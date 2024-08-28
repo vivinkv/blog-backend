@@ -9,110 +9,47 @@ const getAllForums = async (req, res) => {
   const page = req?.query?.page || 1;
   const offset = limit * (page - 1);
 
-  console.log(req.query);
-
   // try {
 
   try {
-    if (req?.query?.premium && req?.query?.published) {
-      const forums = await forumModel.findAll({
-        where: {
-          premium: req?.query?.premium,
-          published: req?.query?.published,
+    const forums = await forumModel.findAll({
+      offset: offset,
+      limit: limit,
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          as: "forum_user",
+          attributes: {
+            exclude: ["password"],
+          },
         },
-        order: [["createdAt", "DESC"]],
-        include: [
-          {
-            model: userModel,
-            foreignKey: "author",
-            as: "forum_user",
-            attributes: {
-              exclude: ["password"],
-            },
-          },
-          {
-            model: forumReplyModel,
-            foreignKey: "forum_id",
-            as: "replies",
-            include: [
-              {
-                model: userModel,
-                foreignKey: "author",
-                as: "repliers",
-                attributes: {
-                  exclude: ["password"],
-                },
+        {
+          model: forumReplyModel,
+          foreignKey: "forum_id",
+          as: "replies",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "repliers",
+              attributes: {
+                exclude: ["password"],
               },
-            ],
-          },
-          {
-            model: forumImgModel,
-            foreignKey: "forum_img",
-            as: "forumimages",
-          },
-        ],
-      });
-      res.status(200).json({ data: forums });
-    } else {
-      const forums = await forumModel.findAll({
-        offset: offset,
-        limit: limit,
-        order: [["createdAt", "DESC"]],
-        include: [
-          {
-            model: userModel,
-            foreignKey: "author",
-            as: "forum_user",
-            attributes: {
-              exclude: ["password"],
             },
-          },
-          {
-            model: forumReplyModel,
-            foreignKey: "forum_id",
-            as: "replies",
-            include: [
-              {
-                model: userModel,
-                foreignKey: "author",
-                as: "repliers",
-                attributes: {
-                  exclude: ["password"],
-                },
-              },
-            ],
-          },
-          {
-            model: forumImgModel,
-            foreignKey: "forum_img",
-            as: "forumimages",
-          },
-        ],
-      });
-      res.status(200).json({ data: forums });
-    }
+          ],
+        },
+      ],
+    });
+    res.status(200).json({ data: forums });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
 
-// const getForumDetails = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const findForum = await forumModel.findByPk(id);
-
-//     if (!findForum) {
-//       return res.status(404).json({ err: "Forum not-found" });
-//     }
-//     res.render("", {});
-//   } catch (error) {
-//     res.status(500).json({ err: error.message });
-//   }
-// };
-
 const createForum = async (req, res) => {
-  const { title, short_description, description, published, premium } =
-    req.body;
+  const { title, description } = req.body;
   console.log("started");
 
   try {
@@ -122,28 +59,11 @@ const createForum = async (req, res) => {
         .json({ err: "Title must be between 10 and 100 characters" });
     }
 
-    const forumImage = await forumImgModel.create({
-      path: `/uploads/${req?.files[0]?.filename}`,
-      fieldname: req?.files[0]?.fieldname,
-      originalname: req?.files[0]?.originalname,
-      encoding: req?.files[0]?.encoding,
-      mimetype: req?.files[0]?.mimetype,
-      destination: req?.files[0]?.destination,
-      filename: req?.files[0]?.filename,
-      size: req?.files[0]?.size,
-    });
-
     const createForum = await forumModel.create({
       title: title,
-      short_description: short_description,
       description: description,
-      published: published,
-      premium: premium,
       author: req?.user?.id,
-      forum_img: forumImage.dataValues.id,
     });
-
-    console.log(create);
 
     res.status(201).json({
       msg: "Forum Created Successfully",
@@ -159,90 +79,25 @@ const updateForum = async (req, res) => {
 
   console.log(req?.body);
   try {
-    const findForum = await forumModel.findByPk(id, {
-      include: [
-        {
-          model: forumImgModel,
-          foreignKey: "forum_img",
-          as: "forumimages",
-        },
-      ],
-    });
+    const findForum = await forumModel.findByPk(id);
 
-    if (req?.files?.length > 0) {
-      const addNewForumImage = await forumImgModel.create({
-        path: `/uploads/${req?.files[0]?.filename}`,
-        fieldname: req?.files[0]?.fieldname,
-        originalname: req?.files[0]?.originalname,
-        encoding: req?.files[0]?.encoding,
-        mimetype: req?.files[0]?.mimetype,
-        destination: req?.files[0]?.destination,
-        filename: req?.files[0]?.filename,
-        size: req?.files[0]?.size,
-      });
-      console.log(
-        `uploads/${findForum?.dataValues?.forumimages?.path?.split("/")?.pop()}`
-      );
-
-      if (
-        fs.existsSync(
-          `uploads/${findForum.dataValues.forumimages.path?.split("/")?.pop()}`
-        )
-      ) {
-        console.log(
-          `uploads/${findForum?.dataValues?.forumimages?.path
-            ?.split("/")
-            ?.pop()}`
-        );
-        fs.unlink(
-          `uploads/${findForum?.dataValues?.forumimages?.path
-            ?.split("/")
-            ?.pop()}`,
-
-          (err) => {
-            if (err) {
-              return res.json({ err: err.message });
-            }
-            console.log("Deleted successfully");
-          }
-        );
-      }
-
-      const updateForum = await forumModel.update(
-        {
-          title: req?.body?.title,
-          short_description: req?.body?.short_description,
-          description: req?.body?.description,
-          published: req?.body?.published,
-          premium: req?.body?.premium,
-          forum_img: addNewForumImage.dataValues.id,
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
-      );
-
-      return res.status(200).json({ msg: "Updated Successfully" });
-    } else {
-      const updateForum = await forumModel.update(
-        {
-          title: req?.body?.title,
-          short_description: req?.body?.short_description,
-          description: req?.body?.description,
-          published: req?.body?.published,
-          premium: req?.body?.premium,
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
-      );
-
-      return res.status(200).json({ msg: "Updated Successfully" });
+    if (!findForum) {
+      return res.status(404).json({ err: "forum not-found" });
     }
+
+    const updateForum = await forumModel.update(
+      {
+        title: req?.body?.title,
+        description: req?.body?.description,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+
+    return res.status(200).json({ msg: "Updated Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -252,89 +107,31 @@ const deleteForum = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const findForum = await forumModel.findByPk(id, {
-      include: [
-        {
-          model: forumImgModel,
-          foreignKey: "forum_img",
-          as: "forumimages",
-        },
-      ],
-    });
+    const findForum = await forumModel.findByPk(id);
     if (!findForum) {
-      return res.status(404).json({ err: "Blog notfound" });
+      return res.status(404).json({ err: "Forum not-found" });
     }
 
-    const findForums = await forumModel.findAll({
-      where: {
-        forum_img: findForum.dataValues.forum_img,
-      },
-    });
-
-    if (findForums.length == 1) {
-      if (
-        fs.existsSync(
-          `uploads/${findForum?.dataValues?.forumimages?.path
-            ?.split("/")
-            ?.pop()}`
-        )
-      ) {
-        //delete images
-        fs.unlink(
-          `uploads/${findForum?.dataValues?.forumimages?.path
-            ?.split("/")
-            ?.pop()}`,
-          (err) => {
-            if (err) {
-              return res.json({ err: err.message });
-            }
-            console.log("Deleted successfully");
-          }
-        );
-      }
-
-      if (!findForum.dataValues?.title?.startsWith("Draft")) {
-        findForum.destroy();
-        return res.status(204).json({ msg: "Deleted Successfully" });
-      } else {
-        findForum.destroy();
-        return res.status(204).json({ msg: "Deleted Successfully" });
-      }
-    } else {
-      await findForum.destroy();
-      return res.status(204).json({ msg: "Deleted Successfully" });
-    }
-
-    // fs.unlink(findBlog?.dataValues?.featuredimg?.path?.split("/")[1], (err) => {
-    //   if (err) {
-    //     return res.json({ err: err.message });
-    //   }
-    //   console.log("Deleted successfully");
-    // });
-    // fs.unlink(findBlog?.dataValues?.ogimg?.path?.split("/")[1], (err) => {
-    //   if (err) {
-    //     return res.json({ err: err.message });
-    //   }
-    //   console.log("Deleted successfully");
-    // });
+    await findForum.destroy();
+    return res.status(200).json({ msg: "Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
 
 const createReply = async (req, res) => {
-  const { blog_id } = req.params;
+  const { forum_id } = req.params;
   const { reply } = req.body;
 
   try {
-    const findForum = await forumModel.findByPk(blog_id);
+    const findForum = await forumModel.findByPk(forum_id);
 
     if (!findForum) {
       return res.status(404).json({ err: "Forum not-found" });
     }
     const createReply = await forumReplyModel.create({
       reply: reply,
-      forum_id: blog_id,
+      forum_id: forum_id,
       user_id: req?.user?.id,
     });
     res.status(201).json({ msg: "Created Successfully" });
@@ -344,13 +141,13 @@ const createReply = async (req, res) => {
 };
 
 const updateReply = async (req, res) => {
-  const { id } = req.params;
+  const { forum_id,reply_id } = req.params;
   const { reply } = req.body;
   try {
-    const findForumReply = await forumReplyModel.findByPk(id);
+    const findForumReply = await forumReplyModel.findByPk(reply_id);
 
     if (!findForumReply) {
-      return res.status(404).json({ err: "Forum not-found" });
+      return res.status(404).json({ err: "Forum reply not-found" });
     }
     const updateReply = await forumReplyModel.update(
       {
@@ -358,7 +155,7 @@ const updateReply = async (req, res) => {
       },
       {
         where: {
-          id: id,
+          id:reply_id
         },
       }
     );
@@ -369,12 +166,12 @@ const updateReply = async (req, res) => {
 };
 
 const deleteReply = async (req, res) => {
-  const { id } = req.params;
+  const { reply_id,forum_id } = req.params;
   try {
-    const findForumReply = await forumReplyModel.findByPk(id);
+    const findForumReply = await forumReplyModel.findByPk(reply_id);
 
     if (!findForumReply) {
-      return res.status(404).json({ err: "Forum not-found" });
+      return res.status(404).json({ err: "Forum Reply not-found" });
     }
     await findForumReply.destroy();
 
