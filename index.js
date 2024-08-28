@@ -23,6 +23,8 @@ const blogCommentModel = require("./models/blogComment.model");
 const forumModel = require("./models/forum/forum.model");
 const forumReplyModel = require("./models/forum/replies.model");
 const forumImgModel = require("./models/forum/forumImage.model");
+const blogLikeModel = require("./models/blogLike.model");
+const blogReplyModel = require("./models/blogReply.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -105,9 +107,43 @@ blogCommentModel.belongsTo(blogModel, {
   as: "comments",
 });
 
-userModel.hasMany(blogCommentModel, { foreignKey: "user_id", as: "user" });
-blogCommentModel.belongsTo(userModel, { foreignKey: "user_id", as: "user" });
+userModel.hasMany(blogCommentModel, {
+  foreignKey: "user_id",
+  as: "commented_by",
+});
+blogCommentModel.belongsTo(userModel, {
+  foreignKey: "user_id",
+  as: "commented_by",
+});
 
+blogCommentModel.hasMany(blogLikeModel, {
+  foreignKey: "comment_id",
+  as: "likes",
+});
+blogLikeModel.belongsTo(blogCommentModel, {
+  foreignKey: "comment_id",
+  as: "likes",
+});
+
+userModel.hasMany(blogLikeModel, { foreignKey: "user_id", as: "liked_by" });
+blogLikeModel.belongsTo(userModel, { foreignKey: "user_id", as: "liked_by" });
+
+blogCommentModel.hasMany(blogReplyModel, {
+  foreignKey: "comment_id",
+  as: "comment_replies",
+});
+blogReplyModel.belongsTo(blogCommentModel, {
+  foreignKey: "comment_id",
+  as: "comment_replies",
+});
+
+userModel.hasMany(blogReplyModel, { foreignKey: "user_id", as: "replied_by" });
+blogReplyModel.belongsTo(userModel, {
+  foreignKey: "user_id",
+  as: "replied_by",
+});
+
+//forum
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
 forumModel.belongsTo(userModel, { foreignKey: "author", as: "forum_user" });
 
@@ -176,10 +212,40 @@ app.get("/", async (req, res) => {
             {
               model: userModel,
               foreignKey: "user_id",
-              as: "user",
+              as: "commented_by",
               attributes: {
                 exclude: ["password"],
               },
+            },
+            {
+              model: blogLikeModel,
+              foreignKey: "comment_id",
+              as: "likes",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "liked_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+            {
+              model: blogReplyModel,
+              foreignKey: "comment_id",
+              as: "comment_replies",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "replied_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
             },
           ],
           separate: true,
@@ -218,6 +284,9 @@ app.get("/", async (req, res) => {
     res.json({ err: error });
   }
 });
+
+app.use("/user", userRoute);
+app.use("/blogs", blogRoute);
 
 app.get("/:id", async (req, res) => {
   try {
@@ -260,10 +329,40 @@ app.get("/:id", async (req, res) => {
             {
               model: userModel,
               foreignKey: "user_id",
-              as: "user",
+              as: "commented_by",
               attributes: {
                 exclude: ["password"],
               },
+            },
+            {
+              model: blogLikeModel,
+              foreignKey: "comment_id",
+              as: "likes",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "liked_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+            {
+              model: blogReplyModel,
+              foreignKey: "comment_id",
+              as: "comment_replies",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "replied_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
             },
           ],
           separate: true,
@@ -282,9 +381,6 @@ app.get("/:id", async (req, res) => {
     res.json({ err: error });
   }
 });
-
-app.use("/user", userRoute);
-app.use("/blogs", blogRoute);
 app.use("/admin", adminRoute);
 app.use("/api/forum", forumRoute);
 

@@ -6,7 +6,13 @@ const {
   deleteBlog,
   createComment,
   deleteComment,
-  updateComment
+  updateComment,
+  createLike,
+  deleteLike,
+  getReplies,
+  createReply,
+  updateReply,
+  deleteReply,
 } = require("../controller/blog.controller");
 const { userAuth } = require("../middleware/auth.middleware");
 const express = require("express");
@@ -31,7 +37,6 @@ const upload = multer({
         cb(null, true);
       } else {
         cb(error);
-       
       }
     });
   },
@@ -45,8 +50,18 @@ router.get("/:id", getBlogDetail);
 router.put("/:id", upload.array("image", 3), updateBlog);
 router.delete("/:id", deleteBlog);
 //comment
-router.post('/:id/comment',createComment);
-router.put('/:id/comment/:comment_id',updateComment);
-router.delete('/:id/comment/:comment_id',deleteComment);
+router.post("/:id/comment", createComment);
+router.put("/:id/comment/:comment_id", updateComment);
+router.delete("/:id/comment/:comment_id", deleteComment);
+
+//likes
+router.post("/:id/comment/:comment_id/like", createLike);
+router.delete("/:id/comment/:comment_id/like/:like_id", deleteLike);
+
+//reply
+router.get("/:id/comment/:comment_id/reply", getReplies);
+router.post("/:id/comment/:comment_id/reply", createReply);
+router.put("/:id/comment/:comment_id/reply/:reply_id", updateReply);
+router.delete("/:id/comment/:comment_id/reply/:reply_id", deleteReply);
 
 module.exports = router;
