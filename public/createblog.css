@@ -382,7 +382,8 @@ small {
 .header {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 20px;
 }
 /* Ensuring modal is hidden by default */
 .modal.hidden {
@@ -448,4 +449,18 @@ small {
 .modal-content p,
 .modal-content div {
   padding-top: 20px;
+}
+
+
+.swap-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.swap-btn:hover {
+  background-color: #0056b3;
 }

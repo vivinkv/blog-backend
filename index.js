@@ -26,6 +26,8 @@ const forumImgModel = require("./models/forum/forumImage.model");
 const blogLikeModel = require("./models/blogLike.model");
 const blogReplyModel = require("./models/blogReply.model");
 const blogSaveModel = require("./models/blogSave.model");
+const blogTopicModel = require("./models/blogTopics.model");
+const blogFavouriteModel = require("./models/blogFavourite");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -102,6 +104,9 @@ blogSectionModel.belongsTo(blogModel, {
   as: "sections",
 });
 
+blogModel.hasMany(blogFavouriteModel,{foreignKey:'blog_id',as:'favourite'});
+blogFavouriteModel.belongsTo(blogModel,{foreignKey:'blog_id',as:'favourite'});
+
 blogModel.hasMany(blogCommentModel, { foreignKey: "blog_id", as: "comments" });
 blogCommentModel.belongsTo(blogModel, {
   foreignKey: "blog_id",
@@ -144,8 +149,11 @@ blogReplyModel.belongsTo(userModel, {
   as: "replied_by",
 });
 
-blogModel.hasMany(blogSaveModel, { foreignKey: "blog_id", as: "saved" });
+blogModel.hasMany(blogSaveModel, { foreignKey: "blog_id",onDelete: 'SET NULL' , as: "saved" });
 blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
+
+blogModel.hasMany(blogTopicModel, { foreignKey: "blog_id", as: "tags" });
+blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 
 //forum
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
@@ -200,6 +208,11 @@ app.get("/", async (req, res) => {
           as: "sections",
         },
         {
+          model:blogFavouriteModel,
+          foreignKey:'blog_id',
+          as:'favourite'
+        },
+        {
           model: blogCommentModel,
           foreignKey: "blog_id",
           as: "comments",
@@ -246,6 +259,11 @@ app.get("/", async (req, res) => {
           separate: true,
           order: [["createdAt", "DESC"]],
         },
+        {
+          model: blogTopicModel,
+          foreignKey: "blog_id",
+          as: "tags",
+        },
       ],
       where: {
         premium: false,
@@ -276,7 +294,7 @@ app.get("/", async (req, res) => {
       data: rows,
     });
   } catch (error) {
-    res.json({ err: error });
+    res.json({ err: error.message });
   }
 });
 
@@ -317,6 +335,11 @@ app.get("/:id", async (req, res) => {
           as: "sections",
         },
         {
+          model:blogFavouriteModel,
+          foreignKey:'blog_id',
+          as:'favourite'
+        },
+        {
           model: blogCommentModel,
           foreignKey: "blog_id",
           as: "comments",
@@ -362,6 +385,11 @@ app.get("/:id", async (req, res) => {
           ],
           separate: true,
           order: [["createdAt", "DESC"]],
+        },
+        {
+          model: blogTopicModel,
+          foreignKey: "blog_id",
+          as: "tags",
         },
       ],
       where: {

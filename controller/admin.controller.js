@@ -12,6 +12,7 @@ const blogSectionModel = require("../models/blogSection.model");
 const blogCommentModel = require("../models/blogComment.model");
 const blogLikeModel = require("../models/blogLike.model");
 const blogReplyModel = require("../models/blogReply.model");
+const blogSaveModel = require("../models/blogSave.model");
 
 //Create a new User
 const createAdmin = async (req, res) => {
@@ -323,11 +324,17 @@ const deleteBlog = async (req, res) => {
           foreignKey: "og_id",
           as: "og",
         },
+        {
+          model:blogSaveModel,
+          foreignKey:'blog_id',
+          as:'saved'
+        }
       ],
     });
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
+
 
     const findBlogs = await blogModel.findAll({
       where: {
@@ -365,6 +372,11 @@ const deleteBlog = async (req, res) => {
           banner?.destroy(),
           featured?.destroy(),
           og?.destroy(),
+          blogSaveModel.destroy({
+            where:{
+              blog_id:id
+            }
+          }),
           blogSectionModel.destroy({
             where: {
               blog_id: findBlog.dataValues.id,
@@ -780,7 +792,7 @@ const getComments = async (req, res) => {
       include:[{
         model:userModel,
         foreignKey:'user_id',
-        as:'user'
+        as:'commented_by'
       }]
     });
 

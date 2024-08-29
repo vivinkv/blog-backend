@@ -122,33 +122,34 @@
             <div class="section-container" id="formSections">
               <div class="section-item">
                 <div class="header">
+                  <button type="button" class="swap-btn swapTop">
+                    <img src="/swapup.svg" width="30" height="30" alt="swap top" />
+                  </button>
                   <button type="button" class="add-btn addSection">
                     <img src="/add.png" width="30" height="30" alt="add" />
                   </button>
+                 
+                  <button type="button" class="swap-btn swapBottom">
+                    <img src="/swapdown.svg" width="30" height="30" alt="swap bottom" />
+                  </button>
                 </div>
-                <div
-                  class="section"
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    gap: 20px;
-                    width: 100%;
-                  "
-                >
+                <div class="section" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
                   <input
                     type="text"
                     name="heading"
                     class="form-input"
-                    placeholder="Section Heading"
+                    placeholder="Title"
                   />
                   <textarea
                     name="content"
                     class="form-textarea summernote-section"
-                    placeholder="Section Content"
+                    placeholder="Message"
                   ></textarea>
                 </div>
               </div>
             </div>
+            
+            
           </div>
 
           <div class="form-group">

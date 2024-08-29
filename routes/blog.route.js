@@ -16,6 +16,7 @@ const {
   getAllSavedBlogs,
   createSaveBlog,
   deleteSavedBlog,
+  createFavourite,
 } = require("../controller/blog.controller");
 const { userAuth } = require("../middleware/auth.middleware");
 const express = require("express");
@@ -59,6 +60,10 @@ router.post("/", upload.array("image", 3), createBlog);
 router.get("/:id", getBlogDetail);
 router.put("/:id", upload.array("image", 3), updateBlog);
 router.delete("/:id", deleteBlog);
+
+//like blog
+router.post('/:id/favourite',createFavourite);
+router.delete('/:id/favourite/:favourite_id')
 
 //comment
 router.post("/:id/comment", createComment);

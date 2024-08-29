@@ -43,24 +43,24 @@ const queryInterface = sequelizeConfig.getQueryInterface();
 
 // changeColumn();
 
-const removeColumn = async () => {
-  await queryInterface.removeColumn("forums", "short_description");
-  await queryInterface.removeColumn("forums", "published");
-  await queryInterface.removeColumn("forums", "premium");
-  await queryInterface.removeColumn("forums", "forum_img");
+const add = async () => {
+  await queryInterface.addConstraint('save', {
+    fields: ['blog_id'],
+    type: 'foreign key',
+    name: 'save_blog_id_fkey',
+    references: {
+      table: 'blog',
+      field: 'id'
+    },
+    onDelete: 'CASCADE', // Use 'SET NULL' if you prefer that behavior
+    onUpdate: 'CASCADE'
+  });
 };
 
-removeColumn();
+add();
 
-// const changeColumn = async () => {
-//   await queryInterface.changeColumn("blog", "top_description", {
-//     type: DataTypes.TEXT,
-//     allowNull: true,
-//   });
-//   await queryInterface.changeColumn("blog", "bottom_description", {
-//     type: DataTypes.TEXT,
-//     allowNull: true,
-//   });
-// };
+const remove = async () => {
+  await queryInterface.removeConstraint('save', 'save_blog_id_fkey');
+};
 
-// changeColumn();
+//remove()
