@@ -721,7 +721,13 @@ const deleteLike = async (req, res) => {
   const { comment_id, like_id } = req.params;
   console.log({id:like_id});
   try {
-    const findLike=await blogLikeModel.findByPk(like_id);
+    const findLike=await blogLikeModel.findOne({
+      where:{
+        id:like_id,
+        comment_id:comment_id,
+        user_id:req?.user?.id
+      }
+    })
     if(!findLike){
       return res.status(404).json({err:'Like not-found'})
     }
