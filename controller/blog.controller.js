@@ -1,10 +1,12 @@
 const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
 const blogCommentModel = require("../models/blogComment.model");
+const blogFavouriteModel = require("../models/blogFavourite");
 const blogLikeModel = require("../models/blogLike.model");
 const blogReplyModel = require("../models/blogReply.model");
 const blogSaveModel = require("../models/blogSave.model");
 const blogSectionModel = require("../models/blogSection.model");
+const blogTopicModel = require("../models/blogTopics.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
 require("dotenv").config();
@@ -717,14 +719,13 @@ const createLike = async (req, res) => {
 
 const deleteLike = async (req, res) => {
   const { comment_id, like_id } = req.params;
+  console.log({id:like_id});
   try {
-    await blogLikeModel.destroy({
-      where: {
-        comment_id: comment_id,
-        id: like_id,
-        user_id: req?.user?.id,
-      },
-    });
+    const findLike=await blogLikeModel.findByPk(like_id);
+    if(!findLike){
+      return res.status(404).json({err:'Like not-found'})
+    }
+    await findLike.destroy();
     res.status(200).json({ msg: "Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
@@ -883,6 +884,64 @@ const deleteSavedBlog = async (req, res) => {
   }
 };
 
+//blog favourite
+const createFavourite = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const alreadyLiked = await blogFavouriteModel.findOne({
+      where: {
+        blog_id: id,
+        user_id: req?.user?.id,
+      },
+    });
+
+    if (alreadyLiked) {
+      return res.status(400).json({ err: "Already Liked" });
+    }
+
+    const createLike = await blogFavouriteModel.create({
+      blog_id: id,
+      user_id: req?.user?.id,
+    });
+
+    res.status(201).json({ msg: "Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteFavourite = async (req, res) => {
+  const { id, favourite_id } = req.params;
+  try {
+    await blogLikeModel.destroy({
+      where: {
+        blog_id: id,
+        id: favourite_id,
+        user_id: req?.user?.id,
+      },
+    });
+    res.status(200).json({ msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const addTopics = async (req, res) => {
+  const {id}=req.params;
+  const { topics } = req.body;
+
+  const topicsParse = JSON.parse(topics);
+
+  for (const topic of topicsParse) {
+    const addTopic=await blogTopicModel.create({
+      name:topic.name,
+      blog_id:id
+    });
+  }
+
+  res.json({ msg: "working" });
+};
+
 module.exports = {
   getAllBlogs,
   getBlogDetail,
@@ -901,4 +960,6 @@ module.exports = {
   getAllSavedBlogs,
   createSaveBlog,
   deleteSavedBlog,
+  createFavourite,
+  deleteFavourite,
 };
