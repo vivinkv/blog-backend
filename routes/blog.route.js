@@ -13,6 +13,9 @@ const {
   createReply,
   updateReply,
   deleteReply,
+  getAllSavedBlogs,
+  createSaveBlog,
+  deleteSavedBlog,
 } = require("../controller/blog.controller");
 const { userAuth } = require("../middleware/auth.middleware");
 const express = require("express");
@@ -44,11 +47,19 @@ const upload = multer({
 //authentication middleware
 router.use(userAuth);
 //routes
+
+//saved
+router.get('/saved',getAllSavedBlogs);
+router.post('/saved/:blog_id',createSaveBlog);
+router.delete('/saved/:id',deleteSavedBlog);
+
+//blogs
 router.get("/", getAllBlogs);
 router.post("/", upload.array("image", 3), createBlog);
 router.get("/:id", getBlogDetail);
 router.put("/:id", upload.array("image", 3), updateBlog);
 router.delete("/:id", deleteBlog);
+
 //comment
 router.post("/:id/comment", createComment);
 router.put("/:id/comment/:comment_id", updateComment);

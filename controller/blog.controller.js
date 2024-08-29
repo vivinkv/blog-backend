@@ -3,6 +3,7 @@ const blogModel = require("../models/blog.model");
 const blogCommentModel = require("../models/blogComment.model");
 const blogLikeModel = require("../models/blogLike.model");
 const blogReplyModel = require("../models/blogReply.model");
+const blogSaveModel = require("../models/blogSave.model");
 const blogSectionModel = require("../models/blogSection.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
@@ -790,6 +791,85 @@ const deleteReply = async (req, res) => {
   }
 };
 
+const getAllSavedBlogs = async (req, res) => {
+  try {
+    const findAllBlogs = await blogSaveModel.findAll({
+      where: {
+        user_id: req?.user?.id,
+      },
+      include: [
+        {
+          model: blogModel,
+          foreignKey: "blog_id",
+          as: "saved",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "created_by",
+              attributes:{
+                exclude:['password']
+              }
+            },
+          ],
+        },
+      ],
+    });
+    res.status(200).json({ data: findAllBlogs });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const createSaveBlog = async (req, res) => {
+  const { blog_id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(blog_id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+
+    const alreadySaved = await blogSaveModel.findOne({
+      where: {
+        blog_id: blog_id,
+        user_id: req?.user?.id,
+      },
+    });
+
+    if (alreadySaved) {
+      return res.status(400).json({ err: "Already Saved" });
+    }
+
+    const createSave = await blogSaveModel.create({
+      blog_id: blog_id,
+      user_id: req?.user?.id,
+    });
+    res.status(201).json({ msg: "Saved Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteSavedBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findSavedBlog = await blogSaveModel.findByPk(id);
+
+    if (!findSavedBlog) {
+      return res.status(404).json({ err: "Saved Blog not-found" });
+    }
+
+    await findSavedBlog.destroy();
+
+    res.status(201).json({ msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
 module.exports = {
   getAllBlogs,
   getBlogDetail,
@@ -805,4 +885,7 @@ module.exports = {
   createReply,
   updateReply,
   deleteReply,
+  getAllSavedBlogs,
+  createSaveBlog,
+  deleteSavedBlog,
 };

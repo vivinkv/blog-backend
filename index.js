@@ -25,6 +25,7 @@ const forumReplyModel = require("./models/forum/replies.model");
 const forumImgModel = require("./models/forum/forumImage.model");
 const blogLikeModel = require("./models/blogLike.model");
 const blogReplyModel = require("./models/blogReply.model");
+const blogSaveModel = require("./models/blogSave.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -142,6 +143,9 @@ blogReplyModel.belongsTo(userModel, {
   foreignKey: "user_id",
   as: "replied_by",
 });
+
+blogModel.hasMany(blogSaveModel, { foreignKey: "blog_id", as: "saved" });
+blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
 
 //forum
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
