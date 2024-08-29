@@ -57,10 +57,12 @@ const add = async () => {
   });
 };
 
-add();
+// add();
 
 const remove = async () => {
   await queryInterface.removeConstraint('save', 'save_blog_id_fkey');
 };
 
-//remove()
+remove()
+
+
