@@ -119,7 +119,9 @@
               i = 0; i < data.sections.length; i++) { %>
               <div class="section-item">
                 <div class="header">
+                  <% if(i!=0){%>
                   <button type="button" class="swap-btn swapTop">
+                  
                     <img
                       src="/swapup.svg"
                       width="30"
@@ -127,6 +129,7 @@
                       alt="swap top"
                     />
                   </button>
+                  <%}%>
                   <button type="button" class="add-btn addSection">
                     <img src="/add.png" width="30" height="30" alt="add" />
                   </button>
@@ -142,6 +145,7 @@
                   </button>
 
                   <%}%>
+                  <% if(i!=0){%>
                   <button type="button" class="swap-btn swapBottom">
                     <img
                       src="/swapdown.svg"
@@ -150,6 +154,7 @@
                       alt="swap bottom"
                     />
                   </button>
+                  <%}%>
                 </div>
                 <div
                   class="section"

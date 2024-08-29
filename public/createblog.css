@@ -464,3 +464,47 @@ small {
 .swap-btn:hover {
   background-color: #0056b3;
 }
+
+
+.styled-date-input {
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  color: #555;
+  background-color: #f9f9f9;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.styled-date-input:hover {
+  border-color: #888;
+}
+
+.styled-date-input:focus {
+  border-color: #5e9ed6;
+  box-shadow: 0 0 5px rgba(94, 158, 214, 0.5);
+}
+
+.styled-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+.styled-date-input::-webkit-inner-spin-button {
+  display: none;
+}
+
+.styled-date-input::-webkit-clear-button {
+  display: none;
+}
+
+
+.note-editable ul, .note-editable ol {
+  list-style-type: disc;
+  padding-left: 40px; /* Adjust the padding as necessary */
+}
+
+.note-editable ol {
+  list-style-type: decimal;
+}

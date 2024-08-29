@@ -145,70 +145,68 @@ const login = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   console.log(req?.query);
   try {
-
-      const blogs = await blogModel.findAll({
-        order: [["createdAt", "DESC"]],
-        include: [
-          {
-            model: userModel,
-            as: "created_by",
-            attributes: { exclude: ["password"] },
-          },
-          {
-            model: bannerImageModel,
-            as: "banner",
-          },
-          {
-            model: bannerImageModel,
-            as: "featured",
-          },
-          {
-            model: bannerImageModel,
-            as: "og",
-          },
-          {
-            model: blogSectionModel,
-            as: "sections",
-          },
-          {
-            model: blogCommentModel,
-            as: "comments",
-            include: [
-              {
-                model: userModel,
-                as: "commented_by",
-                attributes: { exclude: ["password"] },
-              },
-              {
-                model: blogLikeModel,
-                as: "likes",
-                include: [
-                  {
-                    model: userModel,
-                    as: "liked_by",
-                    attributes: { exclude: ["password"] },
-                  },
-                ],
-              },
-              {
-                model: blogReplyModel,
-                as: "comment_replies",
-                include: [
-                  {
-                    model: userModel,
-                    as: "replied_by",
-                    attributes: { exclude: ["password"] },
-                  },
-                ],
-              },
-            ],
-            separate: true,
-            order: [["createdAt", "DESC"]],
-          },
-        ],
-      });
-      res.render("blogs", { data: blogs, title: "Blogs List", query: {} });
-    
+    const blogs = await blogModel.findAll({
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: userModel,
+          as: "created_by",
+          attributes: { exclude: ["password"] },
+        },
+        {
+          model: bannerImageModel,
+          as: "banner",
+        },
+        {
+          model: bannerImageModel,
+          as: "featured",
+        },
+        {
+          model: bannerImageModel,
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          as: "sections",
+        },
+        {
+          model: blogCommentModel,
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              as: "commented_by",
+              attributes: { exclude: ["password"] },
+            },
+            {
+              model: blogLikeModel,
+              as: "likes",
+              include: [
+                {
+                  model: userModel,
+                  as: "liked_by",
+                  attributes: { exclude: ["password"] },
+                },
+              ],
+            },
+            {
+              model: blogReplyModel,
+              as: "comment_replies",
+              include: [
+                {
+                  model: userModel,
+                  as: "replied_by",
+                  attributes: { exclude: ["password"] },
+                },
+              ],
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
+      ],
+    });
+    res.render("blogs", { data: blogs, title: "Blogs List", query: {} });
   } catch (error) {
     res.json({ err: error.message });
   }
@@ -264,7 +262,7 @@ const createBlog = async (req, res) => {
       filename: req?.files[0]?.filename,
       size: req?.files[0]?.size,
     });
-  
+
     const createBlog = await blogModel.create({
       title: title,
       description: description,
@@ -325,16 +323,15 @@ const deleteBlog = async (req, res) => {
           as: "og",
         },
         {
-          model:blogSaveModel,
-          foreignKey:'blog_id',
-          as:'saved'
-        }
+          model: blogSaveModel,
+          foreignKey: "blog_id",
+          as: "saved",
+        },
       ],
     });
     if (!findBlog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
-
 
     const findBlogs = await blogModel.findAll({
       where: {
@@ -373,9 +370,9 @@ const deleteBlog = async (req, res) => {
           featured?.destroy(),
           og?.destroy(),
           blogSaveModel.destroy({
-            where:{
-              blog_id:id
-            }
+            where: {
+              blog_id: id,
+            },
           }),
           blogSectionModel.destroy({
             where: {
@@ -570,8 +567,12 @@ const updateBlog = async (req, res) => {
     }
 
     // Delete sections that were removed
-    const newSectionIds = parseSection.filter((section) => section.id).map((section) => section.id);
-    const sectionsToDelete = existingSectionIds.filter((sectionId) => !newSectionIds.includes(sectionId));
+    const newSectionIds = parseSection
+      .filter((section) => section.id)
+      .map((section) => section.id);
+    const sectionsToDelete = existingSectionIds.filter(
+      (sectionId) => !newSectionIds.includes(sectionId)
+    );
 
     if (sectionsToDelete.length > 0) {
       await blogSectionModel.destroy({
@@ -587,7 +588,6 @@ const updateBlog = async (req, res) => {
     res.status(500).json({ err: error.message });
   }
 };
-
 
 const getUpdateUser = async (req, res) => {
   const { id } = req.params;
@@ -763,10 +763,10 @@ const duplicateBlog = async (req, res) => {
       if (findBlog.sections && findBlog.sections.length > 0) {
         const sectionPromises = findBlog.sections.map((section) =>
           blogSectionModel.create({
-            blog_id: createDuplicateBlog.id, 
+            blog_id: createDuplicateBlog.id,
             heading: section.heading,
             content: section.content,
-            section_name:section.heading
+            section_name: section.heading,
           })
         );
         await Promise.all(sectionPromises);
@@ -789,11 +789,13 @@ const getComments = async (req, res) => {
       where: {
         blog_id: id,
       },
-      include:[{
-        model:userModel,
-        foreignKey:'user_id',
-        as:'commented_by'
-      }]
+      include: [
+        {
+          model: userModel,
+          foreignKey: "user_id",
+          as: "commented_by",
+        },
+      ],
     });
 
     console.log(findComments);
@@ -802,25 +804,26 @@ const getComments = async (req, res) => {
       return res.status(404).json({ err: "Comments not-found" });
     }
 
-    res.render('comments',{title:'Comments',data:findComments})
+    res.render("comments", { title: "Comments", data: findComments });
   } catch (err) {
     res.status(500).json({ err: err.message });
   }
 };
 
-const postComment=async(req,res)=>{
-  const {id}=req.params;
-  const {comment}=req.body;
+const postComment = async (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
 
   try {
-
-    if(comment?.length<5){
-      return res.status(409).json({err:'Comment must be at least 5 characters long.'})
+    if (comment?.length < 5) {
+      return res
+        .status(409)
+        .json({ err: "Comment must be at least 5 characters long." });
     }
 
-    const findBlog=await blogModel.findByPk(id);
-    if(!findBlog){
-      return res.status(404).json({err:"Blog notfound"});
+    const findBlog = await blogModel.findByPk(id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog notfound" });
     }
     const addComment = await blogCommentModel.create({
       comment: comment,
@@ -828,31 +831,23 @@ const postComment=async(req,res)=>{
       blog_id: id,
     });
 
-    res.status(200).json({msg:'Comment Created Successfully'});
-
+    res.status(200).json({ msg: "Comment Created Successfully" });
   } catch (error) {
-    res.status(500).json({err:error.message})
+    res.status(500).json({ err: error.message });
   }
+};
 
- 
+const deleteComment = async (req, res) => {
+  const { id, comment_id } = req.params;
 
-
-
-}
-
-const deleteComment=async(req,res)=>{
-  const {id,comment_id}=req.params;
-
-  const findComment=await blogCommentModel.findByPk(comment_id);
-  if(!findComment){
-   return res.status(404).json({err:'Comment not-found'})
+  const findComment = await blogCommentModel.findByPk(comment_id);
+  if (!findComment) {
+    return res.status(404).json({ err: "Comment not-found" });
   }
 
   await findComment.destroy();
-  res.redirect(`/admin/dashboard/blog/${id}/comments`)
-}
-
-
+  res.redirect(`/admin/dashboard/blog/${id}/comments`);
+};
 
 module.exports = {
   createAdmin,
@@ -870,7 +865,5 @@ module.exports = {
   updateUser,
   getComments,
   deleteComment,
-  postComment
+  postComment,
 };
-
-

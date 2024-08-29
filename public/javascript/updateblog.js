@@ -143,30 +143,50 @@ document.addEventListener("DOMContentLoaded", function () {
     newSection.classList.add("section-item");
 
     newSection.innerHTML = `
-            <div class="header">
-                <button type="button" class="add-btn addSection"><img src="/add.png" width="30" height="30" alt="add"></button>
-                <button type="button" class="delete-btn deleteSection"><img src="/delete.svg" width="30" height="30" alt="delete"></button>
-            </div>
-            <div class="section" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
-                <input
-                    type="text"
-                    name="heading"
-                    class="form-input"
-                    placeholder="Title"
-                />
-                <textarea
-                    name="content"
-                    class="form-textarea summernote-section"
-                    placeholder="Message"
-                ></textarea>
-            </div>
-        `;
+    <div class="header">
+      <button type="button" class="swap-btn swapTop">
+        <img src="/swapup.svg" width="30" height="30" alt="swap top" />
+      </button>
+      <button type="button" class="add-btn addSection">
+        <img src="/add.png" width="30" height="30" alt="add" />
+      </button>
+      <button type="button" class="delete-btn deleteSection">
+        <img src="/delete.svg" width="30" height="30" alt="delete" />
+      </button>
+    
+      <button type="button" class="swap-btn swapBottom">
+        <img src="/swapdown.svg" width="30" height="30" alt="swap bottom" />
+      </button>
+    </div>
+    <div class="section" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
+      <input
+        type="text"
+        name="heading"
+        class="form-input"
+        placeholder="Title"
+      />
+      <textarea
+        name="content"
+        class="form-textarea summernote-section"
+        placeholder="Message"
+      ></textarea>
+    </div>
+  `;
 
     formSections.appendChild(newSection);
 
-    // Attach event listeners to the new buttons
+    // Reattach event listeners to the new buttons
     attachAddSectionListener(newSection.querySelector(".addSection"));
     attachDeleteSectionListener(newSection.querySelector(".deleteSection"));
+    attachSwapTopListener(newSection.querySelector(".swapTop"));
+    attachSwapBottomListener(newSection.querySelector(".swapBottom"));
+
+    // Initialize Summernote for the new textarea
+    $(newSection.querySelector(".summernote-section")).summernote({
+      placeholder: "Enter Section here...",
+      tabsize: 2,
+      height: "30vh",
+    });
   }
 
   // Function to attach event listener to "+" buttons
@@ -187,19 +207,45 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Function to attach event listener to "Swap Top" buttons
+  function attachSwapTopListener(button) {
+    button.addEventListener("click", function () {
+      const currentSection = button.closest(".section-item");
+      const previousSection = currentSection.previousElementSibling;
+      if (previousSection) {
+        formSections.insertBefore(currentSection, previousSection);
+      }
+    });
+  }
+
+  // Function to attach event listener to "Swap Bottom" buttons
+  function attachSwapBottomListener(button) {
+    button.addEventListener("click", function () {
+      const currentSection = button.closest(".section-item");
+      const nextSection = currentSection.nextElementSibling;
+      if (nextSection) {
+        formSections.insertBefore(nextSection, currentSection);
+      }
+    });
+  }
+
+  // Event listener for canceling the delete action
   document.getElementById("cancel-delete").addEventListener("click", () => {
     document.getElementById("delete-confirmation-modal").style.display = "none";
   });
+
+  // Event listener for confirming the delete action
   document.getElementById("confirm-delete").addEventListener("click", () => {
+    const sectionToDelete = document
+      .querySelector(".deleteSection")
+      .closest(".section-item");
+    sectionToDelete.remove();
     document.getElementById("delete-confirmation-modal").style.display = "none";
-    document.querySelector(".deleteSection").closest(".section-item").remove();
   });
 
   // Attach listeners to the initial "+" and "-" buttons
-  formSections
-    .querySelectorAll(".addSection")
-    .forEach((button) => attachAddSectionListener(button));
-  formSections
-    .querySelectorAll(".deleteSection")
-    .forEach((button) => attachDeleteSectionListener(button));
+  attachAddSectionListener(document.querySelector(".addSection"));
+  attachDeleteSectionListener(document.querySelector(".deleteSection"));
+  attachSwapTopListener(document.querySelector(".swapTop"));
+  attachSwapBottomListener(document.querySelector(".swapBottom"));
 });
