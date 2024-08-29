@@ -691,6 +691,18 @@ const deleteComment = async (req, res) => {
 const createLike = async (req, res) => {
   const { comment_id } = req.params;
   try {
+
+    const alreadyLiked=await blogLikeModel.findOne({
+      where:{
+        comment_id:comment_id,
+        user_id:req?.user?.id
+      }
+    })
+
+    if(alreadyLiked){
+      return res.status(400).json({err:'Already Liked'})
+    }
+
     const createLike = await blogLikeModel.create({
       comment_id: comment_id,
       user_id: req?.user?.id,
