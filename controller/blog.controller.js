@@ -669,9 +669,11 @@ const deleteComment = async (req, res) => {
       return res.status(404).json({ err: "Blog not-found" });
     }
     const findComment = await blogCommentModel.findOne({
-      id: comment_id,
-      blog_id: id,
-      user_id: req.user?.id,
+      where: {
+        id: comment_id,
+        blog_id: id,
+        user_id: req.user?.id,
+      },
     });
 
     if (!findComment) {
@@ -691,16 +693,15 @@ const deleteComment = async (req, res) => {
 const createLike = async (req, res) => {
   const { comment_id } = req.params;
   try {
+    const alreadyLiked = await blogLikeModel.findOne({
+      where: {
+        comment_id: comment_id,
+        user_id: req?.user?.id,
+      },
+    });
 
-    const alreadyLiked=await blogLikeModel.findOne({
-      where:{
-        comment_id:comment_id,
-        user_id:req?.user?.id
-      }
-    })
-
-    if(alreadyLiked){
-      return res.status(400).json({err:'Already Liked'})
+    if (alreadyLiked) {
+      return res.status(400).json({ err: "Already Liked" });
     }
 
     const createLike = await blogLikeModel.create({
@@ -819,9 +820,9 @@ const getAllSavedBlogs = async (req, res) => {
               model: userModel,
               foreignKey: "user_id",
               as: "created_by",
-              attributes:{
-                exclude:['password']
-              }
+              attributes: {
+                exclude: ["password"],
+              },
             },
           ],
         },
