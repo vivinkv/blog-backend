@@ -47,7 +47,7 @@
       <li>
         <a
           href="/admin/career"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500  w-32 max-md:w-10 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 w-32 max-md:w-10 px-3 py-2 rounded-lg"
         >
           <img src="/career.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -135,17 +135,6 @@
 
           <td class="py-2 px-4 space-x-2 border border-gray-200">
             <div class="flex justify-center gap-x-5 max-xl:w-52">
-              <button
-                class="duplicate-btn bg-[#333333] p-2 rounded hover:text-blue-800"
-                data-title="<%= data[i].dataValues.title%>"
-                data-id="<%= data[i].dataValues.id%>"
-              >
-                <img
-                  src="/duplicate.svg"
-                  class="w-7 h-7"
-                  alt="duplicate icon"
-                />
-              </button>
               <a
                 href="/admin/dashboard/forums/update/<%= data[i].dataValues.id %>"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"

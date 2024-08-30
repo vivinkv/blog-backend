@@ -50,11 +50,10 @@ const getAllForums = async (req, res) => {
 };
 
 const getForumDetail = async (req, res) => {
-
- const {id}=req.params;
+  const { id } = req.params;
 
   try {
-    const findForum = await forumModel.findByPk(id,{
+    const findForum = await forumModel.findByPk(id, {
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -83,16 +82,15 @@ const getForumDetail = async (req, res) => {
       ],
     });
 
-    if(!findForum){
-      return res.status(404).json({err:'Forum not-found'})
+    if (!findForum) {
+      return res.status(404).json({ err: "Forum not-found" });
     }
 
-    res.status(200).json({ data: findForum.dataValues});
+    res.status(200).json({ data: findForum.dataValues });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
-
 
 const createForum = async (req, res) => {
   const { title, description } = req.body;
@@ -131,17 +129,11 @@ const updateForum = async (req, res) => {
       return res.status(404).json({ err: "forum not-found" });
     }
 
-    const updateForum = await forumModel.update(
-      {
-        title: req?.body?.title,
-        description: req?.body?.description,
+    const updateForum = await forumModel.update(req?.body, {
+      where: {
+        id: id,
       },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
+    });
 
     return res.status(200).json({ msg: "Updated Successfully" });
   } catch (error) {
@@ -187,7 +179,7 @@ const createReply = async (req, res) => {
 };
 
 const updateReply = async (req, res) => {
-  const { forum_id,reply_id } = req.params;
+  const { forum_id, reply_id } = req.params;
   const { reply } = req.body;
   try {
     const findForumReply = await forumReplyModel.findByPk(reply_id);
@@ -201,7 +193,7 @@ const updateReply = async (req, res) => {
       },
       {
         where: {
-          id:reply_id
+          id: reply_id,
         },
       }
     );
@@ -212,7 +204,7 @@ const updateReply = async (req, res) => {
 };
 
 const deleteReply = async (req, res) => {
-  const { reply_id,forum_id } = req.params;
+  const { reply_id, forum_id } = req.params;
   try {
     const findForumReply = await forumReplyModel.findByPk(reply_id);
 
@@ -257,7 +249,6 @@ const deleteReply = async (req, res) => {
 //       user_id:req?.user?.id,
 //       forum_id:forum_id
 //     })
-    
 
 //   } catch (error) {
 //     res.status(500).json({err:error.message})

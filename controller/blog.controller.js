@@ -719,17 +719,17 @@ const createLike = async (req, res) => {
 
 const deleteLike = async (req, res) => {
   const { comment_id, like_id } = req.params;
-  console.log({id:like_id});
+  console.log({ id: like_id });
   try {
-    const findLike=await blogLikeModel.findOne({
-      where:{
-        id:like_id,
-        comment_id:comment_id,
-        user_id:req?.user?.id
-      }
-    })
-    if(!findLike){
-      return res.status(404).json({err:'Like not-found'})
+    const findLike = await blogLikeModel.findOne({
+      where: {
+        id: like_id,
+        comment_id: comment_id,
+        user_id: req?.user?.id,
+      },
+    });
+    if (!findLike) {
+      return res.status(404).json({ err: "Like not-found" });
     }
     await findLike.destroy();
     res.status(200).json({ msg: "Deleted Successfully" });
@@ -919,13 +919,24 @@ const createFavourite = async (req, res) => {
 const deleteFavourite = async (req, res) => {
   const { id, favourite_id } = req.params;
   try {
-    await blogLikeModel.destroy({
+    const findBlog = await blogModel.findByPk(id);
+
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+    const favourite = await blogFavouriteModel.findOne({
       where: {
-        blog_id: id,
         id: favourite_id,
+        blog_id: id,
         user_id: req?.user?.id,
       },
     });
+    if (!favourite) {
+      return res.status(404).json({ err: "Not-found" });
+    }
+
+    await favourite.destroy();
+
     res.status(200).json({ msg: "Deleted Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
@@ -933,15 +944,15 @@ const deleteFavourite = async (req, res) => {
 };
 
 const addTopics = async (req, res) => {
-  const {id}=req.params;
+  const { id } = req.params;
   const { topics } = req.body;
 
   const topicsParse = JSON.parse(topics);
 
   for (const topic of topicsParse) {
-    const addTopic=await blogTopicModel.create({
-      name:topic.name,
-      blog_id:id
+    const addTopic = await blogTopicModel.create({
+      name: topic.name,
+      blog_id: id,
     });
   }
 
