@@ -13,7 +13,39 @@
   <body>
     <div class="container">
       <!-- Sidebar -->
-      <%- include('../components/sidenav') %>
+      <aside id="sidebar">
+        <div class="logo">
+          <img src="/logo.png" alt="logo" />
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="/admin/dashboard" class="nav-link">
+                <img src="/users.svg" alt="users" />
+                <span class="nav-text">Users</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/dashboard/blogs" class="nav-link ">
+                <img src="/blogs.svg" alt="blogs" />
+                <span class="nav-text">Blogs</span>
+              </a>
+            </li>
+            <li>
+                <a href="/admin/dashboard/forums" class="nav-link">
+                  <img src="/forum.svg"  alt="forums" />
+                  <span class="nav-text">Forum</span>
+                </a>
+              </li>
+              <li>
+                <a href="/admin/career" class="nav-link active">
+                  <img src="/career.svg"  alt="forums" />
+                  <span class="nav-text">Career</span>
+                </a>
+              </li>
+          </ul>
+        </nav>
+      </aside>
 
       <main>
         <button id="toggle-button">
@@ -76,6 +108,42 @@
             <small id="titleError"> * Title </small>
           </div>
 
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+              align-items: center;
+              gap: 3rem;
+              padding-bottom: 2rem;
+            "
+          >
+            <div>
+              <label for="title" class="form-label">Last Date to Apply</label>
+              <input type="date" id="last-date" class="styled-date-input" />
+            </div>
+            <div>
+              <label for="expiry-date" class="form-label">Expiry Date</label>
+              <input type="date" id="expiry-date" class="styled-date-input" />
+            </div>
+            <div>
+              <label for="expiry-date" id="expiry-date-error" style="display: none;" >Expiry Date</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="title" class="form-label">Company Name</label>
+            <input
+              type="text"
+              name="title"
+              id="company_name"
+              class="form-input"
+              required
+              placeholder="Enter Company"
+            />
+            <small id="titleError"> * Title </small>
+          </div>
+
           <div class="form-group">
             <label for="shortdescription" class="form-label"
               >Job Description</label
@@ -89,7 +157,7 @@
           </div>
           <div class="form-group">
             <label for="top-description" class="form-label"
-              >Responsibilities</label
+              >Responsibilities (Optional)</label
             >
             <textarea
               id="responsibilities"
@@ -99,7 +167,7 @@
           </div>
           <div class="form-group">
             <label for="bottom-description" class="form-label"
-              >Requirements</label
+              >Requirements (Optional)</label
             >
             <textarea
               id="requirements"
@@ -118,23 +186,23 @@
             ></textarea>
           </div>
           <div class="form-action">
-            <div style="display: flex; align-items: center">
-                <input type="date" id="last-date" class="styled-date-input" />
-
-              <label for="is_published" class="checkbox-label">Last Date</label>
+            <div style="display: flex; align-items: center;gap: 10px;">
+              
+              <input type="checkbox" id="active" class="styled-checkbox" />
+              <label for="title" style="font-weight: 600;color: #4a5568;">Active</label>
             </div>
             <button type="button" id="submitbtn" class="form-button">
               Create
             </button>
-            <div id="alertMessage" class="alert-message" style="display: none">
-              Job Created Successfully
-            </div>
+           
           </div>
           <div id="alertMessage" class="alert-message" style="display: none">
-             Created Successfully
+            Job Created Successfully
           </div>
         </form>
+      
       </main>
+      
     </div>
 
     <!-- Modal -->

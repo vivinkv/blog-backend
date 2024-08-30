@@ -11,6 +11,7 @@ const userRoute = require("./routes/user.route");
 const blogRoute = require("./routes/blog.route");
 const adminRoute = require("./routes/admin.route");
 const forumRoute = require("./routes/forum.route");
+const careerRoute = require("./routes/career.route");
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -28,6 +29,7 @@ const blogReplyModel = require("./models/blogReply.model");
 const blogSaveModel = require("./models/blogSave.model");
 const blogTopicModel = require("./models/blogTopics.model");
 const blogFavouriteModel = require("./models/blogFavourite");
+const jobModel = require("./models/career/job.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -104,8 +106,14 @@ blogSectionModel.belongsTo(blogModel, {
   as: "sections",
 });
 
-blogModel.hasMany(blogFavouriteModel,{foreignKey:'blog_id',as:'favourite'});
-blogFavouriteModel.belongsTo(blogModel,{foreignKey:'blog_id',as:'favourite'});
+blogModel.hasMany(blogFavouriteModel, {
+  foreignKey: "blog_id",
+  as: "favourite",
+});
+blogFavouriteModel.belongsTo(blogModel, {
+  foreignKey: "blog_id",
+  as: "favourite",
+});
 
 blogModel.hasMany(blogCommentModel, { foreignKey: "blog_id", as: "comments" });
 blogCommentModel.belongsTo(blogModel, {
@@ -149,11 +157,18 @@ blogReplyModel.belongsTo(userModel, {
   as: "replied_by",
 });
 
-blogModel.hasMany(blogSaveModel, { foreignKey: "blog_id",onDelete: 'SET NULL' , as: "saved" });
+blogModel.hasMany(blogSaveModel, {
+  foreignKey: "blog_id",
+  onDelete: "SET NULL",
+  as: "saved",
+});
 blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
 
 blogModel.hasMany(blogTopicModel, { foreignKey: "blog_id", as: "tags" });
 blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
+
+userModel.hasMany(jobModel,{foreignKey:'deleted_by',as:'deleted_user'});
+jobModel.belongsTo(userModel,{foreignKey:'deleted_by',as:'deleted_user'})
 
 //forum
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
@@ -208,9 +223,9 @@ app.get("/", async (req, res) => {
           as: "sections",
         },
         {
-          model:blogFavouriteModel,
-          foreignKey:'blog_id',
-          as:'favourite'
+          model: blogFavouriteModel,
+          foreignKey: "blog_id",
+          as: "favourite",
         },
         {
           model: blogCommentModel,
@@ -302,6 +317,7 @@ app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
 
 app.get("/:id", async (req, res) => {
+  console.log(req?.user);
   try {
     const { id } = req.params;
     const blogDetail = await blogModel.findByPk(id, {
@@ -335,9 +351,9 @@ app.get("/:id", async (req, res) => {
           as: "sections",
         },
         {
-          model:blogFavouriteModel,
-          foreignKey:'blog_id',
-          as:'favourite'
+          model: blogFavouriteModel,
+          foreignKey: "blog_id",
+          as: "favourite",
         },
         {
           model: blogCommentModel,
@@ -406,6 +422,7 @@ app.get("/:id", async (req, res) => {
 });
 app.use("/admin", adminRoute);
 app.use("/api/forum", forumRoute);
+app.use("/api/career", careerRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig

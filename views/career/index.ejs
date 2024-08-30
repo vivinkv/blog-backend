@@ -24,7 +24,7 @@
       <li>
         <a
           href="/admin/dashboard/blogs"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500  w-32 max-md:w-10 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 w-32 max-md:w-10 px-3 py-2 rounded-lg"
         >
           <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -100,7 +100,6 @@
     <div class="flex justify-between my-5">
       <h1 class="text-3xl font-bold"><%= title %></h1>
       <div class="flex gap-5">
-       
         <a
           href="/admin/career/create"
           class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
@@ -119,13 +118,16 @@
             Description
           </th>
            -->
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[30rem]">
-            Description
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
+            Active
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
             Last Date
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
+            Expiry Date
+          </th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[20rem]">
             Action
           </th>
         </tr>
@@ -139,21 +141,29 @@
               <%= data[i].dataValues.title %>
             </a>
           </td>
-         
-          
-        
-       <td class="py-2 px-4 text-blue-900 border border-gray-200">
-         <div class="text-ellipsis overflow-hidden">
-              <%= data[i].dataValues.description %>
-             </div>
-        </td> 
-   
-        
-      <td class="py-2 px-4 text-blue-900 border border-gray-200">
-         <div class="text-ellipsis overflow-hidden">
+
+          <td class="py-2 px-4 text-blue-900 border border-gray-200">
+            <a
+              href="/admin/career?id=<%= data[i].dataValues.id %>&active=<%= data[i].dataValues.active %>"
+              id="published-btn"
+              class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.active ? 'bg-green-500' : 'bg-red-500' %> rounded"
+              data-id="<%= data[i].dataValues.active %>"
+              data-publish="<%= data[i].dataValues.active %>"
+            >
+              <%= data[i].dataValues.active ? 'Active' : 'In Active' %>
+            </a>
+          </td>
+
+          <td class="py-2 px-4 text-blue-900 border border-gray-200">
+            <div class="text-ellipsis overflow-hidden">
               <%= data[i].dataValues.last_date %>
-             </div>
-        </td> 
+            </div>
+          </td>
+          <td class="py-2 px-4 text-blue-900 border border-gray-200">
+            <div class="text-ellipsis overflow-hidden">
+              <%= data[i].dataValues.expiry_date %>
+            </div>
+          </td>
           <td class="py-2 px-4 space-x-2 border border-gray-200">
             <div class="flex justify-center gap-x-5 max-xl:w-52">
               <a
@@ -163,7 +173,6 @@
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
               </a>
 
-              
               <a
                 href="javascript:void(0);"
                 data-id="<%= data[i].dataValues.id %>"
@@ -172,7 +181,6 @@
               >
                 <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
               </a>
-              
             </div>
           </td>
         </tr>
@@ -190,8 +198,8 @@
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
     <p class="text-gray-600 mb-6">
-      Do you really want to delete the blog:
-      <span class="font-bold" id="blog-title">blog</span> ?
+      Do you really want to delete the Job Post:
+      <span class="font-bold" id="blog-title">Career</span> ?
     </p>
     <div class="flex justify-end gap-4">
       <button
@@ -245,8 +253,6 @@
 </div>
 
 <script>
- 
-  
   // Delete Confirmation Popup Logic
   const deleteLinks = document.querySelectorAll(".delete-link");
   const confirmationPopup = document.getElementById("delete-confirmation");
@@ -277,9 +283,7 @@
   cancelDeleteBtn.addEventListener("click", () => {
     confirmationPopup.classList.add("hidden");
   });
-  
 </script>
-
 
 <script>
   document.getElementById("filter").addEventListener("click", () => {
