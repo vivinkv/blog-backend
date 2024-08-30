@@ -195,10 +195,26 @@ const getBlogDetail = async (req, res) => {
         },
       ],
     });
+    const isBlogSaved = await blogSaveModel.findOne({
+      where: {
+        blog_id: id,
+        user_id: req?.user?.id,
+      },
+    });
+    const isLiked = await blogFavouriteModel.findOne({
+      where: {
+        blog_id: id,
+        user_id: req?.user?.id,
+      },
+    });
     if (!blog) {
       return res.status(404).json({ err: "Blog notfound" });
     }
-    res.json({ data: blog.dataValues });
+    res.json({
+      data: blog.dataValues,
+      isSaved: isBlogSaved ? true : false,
+      isLiked: isLiked ? true : false,
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
