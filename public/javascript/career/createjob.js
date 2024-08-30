@@ -28,6 +28,7 @@ document.getElementById("submitbtn").addEventListener("click", async () => {
   const expiryDate = document.getElementById("expiry-date").value;
   const active=document.getElementById('active').checked;
   const company_name=document.getElementById('company_name').value;
+  const salary=document.getElementById('salary').value;
 
   // Check if the expiry date is earlier than the last date to apply
   if (new Date(expiryDate) < new Date(lastDate)) {
@@ -48,7 +49,8 @@ document.getElementById("submitbtn").addEventListener("click", async () => {
     last_date: lastDate,
     expiry_date: expiryDate,
     company_name:company_name,
-    active:active
+    active:active,
+    salary:salary
   };
 
   console.log(data);

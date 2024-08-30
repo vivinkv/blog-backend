@@ -46,7 +46,7 @@
       <li>
         <a
           href="/admin/career"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 md:w-32 px-3 py-2 rounded-lg"
         >
           <img src="/career.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -111,20 +111,21 @@
     <table class="min-w-full bg-white border rounded-lg shadow-lg">
       <thead class="bg-blue-100">
         <tr>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[25rem]">Title</th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">Title</th>
           <!--
          
           <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
             Description
           </th>
            -->
+           <th class="py-2 px-4 text-left text-blue-900 min-w-[5rem]">Salary</th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
             Active
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[7rem]">
             Last Date
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[7rem]">
             Expiry Date
           </th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[20rem]">
@@ -141,6 +142,18 @@
               <%= data[i].dataValues.title %>
             </a>
           </td>
+          
+              <% if (data[i].dataValues.salary) { %>
+            <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+              ₹<%= data[i].dataValues.salary %>
+            </td>
+            <% }else{ %>
+            <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+              <img src="/close.png" alt="cross icon" class="h-10 w-10" />
+            </td>
+            <% } %>
+              
+            
 
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <a

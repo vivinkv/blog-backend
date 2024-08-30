@@ -27,6 +27,7 @@ document.getElementById("submitbtn").addEventListener("click", async () => {
   const expiryDate = document.getElementById("expiry-date").value;
   const active = document.getElementById("active").checked;
   const company_name = document.getElementById("company_name").value;
+  const salary=document.getElementById('salary').value;
 
   if (new Date(expiryDate) < new Date(lastDate)) {
     document.getElementById("expiry-date-error").style.display = "block";
@@ -48,6 +49,7 @@ document.getElementById("submitbtn").addEventListener("click", async () => {
     expiry_date: expiryDate,
     company_name: company_name,
     active: active,
+    salary:salary
   };
 
   console.log(data);

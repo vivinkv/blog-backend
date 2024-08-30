@@ -39,6 +39,7 @@ const createJob = async (req, res) => {
     expiry_date,
     company_name,
     active,
+    salary
   } = req.body;
 
   console.log(req.body);
@@ -59,6 +60,7 @@ const createJob = async (req, res) => {
       expiry_date: expiry_date,
       company_name: company_name,
       active: active,
+      salary:salary
     });
     res.status(201).json({ msg: "Created Successfully" });
   } catch (error) {

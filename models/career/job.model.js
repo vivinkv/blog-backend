@@ -61,6 +61,10 @@ const jobModel = sequelizeConfig.define(
       allowNull: true,
       defaultValue: "null",
     },
+    salary:{
+      type: DataTypes.DECIMAL(10,2),
+      allowNull: true,
+    }
   },
   {
     freezeTableName: true,
