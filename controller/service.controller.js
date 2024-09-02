@@ -67,6 +67,7 @@ const getServiceDetail = async (req, res) => {
 
 const createService = async (req, res) => {
   const {
+    service_name,
     title,
     is_published,
     premium,
@@ -94,6 +95,7 @@ const createService = async (req, res) => {
 
     // Create the blog entry in the serviceModel
     const createService = await serviceModel.create({
+      service_name:service_name,
       title: title,
       description: top_description,
       is_published: is_published,
@@ -195,6 +197,7 @@ const getUpdateService = async (req, res) => {
 //update existing blog
 const updateService = async (req, res) => {
   const {
+    service_name,
     title,
     premium,
     short_description,
@@ -287,6 +290,7 @@ const updateService = async (req, res) => {
     // Update the service details without changing the banner
     const updateService = await serviceModel.update(
       {
+        service_name,
         title,
         description: top_description,
         short_description,

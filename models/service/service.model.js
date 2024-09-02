@@ -75,6 +75,11 @@ const serviceModel = sequelizeConfig.define(
       allowNull: false,
       defaultValue: "user",
     },
+    service_name:{
+      type:DataTypes.STRING,
+      allowNull:true,
+      defaultValue:'null'
+    }
   },
   {
     timestamps: true,

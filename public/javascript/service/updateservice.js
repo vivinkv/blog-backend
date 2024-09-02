@@ -18,6 +18,7 @@ document
   .getElementById("submitbtn")
   .addEventListener("click", async function (e) {
     e.preventDefault();
+    const service_name=document.getElementById('service_name').value;
     const title = document.getElementById("title").value;
     const shortDescription = document.getElementById("shortdescription").value;
     const content = $("#summernote").summernote("code");
@@ -55,6 +56,7 @@ document
           'Content-Type':'application/json',
         },
         body: JSON.stringify({
+          service_name:service_name,
           title: title,
           description: top_description,
           top_description: top_description,

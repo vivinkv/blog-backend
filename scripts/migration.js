@@ -5,9 +5,10 @@ const queryInterface = sequelizeConfig.getQueryInterface();
 
 const addColumn = async () => {
 
-  await queryInterface.addColumn("jobs", "salary", {
-    type: DataTypes.DECIMAL(10,2),
+  await queryInterface.addColumn("services", "service_name", {
+    type: DataTypes.STRING,
     allowNull: true, 
+    defaultValue:'null'
   });
 };
 

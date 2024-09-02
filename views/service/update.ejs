@@ -104,6 +104,19 @@
         </div>
         <form action="" class="form-container">
           <div class="form-group">
+            <label for="title" class="form-label">Service Name</label>
+            <input
+              type="text"
+              name="title"
+              id="service_name"
+              required
+              value="<%= data.service_name %>"
+              class="form-input"
+              placeholder="Enter Service Name"
+            />
+            <small id="titleError"> * Title </small>
+          </div>
+          <div class="form-group">
             <label for="title" class="form-label">Title</label>
             <input
               type="text"
