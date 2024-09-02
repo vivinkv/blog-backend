@@ -1,4 +1,4 @@
-<%- include('wrapper/header') %>
+<%- include('../wrapper/header') %>
 
 <!-- Sidebar -->
 <aside
@@ -24,7 +24,7 @@
       <li>
         <a
           href="/admin/dashboard/blogs"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 max-md:w-10 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500  w-32 max-md:w-10 px-3 py-2 rounded-lg"
         >
           <img src="/blogs.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -46,7 +46,7 @@
       <li>
         <a
           href="/admin/career"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 w-32 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500  w-32 px-3 py-2 rounded-lg"
         >
           <img src="/career.svg"  class="h-7 w-7" alt="career" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -57,12 +57,11 @@
       <li>
         <a
           href="/admin/services"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 w-32 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 bg-gray-300 w-32 px-3 py-2 rounded-lg"
         >
           <img src="/career.svg"  class="h-7 w-7" alt="career" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
-            >Services</span
-          >
+            >Services
         </a>
       </li>
     </ul>
@@ -148,7 +147,7 @@
         </button>
 
         <a
-          href="/admin/dashboard/blogs/create"
+          href="/admin/services/create"
           class="w-16 bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-red-400 flex justify-center"
         >
           <img src="/addblog.png" class="h-6 w-6" alt="add" />
@@ -158,9 +157,6 @@
     <table class="min-w-full bg-white border rounded-lg shadow-lg">
       <thead class="bg-blue-100">
         <tr>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">
-            Picture
-          </th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
           <!--
          
@@ -183,33 +179,16 @@
         <% if (data.length > 0) { %> <% for (let i = 0; i < data.length; i++) {
         %>
         <tr class="border border-gray-200">
-          <td class="py-2 px-4 w-24 border border-gray-200 max-w-72">
-            <div class="flex">
-              <img
-                src="<%= data[i]?.dataValues?.banner?.dataValues?.path %>"
-                alt="<%= data[i]?.dataValues?.banner?.dataValues?.originalname %>"
-                class="min-h-46 min-w-46 object-cover rounded"
-              />
-            </div>
-          </td>
           <td class="py-2 px-4 text-blue-900 border border-gray-200 w-72">
             <a href="" class="text-ellipsis">
-              <%= data[i].dataValues.title?.slice(0, 180) %>...
+              <%= data[i].dataValues.title %>
             </a>
           </td>
-          <!--
-          
         
-       <td class="py-2 px-4 text-blue-900 border border-gray-200">
-         <div class="text-ellipsis overflow-hidden">
-              <%= data[i].dataValues.short_description.slice(0, 250) %>...
-             </div>
-        </td> 
-      -->
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
-                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?publish=<%= data[i].dataValues.is_published%>"
+                href="/admin/services/<%= data[i].dataValues.id %>/update?publish=<%= data[i].dataValues.is_published%>"
                 id="published-btn"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white <%= data[i].dataValues.is_published ? 'bg-green-500' : 'bg-red-500' %> rounded"
                 data-id="<%= data[i].dataValues.id %>"
@@ -223,7 +202,7 @@
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
-                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?premium=<%= data[i].dataValues.premium%>"
+                href="/admin/services/<%= data[i].dataValues.id %>/update?premium=<%= data[i].dataValues.premium%>"
                 id="premium-btn"
                 data-premium="<%= data[i].dataValues.premium%>"
                 class="inline-flex items-center px-3 py-1 text-sm font-medium text-white rounded <%= data[i].dataValues.premium ? 'bg-yellow-500' : 'bg-gray-500' %>"
@@ -245,23 +224,10 @@
                   alt="duplicate icon"
                 />
               </button>
-              <a
-                href="/admin/dashboard/blog/<%= data[i].dataValues.id%>/comments"
-                class=" bg-[#f5f5f5] p-2 rounded relative hover:text-blue-800"
-                data-title="<%= data[i].dataValues.title%>"
-                data-id="<%= data[i].dataValues.id%>"
-              >
-                <img src="/comment.svg" class="w-7 h-7" alt="comment icon" />
-                <!-- Badge for comment count -->
-                <span
-                  class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2"
-                >
-                  <%= data[i].dataValues.comments?.length %>
-                </span>
-              </a>
+             
 
               <a
-                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>"
+                href="/admin/services/<%= data[i].dataValues.id %>/update"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"
               >
                 <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
@@ -294,8 +260,8 @@
   <div class="bg-white p-6 rounded-lg shadow-lg w-96">
     <h2 class="text-xl font-semibold mb-4">Are you sure?</h2>
     <p class="text-gray-600 mb-6">
-      Do you really want to delete the blog:
-      <span class="font-bold" id="blog-title">blog</span> ?
+      Do you really want to delete the Service:
+      <span class="font-bold" id="blog-title">Service</span> ?
     </p>
     <div class="flex justify-end gap-4">
       <button
@@ -384,7 +350,7 @@
     changeTitleModal.classList.remove("flex");
     window.location.href = `${
       window.location.origin
-    }/admin/dashboard/blogs/duplicate/${currentId}?title=${encodeURIComponent(
+    }/admin/services/duplicate/${currentId}?title=${encodeURIComponent(
       newTitle.value
     )}`;
   });
@@ -413,7 +379,7 @@
 
   confirmDeleteBtn.addEventListener("click", () => {
     if (deleteUrl) {
-      window.location.href = `/admin/dashboard/blogs/delete/${deleteUrl}`;
+      window.location.href = `/admin/services/${deleteUrl}/delete`;
     }
   });
 
@@ -425,4 +391,4 @@
     changeTitleModal.classList.add("hidden");
   });
 </script>
-<%- include('wrapper/footer') %>
+<%- include('../wrapper/footer') %>

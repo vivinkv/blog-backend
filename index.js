@@ -12,6 +12,7 @@ const blogRoute = require("./routes/blog.route");
 const adminRoute = require("./routes/admin.route");
 const forumRoute = require("./routes/forum.route");
 const careerRoute = require("./routes/career.route");
+const serviceRoute=require('./routes/service.route');
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -30,6 +31,8 @@ const blogSaveModel = require("./models/blogSave.model");
 const blogTopicModel = require("./models/blogTopics.model");
 const blogFavouriteModel = require("./models/blogFavourite");
 const jobModel = require("./models/career/job.model");
+const serviceModel = require("./models/service/service.model");
+const serviceSectionModel = require("./models/service/section.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -182,6 +185,12 @@ forumReplyModel.belongsTo(forumModel, {
 
 userModel.hasMany(forumReplyModel, { foreignKey: "user_id", as: "repliers" });
 forumReplyModel.belongsTo(userModel, { foreignKey: "user_id", as: "repliers" });
+
+userModel.hasMany(serviceModel,{foreignKey:'author',as:'service_created_by'});
+serviceModel.belongsTo(userModel,{foreignKey:'author',as:'service_created_by'});
+
+serviceModel.hasMany(serviceSectionModel,{foreignKey:'service_id',as:'service_sections'});
+serviceSectionModel.belongsTo(serviceModel,{foreignKey:'service_id',as:'service_sections'});
 
 app.get("/", async (req, res) => {
   try {
@@ -423,6 +432,7 @@ app.get("/:id", async (req, res) => {
 app.use("/admin", adminRoute);
 app.use("/api/forum", forumRoute);
 app.use("/api/career", careerRoute);
+app.use('/api/services',serviceRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig

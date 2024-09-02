@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Create Blog</title>
+    <title><%= title %></title>
     <link
       href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
       rel="stylesheet"
@@ -38,13 +38,13 @@
                 </a>
               </li>
               <li>
-                <a href="/admin/career" class="nav-link active">
+                <a href="/admin/career" class="nav-link">
                   <img src="/career.svg"  alt="forums" />
                   <span class="nav-text">Career</span>
                 </a>
               </li>
               <li>
-                <a href="/admin/services" class="nav-link">
+                <a href="/admin/services" class="nav-link active">
                   <img src="/career.svg"  alt="forums" />
                   <span class="nav-text">Services</span>
                 </a>
@@ -103,12 +103,10 @@
         <form action="" class="form-container">
           <div class="form-group">
             <label for="title" class="form-label">Title</label>
-            <input type="hidden" name="" id="id" value="<%= data.id %>">
             <input
               type="text"
               name="title"
               id="title"
-              value="<%= data.title %>"
               class="form-input"
               required
               placeholder="Enter title"
@@ -116,104 +114,94 @@
             <small id="titleError"> * Title </small>
           </div>
 
-          <div
-          style="
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 3rem;
-            padding-bottom: 2rem;
-          "
-        >
-          <div>
-            <label for="title" class="form-label">Last Date to Apply</label>
-            <input type="date" id="last-date" value="<%= data.last_date %>" class="styled-date-input" />
-          </div>
-          <div>
-            <label for="expiry-date" class="form-label">Expiry Date</label>
-            <input type="date" id="expiry-date" value="<%= data.expiry_date %>" class="styled-date-input" />
-          </div>
-          <div>
-            <label for="expiry-date" class="form-label">Salary</label>
-            <input type="text" id="salary" value="<%= data.salary %>" placeholder="₹ Enter Salary" class="styled-date-input" />
-          </div>
-        
-          
-        </div>
-        <div>
-          <label for="expiry-date" id="expiry-date-error" style="display: none;margin-bottom: 10px;">Expiry Date</label>
-        </div>
-     
-        <div class="form-group">
-          <label for="title" class="form-label">Company Name</label>
-          <input
-            type="text"
-            name="title"
-            id="company_name"
-            value="<%= data.company_name %>"
-            class="form-input"
-            required
-            placeholder="Enter Company"
-          />
-          <small id="titleError"> * Title </small>
-        </div>
-
           <div class="form-group">
             <label for="shortdescription" class="form-label"
-              >Job Description</label
+              >Short Description</label
             >
             <textarea
-              id="description"
+              id="shortdescription"
               class="form-textarea"
               required
-              placeholder="Job Description"
-            ><%= data.description %></textarea>
+              placeholder="Short Description"
+            ></textarea>
+            <small id="shortdescriptionError"> * Short Description </small>
           </div>
           <div class="form-group">
             <label for="top-description" class="form-label"
-              >Responsibilities</label
+              >Top Description</label
             >
             <textarea
-              id="responsibilities"
+              id="summernote-top"
               required
               class="form-textarea top_description_summernote"
-            ><%= data.responsibilities %></textarea>
+            ></textarea>
+            <small id="contentError"> * Content </small>
           </div>
+
+          <div class="form-group">
+            <label for="sections" class="form-label">Sections</label>
+            <div class="section-container" id="formSections">
+              <div class="section-item">
+                <div class="header">
+                  <button type="button" class="add-btn addSection">
+                    <img src="/add.png" width="30" height="30" alt="add" />
+                  </button>
+                </div>
+                <div
+                  class="section"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    width: 100%;
+                  "
+                >
+                  <input
+                    type="text"
+                    name="heading"
+                    class="form-input"
+                    placeholder="Title"
+                  />
+                  <textarea
+                    name="content"
+                    class="form-textarea summernote-section"
+                    placeholder="Message"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-group">
             <label for="bottom-description" class="form-label"
-              >Requirements</label
+              >Bottom Description</label
             >
             <textarea
-              id="requirements"
+              id="summernote-bottom"
               required
               class="form-textarea bottom_description_summernote"
-            ><%= data.requirements %></textarea>
-          </div>
-          <div class="form-group">
-            <label for="bottom-description" class="form-label"
-              >Benefits (Optional)</label
-            >
-            <textarea
-              id="benefits"
-              required
-              class="form-textarea bottom_description_summernote"
-            ><%= data.benefits %></textarea>
+            ></textarea>
+            <small id="contentError"> * Content </small>
           </div>
           <div class="form-action">
-           
-            <div style="display: flex; align-items: center;gap: 10px;">
-              
-              <input type="checkbox" id="active" class="styled-checkbox" <%= data.active ? 'checked':''  %>/>
-              <label for="title" style="font-weight: 600;color: #4a5568;" >Active</label>
+            <div style="display: flex; align-items: center">
+              <input
+                type="checkbox"
+                id="is_published"
+                class="styled-checkbox"
+              />
+              <label for="is_published" class="checkbox-label">Publish</label>
+            </div>
+            <div style="display: flex; align-items: center">
+              <input type="checkbox" id="premium" class="styled-checkbox" />
+              <label for="premium" class="checkbox-label">Premium</label>
             </div>
             <button type="button" id="submitbtn" class="form-button">
-              Update
+              Create
             </button>
-          
           </div>
           <div id="alertMessage" class="alert-message" style="display: none">
-            Updated Successfully
+            Blog Created Successfully
           </div>
         </form>
       </main>
@@ -237,6 +225,6 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-    <script src="/javascript/career/updatejob.js"></script>
+    <script src="/javascript/service/createservice.js"></script>
   </body>
 </html>

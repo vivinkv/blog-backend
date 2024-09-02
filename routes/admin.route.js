@@ -25,6 +25,7 @@ const checkFileType = require("../utils/checkFileType");
 const userModel = require("../models/user.model");
 const { getAllForums, createForum, getUpdateForum, updateForum, deleteForum } = require("../controller/forum.controller");
 const { getAllJobs, updateJob, createJob, deleteJob, getUpdateJob } = require("../controller/career.controller");
+const { getAllServices, createService, updateService, deleteService, getUpdateService, duplicateService } = require("../controller/service.controller");
 const storage = multer.diskStorage({
   destination: "./uploads",
   filename: (req, file, cb) => {
@@ -109,5 +110,15 @@ router.get('/career/:id',getUpdateJob);
 router.put('/career/:id',updateJob);
 router.get('/career/:id/delete',deleteJob);
 
+//service routes
+router.get('/services',getAllServices);
+router.get('/services/create',(req,res)=>{
+  res.render('service/create',{title:'Create Service'})
+});
+router.post('/services/create',createService);
+router.get('/services/:id/update',getUpdateService);
+router.put('/services/:id/update',updateService);
+router.get('/services/:id/delete',deleteService);
+router.get("/services/duplicate/:id", duplicateService);
 
 module.exports = router;

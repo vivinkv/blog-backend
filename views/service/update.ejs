@@ -35,7 +35,7 @@
               </a>
             </li>
             <li>
-                <a href="/admin/dashboard/forums" class="nav-link active">
+                <a href="/admin/dashboard/forums" class="nav-link ">
                   <img src="/forum.svg" alt="forums" />
                   <span class="nav-text">Forum</span>
                 </a>
@@ -47,7 +47,7 @@
                 </a>
               </li>
               <li>
-                <a href="/admin/services" class="nav-link">
+                <a href="/admin/services" class="nav-link active">
                   <img src="/career.svg" alt="career" />
                   <span class="nav-text">Services</span>
                 </a>
@@ -118,16 +118,122 @@
           </div>
 
           <div class="form-group">
-            <label for="content" class="form-label">Content</label>
+            <label for="content" class="form-label">Short Description</label>
             <input type="hidden" name="id" id="id" value="<%= data.id %>" />
-            <textarea id="description" required class="form-textarea">
-<%= data.description %></textarea
+            <textarea
+              id="shortdescription"
+              class="form-textarea"
+              required
+              placeholder="Meta Description"
+            >
+<%= data.short_description %></textarea
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="content" class="form-label">Top Description</label>
+            <textarea required class="form-textarea top_description_summernote">
+<%= data.top_description %></textarea
+            >
+            <small id="contentError"> * Content </small>
+          </div>
+
+          <div class="form-group">
+            <label for="content" class="form-label">Sections</label>
+            <div class="section-container" id="formSections">
+              <% if (data.service_sections && data.service_sections.length > 0) { %> <% for (let
+              i = 0; i < data.service_sections.length; i++) { %>
+              <div class="section-item">
+                <div class="header">
+                  <% if(i!=0){%>
+                  <button type="button" class="swap-btn swapTop">
+                  
+                    <img
+                      src="/swapup.svg"
+                      width="30"
+                      height="30"
+                      alt="swap top"
+                    />
+                  </button>
+                  <%}%>
+                  <button type="button" class="add-btn addSection">
+                    <img src="/add.png" width="30" height="30" alt="add" />
+                  </button>
+                  <% if(i!=0){%>
+
+                  <button type="button" id="" class="delete-btn deleteSection">
+                    <img
+                      src="/delete.svg"
+                      width="30"
+                      height="30"
+                      alt="delete"
+                    />
+                  </button>
+
+                  <%}%>
+                  <% if(i!=0){%>
+                  <button type="button" class="swap-btn swapBottom">
+                    <img
+                      src="/swapdown.svg"
+                      width="30"
+                      height="30"
+                      alt="swap bottom"
+                    />
+                  </button>
+                  <%}%>
+                </div>
+                <div
+                  class="section"
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                    width: 100%;
+                  "
+                >
+                  <input
+                    type="text"
+                    name="heading"
+                    value="<%= data.service_sections[i].dataValues.heading %>"
+                    class="form-input"
+                    placeholder="Title"
+                  />
+                  <textarea
+                    name="content"
+                    class="form-textarea summernote-section"
+                    placeholder="Message"
+                  >
+<%= data.service_sections[i].dataValues.content %></textarea
+                  >
+                </div>
+              </div>
+              <% } %> <% } %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="content" class="form-label">Bottom Description</label>
+            <textarea
+              id="summernote"
+              required
+              class="form-textarea bottom_description_summernote"
+            >
+<%= data.bottom_description %></textarea
             >
             <small id="contentError"> * Content </small>
           </div>
 
           <div class="form-action">
-           
+            <div style="display: flex; align-items: center">
+              <input type="checkbox" id="is_published" <%= data.is_published ?
+              'checked': '' %> class="styled-checkbox" />
+              <label for="is_published" class="checkbox-label">Publish</label>
+            </div>
+            <div style="display: flex; align-items: center">
+              <input type="checkbox" id="premium" <%= data.premium ? 'checked':
+              '' %> class="styled-checkbox" />
+              <label for="premium" class="checkbox-label">Premium</label>
+            </div>
             <button type="button" id="submitbtn" class="form-button">
               Update
             </button>
@@ -161,6 +267,6 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-    <script src="/javascript/updateforum.js"></script>
+    <script src="/javascript/service/updateservice.js"></script>
   </body>
 </html>
