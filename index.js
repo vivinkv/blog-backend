@@ -33,6 +33,7 @@ const blogFavouriteModel = require("./models/blogFavourite");
 const jobModel = require("./models/career/job.model");
 const serviceModel = require("./models/service/service.model");
 const serviceSectionModel = require("./models/service/section.model");
+const applicantModel = require("./models/career/applicant.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -191,6 +192,10 @@ serviceModel.belongsTo(userModel,{foreignKey:'author',as:'service_created_by'});
 
 serviceModel.hasMany(serviceSectionModel,{foreignKey:'service_id',as:'service_sections'});
 serviceSectionModel.belongsTo(serviceModel,{foreignKey:'service_id',as:'service_sections'});
+
+//career association
+jobModel.hasMany(applicantModel,{foreignKey:'job_id',as:'applications'});
+applicantModel.belongsTo(jobModel,{foreignKey:'job_id',as:'applications'});
 
 app.get("/", async (req, res) => {
   try {
