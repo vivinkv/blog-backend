@@ -31,32 +31,42 @@ async function fetchData() {
         });
         console.log(user);
       }
-      await blogModel.create({
-        id: blog.ID,
-        title: blog.Title || "null",
-        description: blog.Description || "null",
-        short_description: blog.MetaDescription || "null",
-        is_published: blog.PublishStatus,
-        publish_date: blog.PostedDate,
-        meta_title: blog.MetaTitle,
-        meta_description: blog.MetaDescription || "null",
-        author: user.dataValues.id,
-      });
+      const findBlog=await blogModel.findOne({
+        where:{
+            id:blog.ID
+        }
+      })
+      if(!findBlog){
+        await blogModel.create({
+            id: blog.ID,
+            title: blog.Title || "null",
+            description: blog.Description || "null",
+            short_description: blog.MetaDescription || "null",
+            is_published: blog.PublishStatus,
+            publish_date: blog.PostedDate,
+            meta_title: blog.MetaTitle,
+            meta_description: blog.MetaDescription || "null",
+            author: user.dataValues.id,
+          });
 
-      for (attachment of blog.Attachments) {
-        await bannerImageModel.create({
-          resource_id: attachment.ResourceId,
-          fieldname: attachment.FileType,
-          originalname: attachment.Filename,
-          encoding: attachment.PostedMemberId,
-          mimetype: attachment.PostedMemberId,
-          destination: attachment.Filename,
-          filename: attachment.Filename,
-          path: attachment.Filename,
-          size: attachment.ResourceId,
-          image_type: "attachment",
-        });
+          for (attachment of blog.Attachments) {
+            await bannerImageModel.create({
+              resource_id: attachment.ResourceId,
+              fieldname: attachment.FileType,
+              originalname: attachment.Filename,
+              encoding: attachment.PostedMemberId,
+              mimetype: attachment.PostedMemberId,
+              destination: attachment.Filename,
+              filename: attachment.Filename,
+              path: attachment.Filename,
+              size: attachment.ResourceId,
+              image_type: "attachment",
+            });
+          }
       }
+     
+
+     
     }
   } catch (error) {
     console.error("Error fetching data:", error);
