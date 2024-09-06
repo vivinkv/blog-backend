@@ -34,6 +34,7 @@ const jobModel = require("./models/career/job.model");
 const serviceModel = require("./models/service/service.model");
 const serviceSectionModel = require("./models/service/section.model");
 const applicantModel = require("./models/career/applicant.model");
+const menuModel = require("./models/menu/menu.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -196,6 +197,10 @@ serviceSectionModel.belongsTo(serviceModel,{foreignKey:'service_id',as:'service_
 //career association
 jobModel.hasMany(applicantModel,{foreignKey:'job_id',as:'applications'});
 applicantModel.belongsTo(jobModel,{foreignKey:'job_id',as:'applications'});
+
+menuModel.hasMany(menuModel, { foreignKey: 'parent_id', as: 'submenu' });
+menuModel.belongsTo(menuModel, { foreignKey: 'parent_id', as: 'parentMenu' });
+
 
 app.get("/", async (req, res) => {
   try {

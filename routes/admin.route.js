@@ -21,6 +21,29 @@ const {
 } = require("../controller/admin.controller");
 const multer = require("multer");
 
+const {
+  AllFooterDesktop,
+  AllFooterMobile,
+  AllMainDesktop,
+  AllMainMobile,
+  createFooterDesktop,
+  createFooterMobile,
+  createMainDesktop,
+  createMainMobile,
+  deleteFooterDesktop,
+  deleteFooterMobile,
+  deleteMainDesktop,
+  deleteMainMobile,
+  updateFooterDesktop,
+  updateFooterMobile,
+  updateMainDesktop,
+  updateMainMobile,
+  getMainDesktopChild,
+  getFooterDesktopDetail,
+  getFooterMobileDetail,
+  getMainMobileDetail
+} = require("../controller/menu.controller");
+
 const checkFileType = require("../utils/checkFileType");
 const userModel = require("../models/user.model");
 const { getAllForums, createForum, getUpdateForum, updateForum, deleteForum } = require("../controller/forum.controller");
@@ -120,5 +143,54 @@ router.get('/services/:id/update',getUpdateService);
 router.put('/services/:id/update',updateService);
 router.get('/services/:id/delete',deleteService);
 router.get("/services/duplicate/:id", duplicateService);
+
+
+// menu routes
+
+const iconStorage = multer.diskStorage({
+  destination: "./uploads/icons",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
+const iconUpload = multer({
+  storage: iconStorage,
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, (error, isValid, jsonError) => {
+      if (isValid) {
+        cb(null, true);
+      } else {
+        cb(error);
+      }
+    });
+  },
+});
+
+router.get('/menu',(req,res)=>{
+    res.render('menu/index',{title:'Menu'})
+})
+router.get('/menu/md',AllMainDesktop);
+router.post('/menu/md',iconUpload.single('icon'),createMainDesktop);
+router.get('/menu/md/:id',getMainDesktopChild);
+router.put('/menu/md/:id',iconUpload.single('icon'),updateMainDesktop);
+router.get('/menu/md/:id/delete',deleteMainDesktop);
+
+router.get('/menu/fd',AllFooterDesktop);
+router.post('/menu/fd',iconUpload.single('icon'),createFooterDesktop);
+router.get('/menu/fd/:id',getFooterDesktopDetail);
+router.put('/menu/fd/:id',iconUpload.single('icon'),updateFooterDesktop);
+router.get('/menu/fd/:id/delete',deleteFooterDesktop);
+
+router.get('/menu/mm',AllMainMobile);
+router.post('/menu/mm',iconUpload.single('icon'),createMainMobile);
+router.get('/menu/mm/:id',getMainMobileDetail);
+router.put('/menu/mm/:id',iconUpload.single('icon'),updateMainMobile);
+router.get('/menu/mm/:id/delete',deleteMainMobile);
+
+router.get('/menu/fm',AllFooterMobile);
+router.post('/menu/fm',iconUpload.single('icon'),createFooterMobile);
+router.get('/menu/fm/:id',getFooterMobileDetail);
+router.put('/menu/fm/:id',iconUpload.single('icon'),updateFooterMobile);
+router.get('/menu/fm/:id/delete',deleteFooterMobile);
 
 module.exports = router;

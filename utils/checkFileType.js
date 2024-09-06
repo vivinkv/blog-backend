@@ -1,7 +1,7 @@
 const path=require('path')
 
 function checkFileType(file, cb) {
-    const filetypes = /jpeg|jpg|png|gif/;
+    const filetypes = /jpeg|jpg|png|gif|svg/;
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = filetypes.test(file.mimetype);
   
@@ -11,6 +11,8 @@ function checkFileType(file, cb) {
       cb('Error: Images Only!');
     }
   }
+
+
 
 
   module.exports=checkFileType;

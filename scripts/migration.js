@@ -4,18 +4,23 @@ const sequelizeConfig = require("../config/sequelize.config");
 const queryInterface = sequelizeConfig.getQueryInterface();
 
 const addColumn = async () => {
-  await queryInterface.addConstraint('servicesection', {
-    fields: ['service_id'],
+  await queryInterface.addConstraint('menus', {
+    fields: ['parent_id'],
     type: 'foreign key',
-    name: 'servicesection_service_id_fkey',
+    name: 'menus_parent_id_fkey',
     references: {
-      table: 'services',
+      table: 'menus',
       field: 'id',
     },
-    onDelete: 'CASCADE', // or 'SET NULL' if you prefer
+    onDelete: 'CASCADE', 
     onUpdate: 'CASCADE',
   });
-  await queryInterface.addColumn("services", "service_name", {
+  // await queryInterface.addColumn('menus','link',{
+  //   type:DataTypes.STRING,
+  //   allowNull:true,
+  //   defaultValue:'/'
+  // })
+  await queryInterface.addColumn("menus", "parent_id", {
     type: DataTypes.STRING,
     allowNull: true, 
     defaultValue:'null'
@@ -25,8 +30,8 @@ const addColumn = async () => {
 
 
 const down=async()=>{
-  await queryInterface.removeConstraint('servicesection', 'servicesection_service_id_fkey');
-  await queryInterface.removeColumn('services','service_name');
+  await queryInterface.removeConstraint('menus', 'menus_parent_id_fkey');
+  await queryInterface.removeColumn('menus','parent_id');
 }
 
 down();
