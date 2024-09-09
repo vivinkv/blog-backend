@@ -4,7 +4,7 @@ const { AllFooterDesktop,AllFooterMobile,AllMainDesktop,AllMainMobile } = requir
 const { userAuth } = require('../middleware/auth.middleware');
 const router=express.Router();
 
-router.use(userAuth);
+// router.use(userAuth);
 router.get('/maindesktop',AllMainDesktop);
 router.get('/footerdesktop',AllFooterDesktop);
 router.get('/mainmobile',AllMainMobile);
