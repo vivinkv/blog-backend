@@ -446,7 +446,7 @@ app.get("/:id", async (req, res) => {
         premium: false,
       },
     });
-    const attachment=await bannerImageModel.findAll({
+    const attachments=await bannerImageModel.findAll({
       where:{
         blog_id:id
       }
@@ -454,6 +454,7 @@ app.get("/:id", async (req, res) => {
 
     res.json({
       data: blogDetail,
+      attachments:attachments
     });
   } catch (error) {
     res.json({ err: error });
