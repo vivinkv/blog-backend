@@ -195,6 +195,11 @@ const getBlogDetail = async (req, res) => {
         },
       ],
     });
+    const attachments=await bannerImageModel.findAll({
+      where:{
+        blog_id:id
+      }
+    })
     const isBlogSaved = await blogSaveModel.findOne({
       where: {
         blog_id: id,
@@ -212,6 +217,7 @@ const getBlogDetail = async (req, res) => {
     }
     res.json({
       data: blog.dataValues,
+      attachments:attachments,
       isSaved: isBlogSaved ? true : false,
       isLiked: isLiked ? true : false,
     });
