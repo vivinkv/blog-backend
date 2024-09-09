@@ -105,6 +105,7 @@ const updateMainDesktop = async (req, res) => {
 
   try {
     const findMenu = await menuModel.findByPk(id);
+    console.log('start');
 
     if (!findMenu) {
       return res.status(404).json({ err: "Menu not found" });
@@ -114,20 +115,29 @@ const updateMainDesktop = async (req, res) => {
 
     // Prepare update fields
     const updateData = {
-      title: title || findMenu.title,
-      tooltip: tooltip || findMenu.tooltip,
-      priority: priority || findMenu.priority,
-      link: link || findMenu.link,
+      title: title || findMenu.dataValues.title,
+      tooltip: tooltip || findMenu.dataValues.tooltip,
+      priority: priority || findMenu.dataValues.priority,
+      link: link || findMenu.dataValues.link,
+      icon:findMenu.dataValues.icon
     };
 
-    console.log(req.file);
+    console.log({file:req.file});
+    console.log(req.files);
+    console.log(updateData);
 
     if (req.file) {
       updateData.icon = `/uploads/icons/${req.file.filename}`;
     }
 
     // Update the model instance using the `update` method
-    await menuModel.update(updateData, {
+   const updateMenuModel= await menuModel.update({
+    title:title,
+    tooltip:tooltip,
+    priority:priority,
+    link:link,
+    icon:req?.file ? `/uploads/icons/${req?.file?.filename}` : findMenu.dataValues.icon
+   }, {
       where: { id },
     });
 
@@ -245,13 +255,14 @@ const createFooterDesktop = async (req, res) => {
 
 const updateFooterDesktop = async (req, res) => {
   const { id } = req.params;
-  const { title, tooltip, priority } = req.body;
+  const { title, tooltip, priority,link } = req.body;
 
   try {
     const updateData = {
       title: title,
       tooltip: tooltip,
       priority: priority,
+      link:link,
       menu: "fd",
     };
 
@@ -374,15 +385,20 @@ const createMainMobile = async (req, res) => {
 
 const updateMainMobile = async (req, res) => {
   const { id } = req.params;
-  const { title, tooltip, priority, parent_id } = req.body;
+  const { title, tooltip, priority,link } = req.body;
 
   try {
     const updateData = {
       title: title,
       tooltip: tooltip,
       priority: priority,
+      link:link,
       menu: "mm",
     };
+
+    if (req.file) {
+      updateData.icon = `/uploads/icons/${req.file.filename}`;
+    }
 
     await menuModel.update(updateData, {
       where: { id },
@@ -501,15 +517,20 @@ const createFooterMobile = async (req, res) => {
 
 const updateFooterMobile = async (req, res) => {
   const { id } = req.params;
-  const { title, tooltip, priority, parent_id } = req.body;
+  const { title, tooltip, priority, link} = req.body;
 
   try {
     const updateData = {
       title: title,
       tooltip: tooltip,
       priority: priority,
+      link:link,
       menu: "fm",
     };
+
+    if (req.file) {
+      updateData.icon = `/uploads/icons/${req.file.filename}`;
+    }
 
     await menuModel.update(updateData, {
       where: { id },

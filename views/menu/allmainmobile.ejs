@@ -371,27 +371,49 @@ modal.classList.remove('hidden');
 
   }
 
-document.getElementById('update-route').addEventListener('click',async()=>{
- const id=document.getElementById('edit-id').value;
- const titleField = document.querySelector('#edit-title').value;
-    const priorityField =document.querySelector('#edit-priority').value;
-    const linkField = document.querySelector('#edit-route-link').value;
-    const tooltipField = document.querySelector('#edit-tooltip').value;
-    const iconField = document.querySelector('#edit-file').files[0];
- const response=await fetch(`${window.location.origin}/admin/menu/mm/${id}`,{
-  method:'PUT',
-  headers:{
-    'Content-Type':'application/json'
-  },
-  body:JSON.stringify({title:titleField,priority:priorityField,link:linkField,tooltip:tooltipField,icon:iconField})
- })
- const result=await response.json();
- console.log(result);
- if(response.status==200){
-  document.querySelector('.route-form-modal-edit').classList.add('hidden'); 
-  window.location.href=window.location.href
- }
+  document.getElementById("update-route").addEventListener("click", async () => {
+  const id = document.getElementById("edit-id").value;
+  const titleField = document.querySelector("#edit-title").value;
+  const priorityField = document.querySelector("#edit-priority").value;
+  const linkField = document.querySelector("#edit-route-link").value;
+  const tooltipField = document.querySelector("#edit-tooltip").value;
+  const iconField = document.querySelector("#edit-file").files[0];
+
+  // Create a FormData object to handle both text fields and file upload
+  const formData = new FormData();
+  formData.append("title", titleField);
+  formData.append("priority", priorityField);
+  formData.append("link", linkField);
+  formData.append("tooltip", tooltipField);
+
+  // Append the file to formData if it exists
+  if (iconField) {
+    formData.append("icon", iconField);
+  }
+
+  try {
+    const response = await fetch(`${window.location.origin}/admin/menu/mm/${id}`, {
+      method: "PUT",
+      body: formData, // Use FormData directly as the body
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update the route.');
+    }
+
+    const result = await response.json();
+    console.log(result);
+
+    if (response.status === 200) {
+      document.querySelector(".route-form-modal-edit").classList.add("hidden");
+      window.location.href = window.location.href;
+    }
+  } catch (error) {
+    console.error("Error during the request:", error);
+    alert("An error occurred while updating the route.");
+  }
 });
+
 
 
 

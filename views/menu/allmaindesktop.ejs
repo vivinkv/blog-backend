@@ -371,26 +371,43 @@ modal.classList.remove('hidden');
 
   }
 
-document.getElementById('update-route').addEventListener('click',async()=>{
- const id=document.getElementById('edit-id').value;
- const titleField = document.querySelector('#edit-title').value;
-    const priorityField =document.querySelector('#edit-priority').value;
-    const linkField = document.querySelector('#edit-route-link').value;
-    const tooltipField = document.querySelector('#edit-tooltip').value;
-    const iconField = document.querySelector('#edit-file').files[0];
- const response=await fetch(`${window.location.origin}/admin/menu/md/${id}`,{
-  method:'PUT',
-  headers:{
-    'Content-Type':'application/json'
-  },
-  body:JSON.stringify({title:titleField,priority:priorityField,link:linkField,tooltip:tooltipField,icon:iconField})
- })
- const result=await response.json();
- console.log(result);
- if(response.status==200){
-  document.querySelector('.route-form-modal-edit').classList.add('hidden'); 
-  window.location.href=window.location.href
- }
+  document.getElementById('update-route').addEventListener('click', async function () {
+  const id = document.getElementById('edit-id').value;
+  const titleField = document.querySelector('#edit-title').value;
+  const priorityField = document.querySelector('#edit-priority').value;
+  const linkField = document.querySelector('#edit-route-link').value;
+  const tooltipField = document.querySelector('#edit-tooltip').value;
+  const iconField = document.querySelector('#edit-file').files[0];
+
+  // Create a FormData object to handle the form data including the file
+  const formData = new FormData();
+  formData.append('title', titleField);
+  formData.append('priority', priorityField);
+  formData.append('link', linkField);
+  formData.append('tooltip', tooltipField);
+
+  // Append the file only if a file is selected
+  if (iconField) {
+    formData.append('icon', iconField);
+  }
+
+  try {
+    const response = await fetch(`${window.location.origin}/admin/menu/md/${id}`, {
+      method: 'PUT',
+      body: formData,
+    });
+
+    if (response.ok) {
+      // Reload the page or update the UI as needed
+      window.location.reload();
+    } else {
+      const errorData = await response.json();
+      alert('Error updating route: ' + (errorData.message || 'Unknown error'));
+    }
+  } catch (error) {
+    console.error('Error during the request:', error);
+    alert('An error occurred while updating the route.');
+  }
 });
 
 
@@ -437,14 +454,15 @@ document.getElementById('update-route').addEventListener('click',async()=>{
     formData.append('link', link);
     formData.append('tooltip', tooltip);
     if (file) formData.append('icon', file);
+    console.log(file,formData.get('icon'));
 
-    fetch(`${window.location.origin}/admin/menu/md${routeId}`, {
+    fetch(`${window.location.origin}/admin/menu/md/${routeId}`, {
       method: 'PUT',
       body: formData
     })
     .then(response => response.json())
     .then(() => {
-      location.reload(); // Refresh the page to show updated route
+      // location.reload(); // Refresh the page to show updated route
     });
   }
 
