@@ -12,7 +12,8 @@ const blogRoute = require("./routes/blog.route");
 const adminRoute = require("./routes/admin.route");
 const forumRoute = require("./routes/forum.route");
 const careerRoute = require("./routes/career.route");
-const serviceRoute=require('./routes/service.route');
+const serviceRoute = require("./routes/service.route");
+const menuRoute = require("./routes/menu.route");
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -172,8 +173,8 @@ blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
 blogModel.hasMany(blogTopicModel, { foreignKey: "blog_id", as: "tags" });
 blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 
-userModel.hasMany(jobModel,{foreignKey:'deleted_by',as:'deleted_user'});
-jobModel.belongsTo(userModel,{foreignKey:'deleted_by',as:'deleted_user'})
+userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user" });
+jobModel.belongsTo(userModel, { foreignKey: "deleted_by", as: "deleted_user" });
 
 //forum
 userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
@@ -188,19 +189,33 @@ forumReplyModel.belongsTo(forumModel, {
 userModel.hasMany(forumReplyModel, { foreignKey: "user_id", as: "repliers" });
 forumReplyModel.belongsTo(userModel, { foreignKey: "user_id", as: "repliers" });
 
-userModel.hasMany(serviceModel,{foreignKey:'author',as:'service_created_by'});
-serviceModel.belongsTo(userModel,{foreignKey:'author',as:'service_created_by'});
+userModel.hasMany(serviceModel, {
+  foreignKey: "author",
+  as: "service_created_by",
+});
+serviceModel.belongsTo(userModel, {
+  foreignKey: "author",
+  as: "service_created_by",
+});
 
-serviceModel.hasMany(serviceSectionModel,{foreignKey:'service_id',as:'service_sections'});
-serviceSectionModel.belongsTo(serviceModel,{foreignKey:'service_id',as:'service_sections'});
+serviceModel.hasMany(serviceSectionModel, {
+  foreignKey: "service_id",
+  as: "service_sections",
+});
+serviceSectionModel.belongsTo(serviceModel, {
+  foreignKey: "service_id",
+  as: "service_sections",
+});
 
 //career association
-jobModel.hasMany(applicantModel,{foreignKey:'job_id',as:'applications'});
-applicantModel.belongsTo(jobModel,{foreignKey:'job_id',as:'applications'});
+jobModel.hasMany(applicantModel, { foreignKey: "job_id", as: "applications" });
+applicantModel.belongsTo(jobModel, {
+  foreignKey: "job_id",
+  as: "applications",
+});
 
-menuModel.hasMany(menuModel, { foreignKey: 'parent_id', as: 'submenu' });
-menuModel.belongsTo(menuModel, { foreignKey: 'parent_id', as: 'parentMenu' });
-
+menuModel.hasMany(menuModel, { foreignKey: "parent_id", as: "submenu" });
+menuModel.belongsTo(menuModel, { foreignKey: "parent_id", as: "parentMenu" });
 
 app.get("/", async (req, res) => {
   try {
@@ -442,7 +457,8 @@ app.get("/:id", async (req, res) => {
 app.use("/admin", adminRoute);
 app.use("/api/forum", forumRoute);
 app.use("/api/career", careerRoute);
-app.use('/api/services',serviceRoute);
+app.use("/api/services", serviceRoute);
+app.use("/api/menu", menuRoute);
 
 sequelizeConfig.authenticate();
 sequelizeConfig

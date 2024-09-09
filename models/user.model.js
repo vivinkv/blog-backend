@@ -36,6 +36,11 @@ const userModel = sequelizeConfig.define(
       type:DataTypes.ENUM('user','admin','seo','author','member','editor'),
       allowNull:false,
       defaultValue:'user'
+    },
+    user_id:{
+      type:DataTypes.STRING,
+      allowNull:true,
+      defaultValue:'null'
     }
   },
   {

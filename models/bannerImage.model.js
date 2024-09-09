@@ -41,6 +41,16 @@ const bannerImageModel = sequelizeConfig.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+    blog_id:{
+      type:DataTypes.STRING,
+    allowNull:true,
+    defaultValue:'null'
+    },
+    image_type:{
+      type:DataTypes.ENUM('banner','thumbanil','featured','attachment','og'),
+      allowNull:true,
+      defaultValue:'banner'
+    }
   },
   {
     timestamps: true,
