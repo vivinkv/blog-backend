@@ -446,6 +446,11 @@ app.get("/:id", async (req, res) => {
         premium: false,
       },
     });
+    const attachment=await bannerImageModel.findAll({
+      where:{
+        blog_id:id
+      }
+    })
 
     res.json({
       data: blogDetail,
