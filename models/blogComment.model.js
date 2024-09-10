@@ -29,6 +29,10 @@ const blogCommentModel=sequelizeConfig.define('comments',{
             model:'blog',
             key:'id'
         }
+    },
+    status:{
+        type:DataTypes.INTEGER,
+        defaultValue:1
     }
 },{
     freezeTableName:true,

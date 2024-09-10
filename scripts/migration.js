@@ -36,8 +36,8 @@ const down=async()=>{
   await queryInterface.removeColumn('menus','parent_id');
 }
 
-down();
-addColumn();
+// down();
+// addColumn();
 
 
 
@@ -67,3 +67,17 @@ addColumn();
 // addNewColumn();
 
 
+//add new column in user model
+
+const addNewColumn=async()=>{
+  await queryInterface.addColumn('user','password_expired',{
+    type:DataTypes.BOOLEAN,
+    defaultValue:'true'
+  })
+  await queryInterface.addColumn('comments','status',{
+    type:DataTypes.INTEGER,
+    defaultValue:1
+  })
+}
+
+addNewColumn()
