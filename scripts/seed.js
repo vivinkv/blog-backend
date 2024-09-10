@@ -223,4 +223,20 @@ const addComments = async () => {
   }
 };
 
-addComments();
+
+
+
+// addComments();
+
+
+const deleteRow=async()=>{
+  const findRows=await userModel.findAll({
+    where:{
+      name:''
+    }
+  })
+
+  console.log(findRows);
+}
+
+deleteRow()
