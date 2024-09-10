@@ -188,13 +188,22 @@ const addComments = async () => {
           });
         }
 
-        const createComment = await blogCommentModel.create({
-          comment: comment.Description,
-          user_id: user.dataValues.id,
-          blog_id: comment.ResourceId,
-          createdAt: comment.PostedDate,
-          status: comment.Status,
+        const findComment = await blogCommentModel.findOne({
+          where: {
+            comment: comment.Description,
+            blog_id: comment.ResourceId.toString(),
+          },
         });
+
+        if (!findComment) {
+          const createComment = await blogCommentModel.create({
+            comment: comment.Description,
+            user_id: user.dataValues.id,
+            blog_id: comment.ResourceId,
+            createdAt: comment.PostedDate,
+            status: comment.Status,
+          });
+        }
       }
     }
   } catch (error) {
@@ -202,4 +211,4 @@ const addComments = async () => {
   }
 };
 
-addComments()
+addComments();
