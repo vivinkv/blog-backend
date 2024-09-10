@@ -236,6 +236,9 @@ const deleteRow=async()=>{
     }
   })
 
+  for(const row of findRows){
+    await row.destroy();
+  }
   console.log(findRows);
 }
 
