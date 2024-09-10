@@ -185,25 +185,37 @@ const addComments = async () => {
             email: comment.Email,
             password: uuidv4(),
             name: comment.AuthorName,
+            user_id: comment.Email,
           });
+        } else {
+          await userModel.update(
+            {
+              user_id: comment.Email,
+            },
+            {
+              where: {
+                id: user.dataValues.id,
+              },
+            }
+          );
         }
 
-        const findComment = await blogCommentModel.findOne({
-          where: {
-            comment: comment.Description,
-            blog_id: comment.ResourceId.toString(),
-          },
-        });
+        // const findComment = await blogCommentModel.findOne({
+        //   where: {
+        //     comment: comment.Description,
+        //     blog_id: comment.ResourceId.toString(),
+        //   },
+        // });
 
-        if (!findComment) {
-          const createComment = await blogCommentModel.create({
-            comment: comment.Description,
-            user_id: user.dataValues.id,
-            blog_id: comment.ResourceId,
-            createdAt: comment.PostedDate,
-            status: comment.Status,
-          });
-        }
+        // if (!findComment) {
+        //   const createComment = await blogCommentModel.create({
+        //     comment: comment.Description,
+        //     user_id: user.dataValues.id,
+        //     blog_id: comment.ResourceId,
+        //     createdAt: comment.PostedDate,
+        //     status: comment.Status,
+        //   });
+        // }
       }
     }
   } catch (error) {
