@@ -26,35 +26,41 @@
               </a>
             </li>
             <li>
-              <a href="/admin/dashboard/blogs" class="nav-link ">
+              <a href="/admin/dashboard/blogs" class="nav-link">
                 <img src="/blogs.svg" alt="blogs" />
                 <span class="nav-text">Blogs</span>
               </a>
             </li>
             <li>
-                <a href="/admin/dashboard/forums" class="nav-link">
-                  <img src="/forum.svg"  alt="forums" />
-                  <span class="nav-text">Forum</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/career" class="nav-link active">
-                  <img src="/career.svg"  alt="forums" />
-                  <span class="nav-text">Career</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/services" class="nav-link">
-                  <img src="/career.svg"  alt="forums" />
-                  <span class="nav-text">Services</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/menu" class="nav-link">
-                  <img src="/menu.svg"  alt="forums" />
-                  <span class="nav-text">Menu</span>
-                </a>
-              </li>
+              <a href="/admin/dashboard/forums" class="nav-link">
+                <img src="/forum.svg" alt="forums" />
+                <span class="nav-text">Forum</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/career" class="nav-link active">
+                <img src="/career.svg" alt="forums" />
+                <span class="nav-text">Career</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/services" class="nav-link">
+                <img src="/career.svg" alt="forums" />
+                <span class="nav-text">Services</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/menu" class="nav-link">
+                <img src="/menu.svg" alt="forums" />
+                <span class="nav-text">Menu</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/import" class="nav-link">
+                <img src="/import.svg" alt="import" />
+                <span class="nav-text">Import</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </aside>
@@ -109,7 +115,7 @@
         <form action="" class="form-container">
           <div class="form-group">
             <label for="title" class="form-label">Title</label>
-            <input type="hidden" name="" id="id" value="<%= data.id %>">
+            <input type="hidden" name="" id="id" value="<%= data.id %>" />
             <input
               type="text"
               name="title"
@@ -123,47 +129,66 @@
           </div>
 
           <div
-          style="
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 3rem;
-            padding-bottom: 2rem;
-          "
-        >
-          <div>
-            <label for="title" class="form-label">Last Date to Apply</label>
-            <input type="date" id="last-date" value="<%= data.last_date %>" class="styled-date-input" />
+            style="
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              flex-wrap: wrap;
+              gap: 3rem;
+              padding-bottom: 2rem;
+            "
+          >
+            <div>
+              <label for="title" class="form-label">Last Date to Apply</label>
+              <input
+                type="date"
+                id="last-date"
+                value="<%= data.last_date %>"
+                class="styled-date-input"
+              />
+            </div>
+            <div>
+              <label for="expiry-date" class="form-label">Expiry Date</label>
+              <input
+                type="date"
+                id="expiry-date"
+                value="<%= data.expiry_date %>"
+                class="styled-date-input"
+              />
+            </div>
+            <div>
+              <label for="expiry-date" class="form-label">Salary</label>
+              <input
+                type="text"
+                id="salary"
+                value="<%= data.salary %>"
+                placeholder="₹ Enter Salary"
+                class="styled-date-input"
+              />
+            </div>
           </div>
           <div>
-            <label for="expiry-date" class="form-label">Expiry Date</label>
-            <input type="date" id="expiry-date" value="<%= data.expiry_date %>" class="styled-date-input" />
+            <label
+              for="expiry-date"
+              id="expiry-date-error"
+              style="display: none; margin-bottom: 10px"
+              >Expiry Date</label
+            >
           </div>
-          <div>
-            <label for="expiry-date" class="form-label">Salary</label>
-            <input type="text" id="salary" value="<%= data.salary %>" placeholder="₹ Enter Salary" class="styled-date-input" />
+
+          <div class="form-group">
+            <label for="title" class="form-label">Company Name</label>
+            <input
+              type="text"
+              name="title"
+              id="company_name"
+              value="<%= data.company_name %>"
+              class="form-input"
+              required
+              placeholder="Enter Company"
+            />
+            <small id="titleError"> * Title </small>
           </div>
-        
-          
-        </div>
-        <div>
-          <label for="expiry-date" id="expiry-date-error" style="display: none;margin-bottom: 10px;">Expiry Date</label>
-        </div>
-     
-        <div class="form-group">
-          <label for="title" class="form-label">Company Name</label>
-          <input
-            type="text"
-            name="title"
-            id="company_name"
-            value="<%= data.company_name %>"
-            class="form-input"
-            required
-            placeholder="Enter Company"
-          />
-          <small id="titleError"> * Title </small>
-        </div>
 
           <div class="form-group">
             <label for="shortdescription" class="form-label"
@@ -174,7 +199,9 @@
               class="form-textarea"
               required
               placeholder="Job Description"
-            ><%= data.description %></textarea>
+            >
+<%= data.description %></textarea
+            >
           </div>
           <div class="form-group">
             <label for="top-description" class="form-label"
@@ -184,7 +211,9 @@
               id="responsibilities"
               required
               class="form-textarea top_description_summernote"
-            ><%= data.responsibilities %></textarea>
+            >
+<%= data.responsibilities %></textarea
+            >
           </div>
           <div class="form-group">
             <label for="bottom-description" class="form-label"
@@ -194,7 +223,9 @@
               id="requirements"
               required
               class="form-textarea bottom_description_summernote"
-            ><%= data.requirements %></textarea>
+            >
+<%= data.requirements %></textarea
+            >
           </div>
           <div class="form-group">
             <label for="bottom-description" class="form-label"
@@ -204,19 +235,21 @@
               id="benefits"
               required
               class="form-textarea bottom_description_summernote"
-            ><%= data.benefits %></textarea>
+            >
+<%= data.benefits %></textarea
+            >
           </div>
           <div class="form-action">
-           
-            <div style="display: flex; align-items: center;gap: 10px;">
-              
-              <input type="checkbox" id="active" class="styled-checkbox" <%= data.active ? 'checked':''  %>/>
-              <label for="title" style="font-weight: 600;color: #4a5568;" >Active</label>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <input type="checkbox" id="active" class="styled-checkbox" <%=
+              data.active ? 'checked':'' %>/>
+              <label for="title" style="font-weight: 600; color: #4a5568"
+                >Active</label
+              >
             </div>
             <button type="button" id="submitbtn" class="form-button">
               Update
             </button>
-          
           </div>
           <div id="alertMessage" class="alert-message" style="display: none">
             Updated Successfully

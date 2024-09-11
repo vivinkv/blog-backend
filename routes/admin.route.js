@@ -49,6 +49,7 @@ const userModel = require("../models/user.model");
 const { getAllForums, createForum, getUpdateForum, updateForum, deleteForum } = require("../controller/forum.controller");
 const { getAllJobs, updateJob, createJob, deleteJob, getUpdateJob } = require("../controller/career.controller");
 const { getAllServices, createService, updateService, deleteService, getUpdateService, duplicateService } = require("../controller/service.controller");
+const {addNewBlogs, getDetails,} = require("../controller/import.controller");
 const storage = multer.diskStorage({
   destination: "./uploads",
   filename: (req, file, cb) => {
@@ -192,5 +193,9 @@ router.post('/menu/fm',iconUpload.single('icon'),createFooterMobile);
 router.get('/menu/fm/:id',getFooterMobileDetail);
 router.put('/menu/fm/:id',iconUpload.single('icon'),updateFooterMobile);
 router.get('/menu/fm/:id/delete',deleteFooterMobile);
+
+
+router.get('/import',getDetails)
+router.post('/import/blogs',addNewBlogs);
 
 module.exports = router;

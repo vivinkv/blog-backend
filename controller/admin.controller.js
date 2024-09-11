@@ -692,6 +692,9 @@ const updateUser = async (req, res) => {
 };
 
 const dashboard = async (req, res) => {
+  const page=req?.query?.page||1;
+  const limit=req?.query?.limit||10;
+  const offset=(page-1)*limit;
   try {
     if (req?.query?.role) {
       const users = await userModel.findAll({
@@ -706,19 +709,21 @@ const dashboard = async (req, res) => {
       console.log({ data: users });
       res.render("dashboard", { title: "Users List", data: users });
     } else {
-      const users = await userModel.findAll({
+      const {count,rows} = await userModel.findAndCountAll({
         where: {
           role: {
             [Op.ne]: "admin",
           },
         },
+        limit:limit,
+        offset:offset,
         attributes: {
           exclude: ["password"],
         },
       });
-      // res.status(200).json({ data: users });
-      console.log({ data: users });
-      res.render("dashboard", { title: "Users List", data: users });
+      console.log({count:count});
+    
+      res.render("dashboard", { title: "Users List", data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
     }
   } catch (error) {
     res.status(500).json({ err: error.message });

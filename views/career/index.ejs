@@ -57,7 +57,7 @@
       <li>
         <a
           href="/admin/services"
-          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500  md:w-32 px-3 py-2 rounded-lg"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 md:w-32 px-3 py-2 rounded-lg"
         >
           <img src="/career.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
@@ -73,6 +73,17 @@
           <img src="/menu.svg" class="h-7 w-7" alt="blogs" />
           <span class="font-semibold text-md text-gray-500 hidden md:block"
             >Menu</span
+          >
+        </a>
+      </li>
+      <li>
+        <a
+          href="/admin/import"
+          class="gap-x-2 flex items-center text-blue-900 hover:text-blue-500 max-md:bg-none px-3 py-2 rounded-lg"
+        >
+          <img src="/import.svg" class="h-7 w-7" alt="import" />
+          <span class="font-semibold text-md text-gray-500 hidden md:block"
+            >Import</span
           >
         </a>
       </li>
@@ -140,7 +151,7 @@
             Description
           </th>
            -->
-           <th class="py-2 px-4 text-left text-blue-900 min-w-[5rem]">Salary</th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[5rem]">Salary</th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[10rem]">
             Active
           </th>
@@ -164,18 +175,16 @@
               <%= data[i].dataValues.title %>
             </a>
           </td>
-          
-              <% if (data[i].dataValues.salary) { %>
-            <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
-              ₹<%= data[i].dataValues.salary %>
-            </td>
-            <% }else{ %>
-            <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
-              <img src="/close.png" alt="cross icon" class="h-10 w-10" />
-            </td>
-            <% } %>
-              
-            
+
+          <% if (data[i].dataValues.salary) { %>
+          <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+            ₹<%= data[i].dataValues.salary %>
+          </td>
+          <% }else{ %>
+          <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
+            <img src="/close.png" alt="cross icon" class="h-10 w-10" />
+          </td>
+          <% } %>
 
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <a

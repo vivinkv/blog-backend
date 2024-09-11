@@ -26,35 +26,41 @@
               </a>
             </li>
             <li>
-              <a href="/admin/dashboard/blogs" class="nav-link ">
+              <a href="/admin/dashboard/blogs" class="nav-link">
                 <img src="/blogs.svg" alt="blogs" />
                 <span class="nav-text">Blogs</span>
               </a>
             </li>
             <li>
-                <a href="/admin/dashboard/forums" class="nav-link">
-                  <img src="/forum.svg"  alt="forums" />
-                  <span class="nav-text">Forum</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/career" class="nav-link active">
-                  <img src="/career.svg"  alt="forums" />
-                  <span class="nav-text">Career</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/services" class="nav-link">
-                  <img src="/career.svg"  alt="forums" />
-                  <span class="nav-text">Services</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/menu" class="nav-link">
-                  <img src="/menu.svg"  alt="forums" />
-                  <span class="nav-text">Menu</span>
-                </a>
-              </li>
+              <a href="/admin/dashboard/forums" class="nav-link">
+                <img src="/forum.svg" alt="forums" />
+                <span class="nav-text">Forum</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/career" class="nav-link active">
+                <img src="/career.svg" alt="forums" />
+                <span class="nav-text">Career</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/services" class="nav-link">
+                <img src="/career.svg" alt="forums" />
+                <span class="nav-text">Services</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/menu" class="nav-link">
+                <img src="/menu.svg" alt="forums" />
+                <span class="nav-text">Menu</span>
+              </a>
+            </li>
+            <li>
+              <a href="/admin/import" class="nav-link">
+                <img src="/import.svg" alt="import" />
+                <span class="nav-text">Import</span>
+              </a>
+            </li>
           </ul>
         </nav>
       </aside>
@@ -137,11 +143,21 @@
             <div>
               <label for="expiry-date" class="form-label">Expiry Date</label>
               <input type="date" id="expiry-date" class="styled-date-input" />
-              <label for="expiry-date" id="expiry-date-error" style="display: none;" >Expiry Date</label>
+              <label
+                for="expiry-date"
+                id="expiry-date-error"
+                style="display: none"
+                >Expiry Date</label
+              >
             </div>
             <div>
               <label for="expiry-date" class="form-label">Salary</label>
-              <input type="text" placeholder="₹ Enter Salary" id="salary" class="styled-date-input" />
+              <input
+                type="text"
+                placeholder="₹ Enter Salary"
+                id="salary"
+                class="styled-date-input"
+              />
             </div>
           </div>
 
@@ -200,23 +216,21 @@
             ></textarea>
           </div>
           <div class="form-action">
-            <div style="display: flex; align-items: center;gap: 10px;">
-              
+            <div style="display: flex; align-items: center; gap: 10px">
               <input type="checkbox" id="active" class="styled-checkbox" />
-              <label for="title" style="font-weight: 600;color: #4a5568;">Active</label>
+              <label for="title" style="font-weight: 600; color: #4a5568"
+                >Active</label
+              >
             </div>
             <button type="button" id="submitbtn" class="form-button">
               Create
             </button>
-           
           </div>
           <div id="alertMessage" class="alert-message" style="display: none">
             Job Created Successfully
           </div>
         </form>
-      
       </main>
-      
     </div>
 
     <!-- Modal -->
