@@ -2,13 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title><%= title %></title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css"
-      rel="stylesheet"
-    />
+    <title>Create Settings</title>
+
     <link rel="stylesheet" href="/index.css" />
     <link rel="stylesheet" href="/createblog.css" />
+    <link rel="stylesheet" href="/styles/sidenav.css">
   </head>
   <body>
     <div class="container">
@@ -68,42 +66,49 @@
             <input
               type="text"
               name="title"
-              id="title"
+              id="key"
               class="form-input"
               required
-              placeholder="Enter title"
+              placeholder="Enter key"
             />
-            <small id="titleError"> * Title </small>
+            <small id="keyError"> * Title </small>
           </div>
 
           <div class="form-group">
-            <label for="top-description" class="form-label">Content</label>
-            <textarea
-              id="description"
+            <label for="banner" class="form-label">Icon</label>
+            <input
+              type="file"
+              name="image"
+              id="banner"
               required
-              class="form-textarea"
-            ></textarea>
-            <small id="contentError"> * Content </small>
+              class="form-input"
+              accept="image/*"
+            />
+            <small id="bannerError"> * Banner </small>
           </div>
 
-          <div class="form-action">
-            <button type="button" id="submitbtn" class="form-button">
-              Create
-            </button>
+          <div class="form-group">
+            <label for="shortdescription" class="form-label"
+              >Description</label
+            >
+            <textarea
+              id="shortdescription"
+              class="form-textarea"
+              required
+              placeholder="Short Description"
+            ></textarea>
+            <small id="shortdescriptionError"> * Short Description </small>
           </div>
+          <button type="button" id="submitbtn" class="form-button flex justify-end">
+            Create
+          </button>
           <div id="alertMessage" class="alert-message" style="display: none">
-            Blog Created Successfully
+            Settings Created Successfully
           </div>
         </form>
       </main>
     </div>
 
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-      integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-    <script src="/javascript/createforum.js"></script>
+    <script src="/javascript/createblog.js"></script>
   </body>
 </html>

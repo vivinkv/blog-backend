@@ -12,61 +12,12 @@
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <link rel="stylesheet" href="/index.css" />
     <link rel="stylesheet" href="/createblog.css" />
+    <link rel="stylesheet" href="/styles/sidenav.css">
   </head>
   <body>
     <div class="container">
       <!-- Sidebar -->
-      <aside id="sidebar">
-        <div class="logo">
-          <img src="/logo.png" alt="logo" />
-        </div>
-        <nav>
-          <ul>
-            <li>
-              <a href="/admin/dashboard" class="nav-link">
-                <img src="/users.svg" alt="users" />
-                <span class="nav-text">Users</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/dashboard/blogs" class="nav-link ">
-                <img src="/blogs.svg" alt="blogs" />
-                <span class="nav-text">Blogs</span>
-              </a>
-            </li>
-            <li>
-                <a href="/admin/dashboard/forums" class="nav-link active">
-                  <img src="/forum.svg" alt="forums" />
-                  <span class="nav-text">Forum</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/career" class="nav-link">
-                  <img src="/career.svg" alt="career" />
-                  <span class="nav-text">Career</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/services" class="nav-link">
-                  <img src="/career.svg" alt="career" />
-                  <span class="nav-text">Services</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/menu" class="nav-link">
-                  <img src="/menu.svg"  alt="forums" />
-                  <span class="nav-text">Menu</span>
-                </a>
-              </li>
-              <li>
-                <a href="/admin/import" class="nav-link">
-                  <img src="/import.svg"  alt="import" />
-                  <span class="nav-text">Import</span>
-                </a>
-              </li>
-          </ul>
-        </nav>
-      </aside>
+      <%- include('../components/sidenav') %>
       <main>
         <button id="toggle-button">
           <svg

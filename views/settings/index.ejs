@@ -1,0 +1,254 @@
+<%- include('../wrapper/header') %>
+
+<div class="flex h-screen bg-[#f5f5f5] text-gray-600">
+  <!-- Sidebar -->
+  <%- include('../components/sidenav') %>
+
+  <!-- Main Content -->
+  <div class="flex-1 flex ms-[9rem]">
+    <!-- Table Section -->
+    <div class="flex-1 p-8">
+      <div class="flex justify-center">
+        <div class="bg-white p-8 rounded-lg w-full max-w-5xl">
+          <h2 class="text-4xl font-bold mb-6 text-gray-600">Settings</h2>
+          <form
+            id="settingsForm"
+            enctype="multipart/form-data"
+            class="max-h-[auto]"
+          >
+            <div class="mb-4 flex flex-col md:flex-row items-center">
+              <label
+                for="logo"
+                class="w-full md:w-1/3 text-gray-600 text-lg font-semibold key mb-2 md:mb-0"
+                >Logo</label
+              >
+              <div
+                class="w-full md:w-2/3 flex flex-col md:flex-row items-center"
+              >
+              <% if (data[5]?.dataValues?.value) { %>
+                <input
+                  type="image"
+                  src="<%= data[5]?.dataValues?.value %>"
+                  alt="logo"
+                  id="logo-image"
+                  name="logo-image"
+                  class="w-full md:w-1/2 rounded max-h-40 object-contain px-3 py-2 mb-2 md:mb-0"
+                />
+              <% } %>
+               
+                <input
+                  type="file"
+                  id="logo"
+                  name="logo"
+                  accept=".png,.jpg,.jpeg,.gif"
+                  class="w-full md:w-1/2 bg-gray-100 rounded px-3 py-2"
+                />
+                <span id="logo-error" class="text-red-500 text-sm hidden">Error message for logo</span>
+              </div>
+            </div>
+            <div class="mb-4 flex flex-col md:flex-row items-center">
+              <label
+                for="favicon"
+                class="w-full md:w-1/3 text-gray-600 text-lg key font-semibold mb-2 md:mb-0"
+                >Favicon</label
+              >
+              <div
+                class="w-full md:w-2/3 flex flex-col md:flex-row items-center"
+              >
+              <% if (data[6]?.dataValues?.value) { %>
+                <input
+                type="image"
+                src="<%= data[6]?.dataValues?.value %>"
+                id="favicon-image"
+                alt="favicon"
+                name="favicon-image"
+                class="w-full md:w-1/2 rounded object-contain max-h-36 px-3 py-2 mb-2 md:mb-0"
+              />
+              <% } %>
+                
+                <input
+                  type="file"
+                  id="favicon"
+                  name="favicon"
+                  accept=".ico"
+                  class="w-full md:w-1/2 bg-gray-100 rounded px-3 py-2"
+                />
+                <span id="favicon-error" class="text-red-500 text-sm hidden">Error message for favicon</span>
+              </div>
+            </div>
+            <div class="mb-4 flex flex-col items-start">
+              <label
+                for="headScript"
+                class="w-full text-gray-600 text-lg key font-semibold"
+                >Head Script</label
+              >
+              <textarea
+                id="headScript"
+                name="headScript"
+                class="w-full h-20 bg-gray-100 rounded px-3 py-2"
+                rows="3"
+              >
+<%= data[0]?.dataValues?.value %></textarea
+              >
+              <span id="headScript-error" class="text-red-500 text-sm hidden">Error message for head script</span>
+            </div>
+            <div class="mb-4 flex flex-col items-start">
+              <label
+                for="bodyScript"
+                class="w-full text-gray-600 text-lg key font-semibold"
+                >Body Script</label
+              >
+              <textarea
+                id="bodyScript"
+                name="bodyScript"
+                class="w-full h-20 bg-gray-100 rounded px-3 py-2"
+                rows="3"
+              >
+<%= data[1]?.dataValues?.value %></textarea
+              >
+              <span id="bodyScript-error" class="text-red-500 text-sm hidden">Error message for body script</span>
+            </div>
+            <div class="mb-4 flex">
+              <label
+                for="smtp"
+                class="w-1/3 text-3xl underline font-bold text-gray-600"
+                >SMTP</label
+              >
+            </div>
+            <div class="mb-4 flex items-center">
+              <label
+                for="server"
+                class="w-1/3 text-gray-600 text-lg key font-semibold"
+                >Server</label
+              >
+              <input
+                type="text"
+                id="smtp-server"
+                name="server"
+                value="<%= data[2]?.dataValues?.value %>"
+                class="w-2/3 bg-gray-100 rounded px-3 py-2"
+              />
+              <span id="smtp-server-error" class="text-red-500 text-sm hidden">Error message for server</span>
+            </div>
+            <div class="mb-4 flex items-center">
+              <label
+                for="email"
+                class="w-1/3 text-gray-600 text-lg key font-semibold"
+                >Email</label
+              >
+              <input
+                type="email"
+                id="smtp-email"
+                name="email"
+                value="<%= data[3]?.dataValues?.value %>"
+                class="w-2/3 bg-gray-100 rounded px-3 py-2"
+              />
+              <span id="smtp-email-error" class="text-red-500 text-sm hidden">Error message for email</span>
+            </div>
+            <div class="mb-4 flex items-center">
+              <label
+                for="pwd"
+                data-key="password"
+                class="w-1/3 key text-gray-600 text-lg font-semibold"
+                >Password</label
+              >
+              <input
+                type="password"
+                id="smtp-password"
+                name="pwd"
+                value="<%= data[4]?.dataValues?.value %>"
+                class="w-2/3 bg-gray-100 rounded px-3 py-2"
+              />
+              <span id="smtp-password-error" class="text-red-500 text-sm hidden">Error message for password</span>
+            </div>
+            <div class="flex justify-end">
+              <button
+                type="submit"
+                id="submit-btn"
+                class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showToast(message, isSuccess) {
+    const toast = document.createElement("div");
+    toast.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white ${
+      isSuccess ? "bg-green-500" : "bg-red-500"
+    }`;
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+      window.location.href = "/admin/settings";
+    }, 3000);
+  }
+
+  document.getElementById("submit-btn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append(
+      "settingsList",
+      JSON.stringify([
+        {
+          key: "header_script",
+          value: document.getElementById("headScript").value,
+        },
+        {
+          key: "body_script",
+          value: document.getElementById("bodyScript").value,
+        },
+        {
+          key: "smtp_server",
+          value: document.getElementById("smtp-server").value,
+        },
+        {
+          key: "smtp_email",
+          value: document.getElementById("smtp-email").value,
+        },
+        {
+          key: "smtp_password",
+          value: document.getElementById("smtp-password").value,
+        },
+        {
+          key: "logo",
+          value: null,
+        },
+        {
+          key: "favicon",
+          value: null,
+        },
+      ])
+    );
+
+    formData.append("logo", document.getElementById("logo").files[0]);
+    formData.append("favicon", document.getElementById("favicon").files[0]);
+
+    console.log(formData.get("settings"));
+
+    fetch(`${window.location.origin}/admin/settings`, {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.msg) {
+          showToast("Settings saved successfully!", true);
+        } else {
+          showToast("Failed to save settings.", false);
+        }
+      })
+      .catch((error) => {
+        showToast("An error occurred.", false);
+      });
+  });
+</script>
+
+<%- include('../wrapper/footer') %>

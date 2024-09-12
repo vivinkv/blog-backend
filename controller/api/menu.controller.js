@@ -1,5 +1,6 @@
 const { Op } = require("sequelize");
 const menuModel = require("../../models/menu/menu.model");
+const settingsModel = require("../../models/settings/settings.model");
 
 const AllMainDesktop = async (req, res) => {
   try {
@@ -33,9 +34,16 @@ const AllMainDesktop = async (req, res) => {
       order: [["priority", "ASC"]],
     });
 
+    const settings=await settingsModel.findAll({
+      where:{
+        key:'logo',
+        key:'favicon'
+      }
+    })
+
     console.log(mainDesktop);
 
-    res.status(200).json({ data: mainDesktop });
+    res.status(200).json({ data: mainDesktop,icon:settings });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
