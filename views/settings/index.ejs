@@ -25,7 +25,7 @@
               <div
                 class="w-full md:w-2/3 flex flex-col md:flex-row items-center"
               >
-              <% if (data[5]?.dataValues?.value) { %>
+                <% if (data[5]?.dataValues?.value) { %>
                 <input
                   type="image"
                   src="<%= data[5]?.dataValues?.value %>"
@@ -34,8 +34,8 @@
                   name="logo-image"
                   class="w-full md:w-1/2 rounded max-h-40 object-contain px-3 py-2 mb-2 md:mb-0"
                 />
-              <% } %>
-               
+                <% } %>
+
                 <input
                   type="file"
                   id="logo"
@@ -43,7 +43,9 @@
                   accept=".png,.jpg,.jpeg,.gif"
                   class="w-full md:w-1/2 bg-gray-100 rounded px-3 py-2"
                 />
-                <span id="logo-error" class="text-red-500 text-sm hidden">Error message for logo</span>
+                <span id="logo-error" class="text-red-500 text-sm hidden"
+                  >Error message for logo</span
+                >
               </div>
             </div>
             <div class="mb-4 flex flex-col md:flex-row items-center">
@@ -55,17 +57,17 @@
               <div
                 class="w-full md:w-2/3 flex flex-col md:flex-row items-center"
               >
-              <% if (data[6]?.dataValues?.value) { %>
+                <% if (data[6]?.dataValues?.value) { %>
                 <input
-                type="image"
-                src="<%= data[6]?.dataValues?.value %>"
-                id="favicon-image"
-                alt="favicon"
-                name="favicon-image"
-                class="w-full md:w-1/2 rounded object-contain max-h-36 px-3 py-2 mb-2 md:mb-0"
-              />
-              <% } %>
-                
+                  type="image"
+                  src="<%= data[6]?.dataValues?.value %>"
+                  id="favicon-image"
+                  alt="favicon"
+                  name="favicon-image"
+                  class="w-full md:w-1/2 rounded object-contain max-h-36 px-3 py-2 mb-2 md:mb-0"
+                />
+                <% } %>
+
                 <input
                   type="file"
                   id="favicon"
@@ -73,7 +75,9 @@
                   accept=".ico"
                   class="w-full md:w-1/2 bg-gray-100 rounded px-3 py-2"
                 />
-                <span id="favicon-error" class="text-red-500 text-sm hidden">Error message for favicon</span>
+                <span id="favicon-error" class="text-red-500 text-sm hidden"
+                  >Error message for favicon</span
+                >
               </div>
             </div>
             <div class="mb-4 flex flex-col items-start">
@@ -90,7 +94,9 @@
               >
 <%= data[0]?.dataValues?.value %></textarea
               >
-              <span id="headScript-error" class="text-red-500 text-sm hidden">Error message for head script</span>
+              <span id="headScript-error" class="text-red-500 text-sm hidden"
+                >Error message for head script</span
+              >
             </div>
             <div class="mb-4 flex flex-col items-start">
               <label
@@ -106,7 +112,9 @@
               >
 <%= data[1]?.dataValues?.value %></textarea
               >
-              <span id="bodyScript-error" class="text-red-500 text-sm hidden">Error message for body script</span>
+              <span id="bodyScript-error" class="text-red-500 text-sm hidden"
+                >Error message for body script</span
+              >
             </div>
             <div class="mb-4 flex">
               <label
@@ -128,7 +136,9 @@
                 value="<%= data[2]?.dataValues?.value %>"
                 class="w-2/3 bg-gray-100 rounded px-3 py-2"
               />
-              <span id="smtp-server-error" class="text-red-500 text-sm hidden">Error message for server</span>
+              <span id="smtp-server-error" class="text-red-500 text-sm hidden"
+                >Error message for server</span
+              >
             </div>
             <div class="mb-4 flex items-center">
               <label
@@ -136,6 +146,7 @@
                 class="w-1/3 text-gray-600 text-lg key font-semibold"
                 >Email</label
               >
+              
               <input
                 type="email"
                 id="smtp-email"
@@ -143,8 +154,11 @@
                 value="<%= data[3]?.dataValues?.value %>"
                 class="w-2/3 bg-gray-100 rounded px-3 py-2"
               />
-              <span id="smtp-email-error" class="text-red-500 text-sm hidden">Error message for email</span>
+              <p id="smtp-email-error" class="text-red-500 text-sm hidden"
+                >Error message for email</p
+              >
             </div>
+          
             <div class="mb-4 flex items-center">
               <label
                 for="pwd"
@@ -159,7 +173,9 @@
                 value="<%= data[4]?.dataValues?.value %>"
                 class="w-2/3 bg-gray-100 rounded px-3 py-2"
               />
-              <span id="smtp-password-error" class="text-red-500 text-sm hidden">Error message for password</span>
+              <span id="smtp-password-error" class="text-red-500 text-sm hidden"
+                >Error message for password</span
+              >
             </div>
             <div class="flex justify-end">
               <button
@@ -187,6 +203,7 @@
     document.body.appendChild(toast);
     setTimeout(() => {
       toast.remove();
+      if(isSuccess)
       window.location.href = "/admin/settings";
     }, 3000);
   }
@@ -233,21 +250,30 @@
 
     console.log(formData.get("settings"));
 
-    fetch(`${window.location.origin}/admin/settings`, {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.msg) {
-          showToast("Settings saved successfully!", true);
-        } else {
-          showToast("Failed to save settings.", false);
-        }
-      })
-      .catch((error) => {
-        showToast("An error occurred.", false);
+    try {
+      const response = await fetch(`${window.location.origin}/admin/settings`, {
+        method: "POST",
+        body: formData,
       });
+      const result = await response.json();
+      console.log(response.status);
+
+      if (response.status == 200 ||response.status == 201) {
+        showToast("Settings saved successfully!", true);
+        return;
+      }
+
+      if( result?.type=='email'){
+        showToast(result?.msg, false);
+      }
+      if( result?.type=='password'){
+        showToast(result?.msg, false);
+      }else{
+        showToast('Internal Server Error', false);
+      }
+    } catch (error) {
+      showToast(error.message, false);
+    }
   });
 </script>
 

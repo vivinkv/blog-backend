@@ -1,5 +1,8 @@
+const { validate } = require("email-validator");
 const settingsModel = require("../models/settings/settings.model");
 const fs = require("fs");
+const { passwordStrength } = require("check-password-strength");
+const hash = require("../utils/helper");
 const getAllSettings = async (req, res) => {
   try {
     const settings = await settingsModel.findAll({
@@ -17,6 +20,23 @@ const createSettings = async (req, res) => {
   try {
     const { settingsList } = req.body;
     const parsedSettings = JSON.parse(settingsList);
+
+    const smtp_email = parsedSettings.find(
+      (value) => value.key == "smtp_email"
+    );
+    const smtp_password = parsedSettings.find(
+      (value) => value.key == "smtp_password"
+    );
+    if (!validate(smtp_email.value)) {
+      return res
+        .status(400)
+        .json({ type: "email", msg: "Please Enter valid Email" });
+    }
+    if (passwordStrength(smtp_password.value).id < 2) {
+      return res
+        .status(400)
+        .json({ type: "password", msg: "Please Enter Strong Password" });
+    }
 
     // Retrieve the filenames for uploaded files, if they exist
     const logoFilename = req?.files?.logo ? req.files.logo[0].filename : null;
@@ -97,7 +117,12 @@ const createSettings = async (req, res) => {
 
           if (findKey) {
             await settingsModel.update(
-              { value: settings.value },
+              {
+                value:
+                  settings?.key == "smtp_password"
+                    ? await hash(settings?.value)
+                    : settings.value,
+              },
               { where: { key: settings.key } }
             );
           } else {
@@ -113,7 +138,6 @@ const createSettings = async (req, res) => {
     res.status(201).json({ msg: "Settings Created Successfully" });
   } catch (error) {
     res.status(500).json({ err: error.message });
-    console.log(error.message);
   }
 };
 
