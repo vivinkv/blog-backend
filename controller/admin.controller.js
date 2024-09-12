@@ -694,12 +694,13 @@ const updateUser = async (req, res) => {
 const dashboard = async (req, res) => {
   const page=req?.query?.page||1;
   const limit=req?.query?.limit||10;
+  const role=req?.query?.role||'all'
   const offset=(page-1)*limit;
   try {
-    if (req?.query?.role) {
+    if (role!='all') {
       const {rows,count} = await userModel.findAndCountAll({
         where: {
-          role: req?.query?.role,
+          role: role,
         },
         limit:limit,
         offset:offset,
@@ -709,7 +710,7 @@ const dashboard = async (req, res) => {
       });
       // res.status(200).json({ data: users });
       // console.log({ data: users });
-      res.render("dashboard", { title: "Users List", data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
+      res.render("dashboard", { title: "Users List",role:role, data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
     } else {
       const {count,rows} = await userModel.findAndCountAll({
         where: {
@@ -725,7 +726,7 @@ const dashboard = async (req, res) => {
       });
       console.log({count:count});
     
-      res.render("dashboard", { title: "Users List", data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
+      res.render("dashboard", { title: "Users List",role:role, data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
     }
   } catch (error) {
     res.status(500).json({ err: error.message });

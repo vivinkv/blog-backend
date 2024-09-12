@@ -145,14 +145,14 @@
       </table>
       <div class="flex items-center justify-center gap-x-10 mt-4 space-x-1">
         <a
-          href="/admin/dashboard?page=<%=page==1 ? 1: page-1 %>&limit=<%=limit %>"
+          href="/admin/dashboard?role=<%=role %>&page=<%=page==1 ? 1: page-1 %>&limit=<%=limit %>"
           class="px-3 py-2 <%=page==1 ? 'hidden': '' %> text-white bg-blue-600 border border-blue-300 rounded-md hover:bg-blue-500"
         >
           Previous
         </a>
 
         <a
-          href="/admin/dashboard?page=<%=page+1 %>&limit=<%=limit %>"
+          href="/admin/dashboard?role=<%=role %>&page=<%=page+1 %>&limit=<%=limit %>"
           class="px-3 py-2 text-white bg-blue-600 border <%=page>lastPage ? 'hidden': '' %> border-blue-300 rounded-md hover:bg-blue-500"
         >
           Next

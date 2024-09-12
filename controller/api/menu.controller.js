@@ -34,12 +34,13 @@ const AllMainDesktop = async (req, res) => {
       order: [["priority", "ASC"]],
     });
 
-    const settings=await settingsModel.findAll({
-      where:{
-        key:'logo',
-        key:'favicon'
+    const settings = await settingsModel.findAll({
+      where: {
+        key: {
+          [Op.in]: ['logo', 'favicon']
+        }
       }
-    })
+    });
 
     console.log(mainDesktop);
 
