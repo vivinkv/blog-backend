@@ -17,6 +17,7 @@
     font-weight: 700;
     margin-left: 0rem;
   }
+
   
   /* Main content area */
   main {
@@ -101,9 +102,9 @@
     display: none;
   }
   
-  #sidebar nav ul li a.active,
+  /* #sidebar nav ul li a.active, */
   #sidebar nav ul li a:hover {
-    background-color: #e5e7eb;
+    background-color: #d5d5d5;
     color: #3b82f6;
   }
   
