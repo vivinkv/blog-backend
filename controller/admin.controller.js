@@ -697,17 +697,19 @@ const dashboard = async (req, res) => {
   const offset=(page-1)*limit;
   try {
     if (req?.query?.role) {
-      const users = await userModel.findAll({
+      const {rows,count} = await userModel.findAndCountAll({
         where: {
           role: req?.query?.role,
         },
+        limit:limit,
+        offset:offset,
         attributes: {
           exclude: ["password"],
         },
       });
       // res.status(200).json({ data: users });
-      console.log({ data: users });
-      res.render("dashboard", { title: "Users List", data: users });
+      // console.log({ data: users });
+      res.render("dashboard", { title: "Users List", data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
     } else {
       const {count,rows} = await userModel.findAndCountAll({
         where: {
