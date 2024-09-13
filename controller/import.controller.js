@@ -2,10 +2,14 @@ const axios = require("axios");
 const blogModel = require("../models/blog.model");
 const blogCommentModel = require("../models/blogComment.model");
 const userModel = require("../models/user.model");
+const bannerImageModel = require("../models/bannerImage.model");
 const { v4: uuidv4 } = require("uuid");
 
 const getDetails = (req, res) => {
-  res.render("import/index", { title: "Import Data", id: req.cookies.last_id ? req.cookies.last_id : 'null' });
+  res.render("import/index", {
+    title: "Import Data",
+    id: req.cookies.last_id ? req.cookies.last_id : "null",
+  });
 };
 
 const addNewBlogs = async (req, res) => {
@@ -14,61 +18,138 @@ const addNewBlogs = async (req, res) => {
   try {
     switch (module) {
       case "blogs":
-        const blogs = await axios.get(
-          `${domain}/getresources.aspx?MaxCount=${count}&StartId=${startId}`
-        );
-        const beforeInsertionCount = await blogModel.count();
-        for (const blog of blogs.data) {
-          for (const comment of blog.Responses) {
+        try {
+          const blogs = await axios.get(
+            `${domain}/getresources.aspx?MaxCount=${count}&StartId=${startId}`
+          );
+          const beforeInsertionCount = await blogModel.count();
+
+          for (const blog of blogs.data) {
             let user = await userModel.findOne({
               where: {
-                email: comment.Email,
+                email: blog.Member.Email,
               },
             });
-
             if (!user) {
               user = await userModel.create({
-                email: comment.Email,
-                password: uuidv4(),
-                name: comment.AuthorName,
-                user_id: comment.Email,
+                id: blog.Member.ID.toString(),
+                name: blog.Member.Name,
+                email: blog.Member.Email,
+                password: blog.Member.Passcrypt,
+                user_id:
+                  blog.Member.UserID == null
+                    ? blog.Member.Email
+                    : blog.Member.UserID,
+                password_expired: "true",
               });
             }
-
-            const findComment = await blogCommentModel.findOne({
+            let findBlog = await blogModel.findOne({
               where: {
-                comment: comment.Description,
-                blog_id: comment.ResourceId.toString(),
+                id: blog.ID.toString(),
               },
             });
-
-            if (!findComment) {
-              const createComment = await blogCommentModel.create({
-                comment: comment.Description,
-                user_id: user.dataValues.id,
-                blog_id: comment.ResourceId,
-                createdAt: comment.PostedDate,
-                status: comment.Status,
+            if (!findBlog) {
+              findBlog = await blogModel.create({
+                id: blog.ID.toString(),
+                title: blog.Title,
+                meta_title: blog.MetaTitle,
+                short_description: blog.MetaDescription,
+                meta_description: blog.MetaDescription,
+                description: blog.Description,
+                author: user.dataValues.id,
+                publish_date: blog.PostedDate,
+                is_published: blog.PublishStatus,
               });
             }
+
+            for (const attachments of blog.Attachments) {
+              let attachment = await bannerImageModel.findOne({
+                where: {
+                  id: attachments.toString(),
+                },
+              });
+
+              if (!attachment) {
+                attachment = await bannerImageModel.create({
+                  blog_id: findBlog.dataValues.id,
+                  fieldname: attachments.FileType,
+                  originalname: attachments.Filename,
+                  encoding: attachments.PostedMemberId,
+                  mimetype: attachments.PostedMemberId,
+                  destination: attachments.Filename,
+                  filename: attachments.Filename,
+                  path: attachments.Filename,
+                  size:
+                    attachments.Size == null
+                      ? attachments.ResourceId
+                      : attachments.Size,
+                  image_type: "attachment",
+                });
+              }
+            }
+            for (const comments of blog.Responses) {
+              let comment = await blogCommentModel.findOne({
+                where: {
+                  id: comments.ID.toString(),
+                },
+              });
+              let commentedUser = await userModel.findOne({
+                where: {
+                  email: comments.Email,
+                },
+              });
+              if (!commentedUser) {
+                commentedUser = await userModel.create({
+                  email: comments.Email,
+                  password: uuidv4(),
+                  name: comments.AuthorName,
+                  user_id: comments.Email,
+                });
+              }
+              if (!comment) {
+                comment = await blogCommentModel.create({
+                  comment: comments.Description,
+                  user_id: user.dataValues.id,
+                  blog_id: findBlog.dataValues.id,
+                  createdAt: comments.PostedDate,
+                  status: comments.Status,
+                });
+              } else {
+                comment = await blogCommentModel.update(
+                  {
+                    user_id: commentedUser.dataValues.id,
+                  },
+                  {
+                    where: {
+                      comment: comments.Description,
+                      blog_id: findBlog.dataValues.id,
+                    },
+                  }
+                );
+              }
+            }
           }
+
+          const lastId = await blogModel.findOne({
+            order: [["createdAt", "DESC"]],
+          });
+          res.cookie("last_id", lastId.dataValues.id, {
+            expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            secure: true,
+            httpOnly: true,
+          });
+          const afterInsertionCount = await blogModel.count();
+          res.status(201).json({
+            msg: "Blogs Created Successfully",
+            query: `Query Run Successfully, ${
+              afterInsertionCount - beforeInsertionCount
+            } Rows Affected`,
+            last_id: lastId.dataValues.id,
+          });
+        } catch (error) {
+          console.log(error.message);
+          res.status(500).json({ err: error.message });
         }
-        const lastId = await blogModel.findOne({
-          order: [["createdAt", "DESC"]],
-        });
-        res.cookie("last_id", lastId.dataValues.id, {
-          expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-          secure: true,
-          httpOnly: true,
-        });
-        const afterInsertionCount = await blogModel.count();
-        res.status(201).json({
-          msg: "Blogs Created Successfully",
-          query: `Query Run Successfully, ${
-            afterInsertionCount - beforeInsertionCount
-          } Rows Affected`,
-           last_id:lastId.dataValues.id
-        });
 
         break;
 
