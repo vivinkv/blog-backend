@@ -75,6 +75,9 @@ const {
   createSettings,
   updateSettings,
 } = require("../controller/settings.controller");
+
+const {createPage,deletePage,getAllPages,updatePage, getPageDetails}=require('../controller/page.controller');
+
 const storage = multer.diskStorage({
   destination: "./uploads",
   filename: (req, file, cb) => {
@@ -260,5 +263,16 @@ router.post("/settings", settingsUpload.fields([
 ]), createSettings);
 router.put("/settings/:id", updateSettings);
 router.get("/settings/:id/delete");
+
+
+//pages
+router.get('/pages',getAllPages);
+router.get('/pages/create',(req,res)=>{
+  res.render('page/create',{title:'Create Page'})
+})
+router.get('/pages/:id',getPageDetails);
+router.post('/pages',createPage);
+router.put('/pages/:id/update',updatePage);
+router.get('/pages/:id/delete',deletePage);
 
 module.exports = router;

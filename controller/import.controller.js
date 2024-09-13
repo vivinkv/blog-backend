@@ -89,7 +89,7 @@ const addNewBlogs = async (req, res) => {
                   mimetype: attachments.PostedMemberId,
                   destination: attachments.Filename,
                   filename: attachments.Filename,
-                  path: attachments.Filename,
+                  path: `/uploads/attachments/resources/${attachments.Filename}`,
                   size:
                     attachments.Size == null
                       ? attachments.ResourceId
