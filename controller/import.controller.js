@@ -4,6 +4,9 @@ const blogCommentModel = require("../models/blogComment.model");
 const userModel = require("../models/user.model");
 const bannerImageModel = require("../models/bannerImage.model");
 const { v4: uuidv4 } = require("uuid");
+const storeImageOnServer = require("../utils/storeImagetoServer");
+const path = require("path");
+const fs = require("fs");
 
 const getDetails = (req, res) => {
   res.render("import/index", {
@@ -65,9 +68,16 @@ const addNewBlogs = async (req, res) => {
             for (const attachments of blog.Attachments) {
               let attachment = await bannerImageModel.findOne({
                 where: {
-                  id: attachments.toString(),
+                  filename: attachments.Filename,
                 },
               });
+
+              if (!fs.existsSync(`uploads/${attachments.Filename}`)) {
+                await storeImageOnServer(
+                  `http://www.thehappyhomes.com/attachments/Resources/${attachments.Filename}`,
+                  path.join('', "uploads", attachments.Filename)
+                );
+              }
 
               if (!attachment) {
                 attachment = await bannerImageModel.create({
@@ -108,8 +118,9 @@ const addNewBlogs = async (req, res) => {
               }
               if (!comment) {
                 comment = await blogCommentModel.create({
+                  id: comments.ID.toString(),
                   comment: comments.Description,
-                  user_id: user.dataValues.id,
+                  user_id: commentedUser.dataValues.id,
                   blog_id: findBlog.dataValues.id,
                   createdAt: comments.PostedDate,
                   status: comments.Status,

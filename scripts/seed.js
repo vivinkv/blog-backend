@@ -242,4 +242,12 @@ const deleteRow=async()=>{
   console.log(findRows);
 }
 
-deleteRow()
+// deleteRow()
+
+const deleteTableData=async()=>{
+  
+  await blogCommentModel.destroy();
+  await blogModel.destroy();
+  await bannerImageModel.destroy();
+}
+deleteTableData();
