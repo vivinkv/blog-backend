@@ -77,7 +77,7 @@ const addNewBlogs = async (req, res) => {
                   `http://www.thehappyhomes.com/attachments/Resources/${attachments.Filename}`,
                   path.join('', "uploads","attachments","resources", attachments.Filename)
                 );
-                await fs.promises.unlink(`uploads/${attachments.Filename}`);
+                // await fs.promises.unlink(`uploads/${attachments.Filename}`);
               }
 
               if (!attachment) {
