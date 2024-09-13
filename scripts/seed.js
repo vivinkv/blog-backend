@@ -246,8 +246,8 @@ const deleteRow=async()=>{
 
 const deleteTableData=async()=>{
   
-  await blogCommentModel.destroy();
-  await blogModel.destroy();
-  await bannerImageModel.destroy();
+  await blogCommentModel.destroy({truncate:true});
+  await blogModel.destroy({truncate:true});
+  await bannerImageModel.destroy({truncate:true});
 }
 deleteTableData();
