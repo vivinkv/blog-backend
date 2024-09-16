@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require("uuid");
 const storeImageOnServer = require("../utils/storeImagetoServer");
 const path = require("path");
 const fs = require("fs");
+const replaceURL = require("../utils/replaceUrl");
 
 const getDetails = (req, res) => {
   res.render("import/index", {
@@ -52,13 +53,15 @@ const addNewBlogs = async (req, res) => {
               },
             });
             if (!findBlog) {
+              const updatedDescription=replaceURL(blog.Description);
+            
               findBlog = await blogModel.create({
                 id: blog.ID.toString(),
                 title: blog.Title,
                 meta_title: blog.MetaTitle,
                 short_description: blog.MetaDescription,
                 meta_description: blog.MetaDescription,
-                description: blog.Description,
+                description: updatedDescription,
                 author: user.dataValues.id,
                 publish_date: blog.PostedDate,
                 is_published: blog.PublishStatus,
@@ -75,7 +78,13 @@ const addNewBlogs = async (req, res) => {
               if (!fs.existsSync(`uploads/${attachments.Filename}`)) {
                 await storeImageOnServer(
                   `http://www.thehappyhomes.com/attachments/Resources/${attachments.Filename}`,
-                  path.join('', "uploads","attachments","resources", attachments.Filename)
+                  path.join(
+                    "",
+                    "uploads",
+                    "attachments",
+                    "resources",
+                    attachments.Filename
+                  )
                 );
                 // await fs.promises.unlink(`uploads/${attachments.Filename}`);
               }
