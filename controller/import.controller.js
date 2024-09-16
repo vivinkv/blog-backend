@@ -110,7 +110,8 @@ const addNewBlogs = async (req, res) => {
             for (const comments of blog.Responses) {
               let comment = await blogCommentModel.findOne({
                 where: {
-                  id: comments.ID.toString(),
+                  comment: comments.Description,
+                  blog_id: findBlog.dataValues.id,
                 },
               });
               let commentedUser = await userModel.findOne({
@@ -128,26 +129,26 @@ const addNewBlogs = async (req, res) => {
               }
               if (!comment) {
                 comment = await blogCommentModel.create({
-                  id: comments.ID.toString(),
                   comment: comments.Description,
                   user_id: commentedUser.dataValues.id,
                   blog_id: findBlog.dataValues.id,
                   createdAt: comments.PostedDate,
                   status: comments.Status,
                 });
-              } else {
-                comment = await blogCommentModel.update(
-                  {
-                    user_id: commentedUser.dataValues.id,
-                  },
-                  {
-                    where: {
-                      comment: comments.Description,
-                      blog_id: findBlog.dataValues.id,
-                    },
-                  }
-                );
               }
+              // } else {
+              //   comment = await blogCommentModel.update(
+              //     {
+              //       user_id: commentedUser.dataValues.id,
+              //     },
+              //     {
+              //       where: {
+              //         comment: comments.Description,
+              //         blog_id: findBlog.dataValues.id,
+              //       },
+              //     }
+              //   );
+              // }
             }
           }
 
