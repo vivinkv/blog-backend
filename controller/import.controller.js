@@ -27,6 +27,9 @@ const addNewBlogs = async (req, res) => {
             `${domain}/getresources.aspx?MaxCount=${count}&StartId=${startId}`
           );
           const beforeInsertionCount = await blogModel.count();
+          const beforeBannerCount = await bannerImageModel.count();
+          const beforeCommentCount = await blogCommentModel.count();
+          const beforeUserCount = await userModel.count();
 
           for (const blog of blogs.data) {
             let user = await userModel.findOne({
@@ -53,8 +56,8 @@ const addNewBlogs = async (req, res) => {
               },
             });
             if (!findBlog) {
-              const updatedDescription=replaceURL(blog.Description);
-            
+              const updatedDescription = replaceURL(blog.Description);
+
               findBlog = await blogModel.create({
                 id: blog.ID.toString(),
                 title: blog.Title,
@@ -116,16 +119,18 @@ const addNewBlogs = async (req, res) => {
               });
               let commentedUser = await userModel.findOne({
                 where: {
-                  email: comments.Email,
+                  email: comments?.Email,
                 },
               });
               if (!commentedUser) {
-                commentedUser = await userModel.create({
-                  email: comments.Email,
-                  password: uuidv4(),
-                  name: comments.AuthorName,
-                  user_id: comments.Email,
-                });
+                if (comments.Email) {
+                  commentedUser = await userModel.create({
+                    email: comments.Email,
+                    password: uuidv4(),
+                    name: comments.AuthorName,
+                    user_id: comments.Email,
+                  });
+                }
               }
               if (!comment) {
                 comment = await blogCommentModel.create({
@@ -161,10 +166,17 @@ const addNewBlogs = async (req, res) => {
             httpOnly: true,
           });
           const afterInsertionCount = await blogModel.count();
+          const afterBannerCount = await bannerImageModel.count();
+          const afterCommentCount = await blogCommentModel.count();
+          const afterUserCount = await userModel.count();
           res.status(201).json({
             msg: "Blogs Created Successfully",
             query: `Query Run Successfully, ${
-              afterInsertionCount - beforeInsertionCount
+              afterInsertionCount -
+              beforeInsertionCount +
+              (afterBannerCount - beforeBannerCount) +
+              (afterCommentCount - beforeCommentCount) +
+              (afterUserCount - beforeUserCount)
             } Rows Affected`,
             last_id: lastId.dataValues.id,
           });
