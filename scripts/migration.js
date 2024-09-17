@@ -6,23 +6,23 @@ const queryInterface = sequelizeConfig.getQueryInterface();
 // menu module migration
 
 const addColumn = async () => {
-  await queryInterface.addConstraint('jobs', {
-    fields: ['deleted_by'],
+  await queryInterface.addConstraint('menus', {
+    fields: ['parent_id'],
     type: 'foreign key',
-    name: 'jobs_deleted_by_fkey',
+    name: 'menus_parent_id_fkey',
     references: {
-      table: 'jobs',
+      table: 'menus',
       field: 'id',
     },
     onDelete: 'CASCADE', 
     onUpdate: 'CASCADE',
   });
-  // await queryInterface.addColumn('jobs','link',{
+  // await queryInterface.addColumn('menus','link',{
   //   type:DataTypes.STRING,
   //   allowNull:true,
   //   defaultValue:'/'
   // })
-  await queryInterface.addColumn("jobs", "deleted_by", {
+  await queryInterface.addColumn("menus", "parent_id", {
     type: DataTypes.STRING,
     allowNull: true, 
     defaultValue:'null'
@@ -32,8 +32,8 @@ const addColumn = async () => {
 
 
 const down=async()=>{
-  await queryInterface.removeConstraint('jobs', 'jobs_deleted_by_fkey');
-  await queryInterface.removeColumn('jobs','deleted_by');
+  await queryInterface.removeConstraint('menus', 'menus_parent_id_fkey');
+  await queryInterface.removeColumn('menus','parent_id');
 }
 
 down();
