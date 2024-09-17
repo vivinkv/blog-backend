@@ -5,24 +5,58 @@ const queryInterface = sequelizeConfig.getQueryInterface();
 
 // menu module migration
 
+// const addColumn = async () => {
+//   await queryInterface.addConstraint('menus', {
+//     fields: ['parent_id'],
+//     type: 'foreign key',
+//     name: 'menus_parent_id_fkey',
+//     references: {
+//       table: 'menus',
+//       field: 'id',
+//     },
+//     onDelete: 'CASCADE', 
+//     onUpdate: 'CASCADE',
+//   });
+//   // await queryInterface.addColumn('menus','link',{
+//   //   type:DataTypes.STRING,
+//   //   allowNull:true,
+//   //   defaultValue:'/'
+//   // })
+//   await queryInterface.addColumn("menus", "parent_id", {
+//     type: DataTypes.STRING,
+//     allowNull: true, 
+//     defaultValue:'null'
+//   });
+// };
+
+
+
+// const down=async()=>{
+//   await queryInterface.removeConstraint('menus', 'menus_parent_id_fkey');
+//   await queryInterface.removeColumn('menus','parent_id');
+// }
+
+// down();
+// addColumn();
+
 const addColumn = async () => {
-  await queryInterface.addConstraint('menus', {
-    fields: ['parent_id'],
+  await queryInterface.addConstraint('jobs', {
+    fields: ['deleted_by'],
     type: 'foreign key',
-    name: 'menus_parent_id_fkey',
+    name: 'jobs_deleted_by_fkey',
     references: {
-      table: 'menus',
+      table: 'jobs',
       field: 'id',
     },
     onDelete: 'CASCADE', 
     onUpdate: 'CASCADE',
   });
-  // await queryInterface.addColumn('menus','link',{
+  // await queryInterface.addColumn('jobs','link',{
   //   type:DataTypes.STRING,
   //   allowNull:true,
   //   defaultValue:'/'
   // })
-  await queryInterface.addColumn("menus", "parent_id", {
+  await queryInterface.addColumn("jobs", "deleted_by", {
     type: DataTypes.STRING,
     allowNull: true, 
     defaultValue:'null'
@@ -32,13 +66,12 @@ const addColumn = async () => {
 
 
 const down=async()=>{
-  await queryInterface.removeConstraint('menus', 'menus_parent_id_fkey');
-  await queryInterface.removeColumn('menus','parent_id');
+  await queryInterface.removeConstraint('jobs', 'jobs_deleted_by_fkey');
+  await queryInterface.removeColumn('jobs','deleted_by');
 }
 
 down();
 addColumn();
-
 
 
 // new migration
