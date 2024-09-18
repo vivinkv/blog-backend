@@ -78,7 +78,7 @@ const addNewBlogs = async (req, res) => {
                 },
               });
 
-              if (!fs.existsSync(`uploads/${attachments.Filename}`)) {
+              if (!fs.existsSync(`uploads/attachments/resources/${attachments.Filename}`)) {
                 await storeImageOnServer(
                   `http://www.thehappyhomes.com/attachments/Resources/${attachments.Filename}`,
                   path.join(
