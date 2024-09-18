@@ -1,6 +1,7 @@
 const storeImageOnServer = require("./storeImagetoServer");
 const path=require('path')
 const regex = /http:\/\/www\.thehappyhomes\.com\/attachments\/Resources\/([^\s]+)\.(png|jpg|jpeg|gif)/g;
+require('dotenv').config();
 const replaceURL=(description)=> {
   // Check if the description is an array
   if (Array.isArray(description)) {
@@ -14,7 +15,7 @@ const replaceURL=(description)=> {
           `${filePath}.${ext}`
         ))
         console.log(`File:${filePath}.${ext}`);
-        return `https://blogs-23vc.onrender.com/uploads/attachments/resources/${filePath}.${ext}`;
+        return `${process.env.BACKEND_URL}/uploads/attachments/resources/${filePath}.${ext}`;
       })
     );
   } else if (typeof description === "string") {
