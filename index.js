@@ -39,6 +39,7 @@ const menuModel = require("./models/menu/menu.model");
 const pageModel = require("./models/page/page.model");
 const pageSectionModel = require("./models/page/section.model");
 const pageSeoModel = require("./models/page/seo.model");
+const notificationModel = require("./models/notification/notification.model");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -227,6 +228,12 @@ pageSectionModel.belongsTo(pageModel,{foreignKey:'page_id',as:'page_sections'})
 
 pageModel.hasOne(pageSeoModel,{foreignKey:'page_id',as:'page_seo'});
 pageSeoModel.belongsTo(pageModel,{foreignKey:'page_id',as:'page_seo'});
+
+
+// notifications
+
+userModel.hasMany(notificationModel,{foreignKey:'created_by',as:'notified_by'});
+notificationModel.belongsTo(userModel,{foreignKey:'created_by',as:'notified_by'});
 
 app.get("/", async (req, res) => {
   try {

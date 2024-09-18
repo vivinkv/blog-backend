@@ -77,6 +77,7 @@ const {
 } = require("../controller/settings.controller");
 
 const {createPage,deletePage,getAllPages,updatePage, getPageDetails}=require('../controller/page.controller');
+const { getAllNotifications, getNotification, updateNotification, deleteNotification, createNotification } = require("../controller/notification.controller");
 
 const storage = multer.diskStorage({
   destination: "./uploads",
@@ -274,5 +275,16 @@ router.get('/pages/:id',getPageDetails);
 router.post('/pages',createPage);
 router.put('/pages/:id/update',updatePage);
 router.get('/pages/:id/delete',deletePage);
+
+// notification
+
+router.get('/notifications',getAllNotifications);
+router.get('/notifications/create',(req,res)=>{
+  res.render('notifications/create')
+});
+router.post('/notifications',createNotification);
+router.get('/notifications/:id',getNotification);
+router.put('/notifications/:id',updateNotification);
+router.get('/notifications/:id/delete',deleteNotification)
 
 module.exports = router;
