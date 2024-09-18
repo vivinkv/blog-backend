@@ -27,7 +27,7 @@ const replaceURL=(description)=> {
         "resources",
         `${filePath}.${ext}`
       ))
-      return `https://blogs-23vc.onrender.com/uploads/attachments/resources/${filePath}.${ext}`;
+      return `${process.env.BACKEND_URL}/uploads/attachments/resources/${filePath}.${ext}`;
     });
   } else {
     // If it's neither a string nor an array, return it as-is (or handle accordingly)
