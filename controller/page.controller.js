@@ -46,7 +46,7 @@ const getPageDetails = async (req, res) => {
       return res.status(404).json({ err: "Page not-found" });
     }
 
-    if(req?.query){
+    if(req?.query?.publish){
       await pageModel.update({
         is_published:req?.query?.publish=='true' ? 'false':'true'
       },{
