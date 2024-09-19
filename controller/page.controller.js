@@ -16,7 +16,7 @@ const getAllPages = async (req, res) => {
         },
       ],
     });
-    res.render("page/index", { title: "Pages List", data: pages,query:{} });
+    res.render("page/index", { title: "Dynamic Pages", data: pages,query:{} });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }

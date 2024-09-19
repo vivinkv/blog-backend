@@ -70,10 +70,10 @@ const jobdown=async()=>{
 }
 
 
-Menudown()
-menuAddColumn();
-jobdown();
-jobaddColumn();
+// Menudown()
+// menuAddColumn();
+// jobdown();
+// jobaddColumn();
 
 
 
@@ -117,3 +117,16 @@ const addNewColumn=async()=>{
 }
 
 // addNewColumn()
+
+
+// add new column to the forums
+
+const addNewForumColumn=async()=>{
+  await queryInterface.addColumn('forums','status',{
+    type:DataTypes.ENUM('not-reviewed','approved','on-hold','rejected'),
+    allowNull:false,
+    defaultValue:'not-reviewed'
+  })
+}
+
+addNewForumColumn();

@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 const { generateToken } = require("../utils/generateToken");
 var emailValidator = require("email-validator");
 var { passwordStrength } = require("check-password-strength");
+const blogModel = require("../models/blog.model");
+const forumModel = require("../models/forum/forum.model");
+const blogCommentModel=require('../models/blogComment.model.js')
 
 //Create a new User
 const createUser = async (req, res) => {
@@ -80,7 +83,7 @@ const createUser = async (req, res) => {
         bio: createUser.dataValues.bio,
         token: token,
       },
-      msg:"User Created Successfully"
+      msg: "User Created Successfully",
     });
   } catch (error) {
     console.log(error);
@@ -146,4 +149,126 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { createUser, login, getAllUsers };
+const getPersonalDetails = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const personalDetails = await userModel.findByPk(id, {
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+
+    if (!personalDetails) {
+      return res.status(404).json({ err: "User not-found" });
+    }
+    res.render("user/index", {
+      data: personalDetails.dataValues,
+      id: personalDetails.dataValues.id,
+      title: "Personal Details",
+    });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const getPersonBlogs = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const blogs = await blogModel.findAll({
+      where: {
+        author: id,
+      },
+      include:[{
+        model:blogCommentModel,
+        as:'comments'
+      }]
+    });
+
+    if (req?.query?.publish) {
+      console.log("yes");
+      const updateBlog = await blogModel.update(
+        {
+          is_published: req?.query?.publish == "true" ? false : true,
+        },
+        {
+          where: {
+            id: req?.query?.id,
+          },
+        }
+      );
+      res.redirect(`/admin/user/${id}/blogs`);
+      return;
+    }
+    if (req?.query?.premium) {
+      console.log("yes");
+      const updateBlog = await blogModel.update(
+        {
+          premium: req?.query?.premium == "true" ? false : true,
+        },
+        {
+          where: {
+            id: req?.query?.id,
+          },
+        }
+      );
+      res.redirect(`/admin/user/${id}/blogs`);
+      return;
+    }
+
+    const author = await userModel.findByPk(id);
+
+    res.render("user/blogs", {
+      data: blogs,
+      title: "Blogs List",
+      name: author.dataValues.name,
+      id: id,
+      query: {},
+    });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const getPersonForums = async (req, res) => {
+  const { id } = req.params;
+  try {
+
+    if(req?.query?.status){
+      await forumModel.update({
+        status:req?.query?.status
+      },{
+        where:{
+          id:req.query?.id
+        }
+      })
+
+      return res.redirect(`/admin/user/${id}/forums`)
+    }
+
+    const forums = await forumModel.findAll({
+      where: {
+        author: id,
+      },
+    });
+    const author = await userModel.findByPk(id);
+
+    
+    res.render("user/forums", {
+      data: forums,
+      title: "Forums List",
+      id: id,
+      name: author.dataValues.name,
+    });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+module.exports = {
+  createUser,
+  login,
+  getAllUsers,
+  getPersonalDetails,
+  getPersonBlogs,
+  getPersonForums,
+};

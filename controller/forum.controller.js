@@ -18,6 +18,18 @@ const getAllForums = async (req, res) => {
   // try {
 
   try {
+
+    if(req?.query?.status){
+      await forumModel.update({
+        status:req?.query?.status
+      },{
+        where:{
+          id:req.query?.id
+        }
+      })
+
+      return res.redirect('/admin/dashboard/forums')
+    }
     const forums = await forumModel.findAll({
       offset: offset,
       limit: limit,
@@ -48,6 +60,7 @@ const getAllForums = async (req, res) => {
         },
       ],
     });
+   
     res.render("forum/forums", {
       data: forums,
       title: "Forums List",

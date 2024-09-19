@@ -26,6 +26,11 @@ const forumModel = sequelizeConfig.define(
         key: "id",
       },
     },
+    status: {
+      type: DataTypes.ENUM("not-reviewed", "approved", "on-hold", "rejected"),
+      allowNull: false,
+      defaultValue: "not-reviewed",
+    },
   },
   {
     freezeTableName: true,
@@ -33,4 +38,4 @@ const forumModel = sequelizeConfig.define(
   }
 );
 
-module.exports=forumModel
+module.exports = forumModel;

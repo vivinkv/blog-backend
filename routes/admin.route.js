@@ -1,5 +1,5 @@
 const express = require("express");
-const { getAllUsers, createUser } = require("../controller/user.controller");
+const { getAllUsers, createUser, getPersonalDetails, getPersonBlogs, getPersonForums } = require("../controller/user.controller");
 const { adminAuth } = require("../middleware/auth.middleware");
 const {
   login,
@@ -78,6 +78,7 @@ const {
 
 const {createPage,deletePage,getAllPages,updatePage, getPageDetails}=require('../controller/page.controller');
 const { getAllNotifications, getNotification, updateNotification, deleteNotification, createNotification } = require("../controller/notification.controller");
+const { getRobotTxt, createRobotTxt } = require("../controller/robot.controller");
 
 const storage = multer.diskStorage({
   destination: "./uploads",
@@ -286,5 +287,17 @@ router.post('/notifications',createNotification);
 router.get('/notifications/:id',getNotification);
 router.put('/notifications/:id',updateNotification);
 router.get('/notifications/:id/delete',deleteNotification)
+
+//robot.txt
+
+router.get('/robot',getRobotTxt);
+router.post('/robot',createRobotTxt);
+
+
+//user specific details
+
+router.get('/user/:id',getPersonalDetails);
+router.get('/user/:id/blogs',getPersonBlogs);
+router.get('/user/:id/forums',getPersonForums);
 
 module.exports = router;
