@@ -4,6 +4,7 @@ const userModel = require("../models/user.model");
 const bannerImageModel = require("../models/bannerImage.model");
 const { v4: uuidv4 } = require("uuid");
 const blogCommentModel = require("../models/blogComment.model");
+const pageModel = require("../models/page/page.model");
 
 async function fetchData() {
   try {
@@ -223,31 +224,50 @@ const addComments = async () => {
   }
 };
 
-
-
-
 // addComments();
 
+const deleteRow = async () => {
+  const findRows = await userModel.findAll({
+    where: {
+      name: "",
+    },
+  });
 
-const deleteRow=async()=>{
-  const findRows=await userModel.findAll({
-    where:{
-      name:''
-    }
-  })
-
-  for(const row of findRows){
+  for (const row of findRows) {
     await row.destroy();
   }
   console.log(findRows);
-}
+};
 
 // deleteRow()
 
-const deleteTableData=async()=>{
-  
-  await blogCommentModel.destroy({truncate:true});
-  await blogModel.destroy({truncate:true});
-  await bannerImageModel.destroy({truncate:true});
-}
-deleteTableData();
+const deleteTableData = async () => {
+  await blogCommentModel.destroy({ truncate: true });
+  await blogModel.destroy({ truncate: true });
+  await bannerImageModel.destroy({ truncate: true });
+};
+// deleteTableData();
+
+const updatePageData = async () => {
+  try {
+    const pages = await pageModel.findAll({});
+
+    for (const page of pages) {
+      await pageModel.update(
+        {
+          meta_title: page.dataValues.title,
+          meta_description: page.dataValues.short_description,
+        },
+        {
+          where: {
+            id: page.dataValues.id,
+          },
+        }
+      );
+    }
+  } catch (error) {
+    console.log({ err: error.message });
+  }
+};
+
+updatePageData();

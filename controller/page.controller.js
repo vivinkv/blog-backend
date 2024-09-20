@@ -90,6 +90,8 @@ const createPage = async (req, res) => {
       short_description: short_description,
       top_description: top_description,
       bottom_description: bottom_description,
+      meta_title:title,
+      meta_description:short_description
     });
 
     // Create sections associated with the page

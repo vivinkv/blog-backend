@@ -418,8 +418,22 @@ const deleteBlog = async (req, res) => {
 
 const getUpdateBlog = async (req, res) => {
   const { id } = req.params;
+  console.log('start');
   console.log({ query: req?.query });
   try {
+
+    if(req?.query?.type){
+      await blogModel.update({
+        type:req?.query?.type
+      },{
+        where:{
+          id:id
+        }
+      })
+      res.redirect("/admin/dashboard/blogs");
+      return
+    }
+
     if (req?.query?.publish) {
       console.log("yes");
       const updateBlog = await blogModel.update(

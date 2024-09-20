@@ -1,5 +1,6 @@
 const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
+const blogCategoryModel = require("../models/blogCategory.model");
 const blogCommentModel = require("../models/blogComment.model");
 const blogFavouriteModel = require("../models/blogFavourite");
 const blogLikeModel = require("../models/blogLike.model");
@@ -9,6 +10,8 @@ const blogSectionModel = require("../models/blogSection.model");
 const blogTopicModel = require("../models/blogTopics.model");
 const userModel = require("../models/user.model");
 const fs = require("fs");
+const slugify = require("slugify");
+
 require("dotenv").config();
 
 //get all blogs
@@ -195,11 +198,11 @@ const getBlogDetail = async (req, res) => {
         },
       ],
     });
-    const attachments=await bannerImageModel.findAll({
-      where:{
-        blog_id:id
-      }
-    })
+    const attachments = await bannerImageModel.findAll({
+      where: {
+        blog_id: id,
+      },
+    });
     const isBlogSaved = await blogSaveModel.findOne({
       where: {
         blog_id: id,
@@ -217,7 +220,7 @@ const getBlogDetail = async (req, res) => {
     }
     res.json({
       data: blog.dataValues,
-      attachments:attachments,
+      attachments: attachments,
       isSaved: isBlogSaved ? true : false,
       isLiked: isLiked ? true : false,
     });
@@ -965,20 +968,105 @@ const deleteFavourite = async (req, res) => {
   }
 };
 
-const addTopics = async (req, res) => {
-  const { id } = req.params;
-  const { topics } = req.body;
-
-  const topicsParse = JSON.parse(topics);
-
-  for (const topic of topicsParse) {
-    const addTopic = await blogTopicModel.create({
-      name: topic.name,
-      blog_id: id,
+const getBlogCategories = async (req, res) => {
+  try {
+    const blogCategories = await blogCategoryModel.findAll({});
+    res.render("category/index", {
+      data: blogCategories,
+      title: "Category List",
+      query: {},
     });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
   }
+};
 
-  res.json({ msg: "working" });
+const getBlogCategory = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlogCategory = await blogCategoryModel.findByPk(id);
+    if (!findBlogCategory) {
+      return res.status(404).json({ err: "Category not-found" });
+    }
+    res.render("category/update", { data: findBlogCategory.dataValues });
+    // res.status(200).json({ data: findBlogCategory.dataValues });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const createBlogCategory = async (req, res) => {
+  const { title, description, name } = req.body;
+  try {
+    const createCategory = await blogCategoryModel.create({
+      title,
+      description,
+      name,
+      slug: slugify(title, {
+        replacement: "-",
+        remove: undefined,
+        lower: false,
+        strict: false,
+        trim: true,
+      }),
+      meta_title: title,
+      meta_description: description,
+    });
+
+    res.status(201).json({ msg: "Category Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const updateBlogCategory = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const findBlogCategory = await blogCategoryModel.findByPk(id);
+    if (!findBlogCategory) {
+      return res.status(404).json({ err: "Category not-found" });
+    }
+    await blogCategoryModel.update(
+      {
+        title: req?.body.title,
+        description: req?.body?.description,
+        name: req?.body.name,
+        slug: slugify(req?.body?.title, {
+          replacement: "-",
+          remove: undefined,
+          lower: false,
+          strict: false,
+          trim: true,
+        }),
+        meta_title: req?.body.title,
+        meta_description: req?.body?.description,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    res.status(200).json({ msg: "Update Category Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteBlogCategory = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const findBlogCategory = await blogCategoryModel.findByPk(id);
+    if (!findBlogCategory) {
+      return res.status(404).json({ err: "Category not-found" });
+    }
+    await findBlogCategory.destroy();
+    res.status(200).json({ msg: "Deleted Successfully" });
+  } catch (error) {
+    res.status(500).json({ err: error.message });
+  }
 };
 
 module.exports = {
@@ -1001,4 +1089,9 @@ module.exports = {
   deleteSavedBlog,
   createFavourite,
   deleteFavourite,
+  getBlogCategories,
+  getBlogCategory,
+  createBlogCategory,
+  updateBlogCategory,
+  deleteBlogCategory,
 };

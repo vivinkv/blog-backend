@@ -1,38 +1,62 @@
-const { DataTypes } = require('sequelize');
-const sequelizeConfig=require('../../config/sequelize.config');
+const { DataTypes } = require("sequelize");
+const sequelizeConfig = require("../../config/sequelize.config");
 
-const pageModel=sequelizeConfig.define('pages',{
-    id:{
-        type:DataTypes.STRING,
-        allowNull:false,
-        primaryKey:true,
-        defaultValue:DataTypes.UUIDV4
+const pageModel = sequelizeConfig.define(
+  "pages",
+  {
+    id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      primaryKey: true,
+      defaultValue: DataTypes.UUIDV4,
     },
-    title:{
-        type:DataTypes.STRING,
-        allowNull:false,
-        unique:true
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        len: {
+          args: [5, 15],
+          msg: "Title Must be Between 5 and 15 characters",
+        },
+      },
     },
-    short_description:{
-        type:DataTypes.TEXT,
-        allowNull:false
+    short_description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        len: {
+          args: [10, 50],
+          msg: "Description Must be Between 10 and 50 characters",
+        },
+      },
     },
-    top_description:{
-        type:DataTypes.TEXT,
-        allowNull:true
+    top_description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
-    bottom_description:{
-        type:DataTypes.TEXT,
-        allowNull:true
+    bottom_description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
-    is_published:{
-        type:DataTypes.BOOLEAN,
-        defaultValue:'false'
-    }
-},{
-    freezeTableName:true,
-    timestamps:true,
-    paranoid:true
-})
+    is_published: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: "false",
+    },
+    meta_title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    meta_description: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+  },
+  {
+    freezeTableName: true,
+    timestamps: true,
+    paranoid: true,
+  }
+);
 
-module.exports=pageModel
+module.exports = pageModel;

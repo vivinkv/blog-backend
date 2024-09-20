@@ -96,6 +96,7 @@
             Picture
           </th>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">Type</th>
           <!--
          
           <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
@@ -131,15 +132,22 @@
               <%= data[i].dataValues.title?.slice(0, 180) %>...
             </a>
           </td>
-          <!--
-          
-        
-       <td class="py-2 px-4 text-blue-900 border border-gray-200">
-         <div class="text-ellipsis overflow-hidden">
-              <%= data[i].dataValues.short_description.slice(0, 250) %>...
-             </div>
-        </td> 
-      -->
+          <td class="py-2 px-4 text-blue-900 border border-gray-200">
+            <div class="text-ellipsis overflow-hidden">
+              <a
+                href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>?type=<%= data[i].dataValues.type%>"
+                id="type-btn"
+                class="inline-flex items-center px-3 py-1 cursor-pointer text-sm font-medium text-white rounded"
+                data-id="<%= data[i].dataValues.id %>"
+                data-type="<%= data[i].dataValues.type%>"
+              >
+                <span class="px-3 py-1 rounded <%= data[i].dataValues.type === 'featured' ? 'bg-emerald-500' : data[i].dataValues.type === 'banner' ? 'bg-indigo-500' : data[i].dataValues.type === 'standard' ? 'bg-pink-500' : 'bg-black' %>">
+                  <%= data[i].dataValues.type.charAt(0).toUpperCase() + data[i].dataValues.type.slice(1) %>
+                </span>
+              </a>
+            </div>
+          </td>
+         
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
@@ -181,7 +189,7 @@
               </button>
               <a
                 href="/admin/dashboard/blog/<%= data[i].dataValues.id%>/comments"
-                class=" bg-[#f5f5f5] p-2 rounded relative hover:text-blue-800"
+                class="bg-[#f5f5f5] p-2 rounded relative hover:text-blue-800"
                 data-title="<%= data[i].dataValues.title%>"
                 data-id="<%= data[i].dataValues.id%>"
               >
@@ -282,6 +290,40 @@
   </div>
 </div>
 
+<!-- Change Type of blog -->
+<div
+  id="change-type-modal"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 items-center justify-center hidden flex"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto">
+    <h2 class="text-xl font-semibold mb-4 text-center">Change Type</h2>
+    <p class="text-gray-600 mb-4 text-center">Select the new type:</p>
+    <select
+      id="new-type"
+      class="w-full px-4 py-2 mb-4 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 mx-auto"
+    >
+      <option value="featured">Featured</option>
+      <option value="banner">Banner</option>
+      <option value="standard">Standard</option>
+      <option value="none">None</option>
+    </select>
+    <div class="flex justify-center gap-4">
+      <button
+        id="cancel-change-type"
+        class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+      <button
+        id="confirm-change-type"
+        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   const changeTitleModal = document.getElementById("change-title-modal");
   const newTitle = document.getElementById("new-blog-title");
@@ -357,6 +399,46 @@
 
   cancelDuplicateBtn.addEventListener("click", () => {
     changeTitleModal.classList.add("hidden");
+  });
+</script>
+<script>
+  // Change Type Popup Logic
+  const typeBtns = document.querySelectorAll("#type-btn");
+  const changeTypeModal = document.getElementById("change-type-modal");
+  const newType = document.getElementById("new-type");
+  const cancelChangeTypeBtn = document.getElementById("cancel-change-type");
+  const confirmChangeTypeBtn = document.getElementById("confirm-change-type");
+
+  let currentTypeId = null;
+
+  typeBtns.forEach((typeBtn) => {
+    typeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      currentTypeId = typeBtn.getAttribute("data-id");
+      changeTypeModal.classList.remove("hidden");
+    });
+  });
+
+  confirmChangeTypeBtn.addEventListener("click", async () => {
+    if (currentTypeId) {
+      const selectedType = newType.value;
+      try {
+        const response = await fetch(
+          `/admin/dashboard/blogs/update/${currentTypeId}?type=${selectedType}`
+        );
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          console.error("Failed to update type");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  });
+
+  cancelChangeTypeBtn.addEventListener("click", () => {
+    changeTypeModal.classList.add("hidden");
   });
 </script>
 <%- include('wrapper/footer') %>

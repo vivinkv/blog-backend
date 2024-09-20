@@ -20,6 +20,7 @@ const createSettings = async (req, res) => {
   try {
     const { settingsList } = req.body;
     const parsedSettings = JSON.parse(settingsList);
+    console.log(req.body);
 
     const smtp_email = parsedSettings.find(
       (value) => value.key == "smtp_email"

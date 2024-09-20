@@ -96,6 +96,11 @@ const blogModel = sequelizeConfig.define(
       allowNull: false,
       defaultValue: "user",
     },
+    type:{
+      type: DataTypes.ENUM("banner", "featured", "standard", "none"),
+      allowNull: false,
+      defaultValue: "none",
+    }
   },
   {
     timestamps: true,

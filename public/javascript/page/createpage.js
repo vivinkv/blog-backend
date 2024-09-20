@@ -54,12 +54,12 @@ $(".summernote").summernote({
         },
         body: JSON.stringify(formData),  // Properly stringify the JSON object
       });
-
+      const result = await response.json();
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(result?.err);
       }
 
-      const result = await response.json();
+     
 
       if (result?.type == "title") {
         document.getElementById("titleError").innerText = `* ${result?.err}`;
@@ -96,6 +96,7 @@ $(".summernote").summernote({
       }
     } catch (error) {
       const alertMessage = document.getElementById("alertMessage");
+      alertMessage.style.backgroundColor="red"
       alertMessage.innerText = error.message;
       alertMessage.style.display = "block";
     }

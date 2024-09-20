@@ -79,6 +79,9 @@ const {
 const {createPage,deletePage,getAllPages,updatePage, getPageDetails}=require('../controller/page.controller');
 const { getAllNotifications, getNotification, updateNotification, deleteNotification, createNotification } = require("../controller/notification.controller");
 const { getRobotTxt, createRobotTxt } = require("../controller/robot.controller");
+const { getAllRedirects, createRedirect, getRedirect, updateRedirect, deleteRedirect } = require("../controller/redirect.controller");
+const { getBlogCategories, getBlogCategory, createBlogCategory, updateBlogCategory, deleteBlogCategory } = require("../controller/blog.controller");
+const blogCategoryModel = require("../models/blogCategory.model");
 
 const storage = multer.diskStorage({
   destination: "./uploads",
@@ -121,8 +124,9 @@ router.get("/login", (req, res) => {
 router.post("/login", login);
 router.use(adminAuth);
 router.get("/dashboard", dashboard);
-router.get("/dashboard/blogs/create", (req, res) => {
-  res.render("createblog", { title: "Create Blog" });
+router.get("/dashboard/blogs/create", async(req, res) => {
+  const categories=await blogCategoryModel.findAll({});
+  res.render("createblog", { title: "Create Blog",categories:categories });
 });
 
 router.put("/dashboard/blogs/update/:id", upload.array("image", 3), updateBlog);
@@ -143,6 +147,16 @@ router.put("/dashboard/user/update/:id", updateUser);
 router.get("/dashboard/user/create", (req, res) => {
   res.render("createuser", { title: "Create User" });
 });
+
+
+router.get('/category',getBlogCategories);
+router.get('/category/create',(req,res)=>{
+  res.render('category/create',{title:"Create New Category"})
+})
+router.get('/category/:id',getBlogCategory);
+router.post('/category',createBlogCategory);
+router.put('/category/:id',updateBlogCategory);
+router.delete('/category/:id',deleteBlogCategory);
 
 // forums
 router.get("/dashboard/forums", getAllForums);
@@ -299,5 +313,14 @@ router.post('/robot',createRobotTxt);
 router.get('/user/:id',getPersonalDetails);
 router.get('/user/:id/blogs',getPersonBlogs);
 router.get('/user/:id/forums',getPersonForums);
+
+
+//301 redirects
+
+router.get('/redirect',getAllRedirects);
+router.post('/redirect',createRedirect);
+router.get('/redirect/:id',getRedirect);
+router.put('/redirect/:id',updateRedirect);
+router.delete('/redirect/:id',deleteRedirect);
 
 module.exports = router;

@@ -40,6 +40,11 @@ const pageModel = require("./models/page/page.model");
 const pageSectionModel = require("./models/page/section.model");
 const pageSeoModel = require("./models/page/seo.model");
 const notificationModel = require("./models/notification/notification.model");
+const blogCategoryModel = require("./models/blogCategory.model");
+const blogCategoryMapModel = require("./models/blogCategoryMap.model");
+
+const errorHandler = require("./middleware/error.middleware");
+const redirection = require("./middleware/redirection.middleware");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -66,7 +71,7 @@ app.set("views", "./views");
 const allowedOrigins = [
   "http://localhost:3000",
   "https://swblogs.vercel.app",
-  "http://localhost:5000",
+  "http://localhost:4000",
   "https://blogs-23vc.onrender.com",
 ];
 
@@ -177,6 +182,9 @@ blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
 blogModel.hasMany(blogTopicModel, { foreignKey: "blog_id", as: "tags" });
 blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 
+blogModel.belongsToMany(blogCategoryModel, { through: blogCategoryMapModel });
+blogCategoryModel.belongsToMany(blogModel, { through: blogCategoryMapModel });
+
 userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user" });
 jobModel.belongsTo(userModel, { foreignKey: "deleted_by", as: "deleted_user" });
 
@@ -223,17 +231,28 @@ menuModel.belongsTo(menuModel, { foreignKey: "parent_id", as: "parentMenu" });
 
 //pages
 
-pageModel.hasMany(pageSectionModel,{foreignKey:'page_id',as:'page_sections'});
-pageSectionModel.belongsTo(pageModel,{foreignKey:'page_id',as:'page_sections'})
+pageModel.hasMany(pageSectionModel, {
+  foreignKey: "page_id",
+  as: "page_sections",
+});
+pageSectionModel.belongsTo(pageModel, {
+  foreignKey: "page_id",
+  as: "page_sections",
+});
 
-pageModel.hasOne(pageSeoModel,{foreignKey:'page_id',as:'page_seo'});
-pageSeoModel.belongsTo(pageModel,{foreignKey:'page_id',as:'page_seo'});
-
+pageModel.hasOne(pageSeoModel, { foreignKey: "page_id", as: "page_seo" });
+pageSeoModel.belongsTo(pageModel, { foreignKey: "page_id", as: "page_seo" });
 
 // notifications
 
-userModel.hasMany(notificationModel,{foreignKey:'created_by',as:'notified_by'});
-notificationModel.belongsTo(userModel,{foreignKey:'created_by',as:'notified_by'});
+userModel.hasMany(notificationModel, {
+  foreignKey: "created_by",
+  as: "notified_by",
+});
+notificationModel.belongsTo(userModel, {
+  foreignKey: "created_by",
+  as: "notified_by",
+});
 
 app.get("/", async (req, res) => {
   try {
@@ -330,6 +349,14 @@ app.get("/", async (req, res) => {
           model: blogTopicModel,
           foreignKey: "blog_id",
           as: "tags",
+        },
+        {
+          model: blogCategoryModel,
+          as: "blog_categories",
+          through: {
+            model: blogCategoryMapModel,
+            unique: false,
+          },
         },
       ],
       where: {
@@ -459,25 +486,35 @@ app.get("/:id", async (req, res) => {
           foreignKey: "blog_id",
           as: "tags",
         },
+        {
+          model: blogCategoryModel,
+          as: "blog_categories",
+          through: {
+            model: blogCategoryMapModel,
+            unique: true,
+          },
+        },
       ],
       where: {
         premium: false,
       },
     });
-    const attachments=await bannerImageModel.findAll({
-      where:{
-        blog_id:id
-      }
-    })
+    const attachments = await bannerImageModel.findAll({
+      where: {
+        blog_id: id,
+      },
+    });
 
     res.json({
       data: blogDetail,
-      attachments:attachments
+      attachments: attachments,
     });
   } catch (error) {
     res.json({ err: error });
   }
 });
+
+// app.use(redirection);
 app.use("/admin", adminRoute);
 app.use("/api/forum", forumRoute);
 app.use("/api/career", careerRoute);
