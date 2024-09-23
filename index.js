@@ -182,8 +182,14 @@ blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
 blogModel.hasMany(blogTopicModel, { foreignKey: "blog_id", as: "tags" });
 blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 
-blogModel.belongsToMany(blogCategoryModel, { through: blogCategoryMapModel });
-blogCategoryModel.belongsToMany(blogModel, { through: blogCategoryMapModel });
+blogModel.belongsToMany(blogCategoryModel, {
+  foreignKey: "blog_id",
+  through: blogCategoryMapModel,
+});
+blogCategoryModel.belongsToMany(blogModel, {
+  foreignKey: "category_id",
+  through: blogCategoryMapModel,
+});
 
 userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user" });
 jobModel.belongsTo(userModel, { foreignKey: "deleted_by", as: "deleted_user" });
@@ -260,133 +266,242 @@ app.get("/", async (req, res) => {
     const limit = req?.query?.limit || 15;
     const offset = (page - 1) * limit;
 
-    const { count, rows } = await blogModel.findAndCountAll({
-      order: [["createdAt", "DESC"]], // Order blogs by latest first
-      limit: limit,
-      offset: offset,
-      include: [
-        {
-          model: userModel,
-          foreignKey: "author",
-          as: "created_by",
-          attributes: {
-            exclude: ["password"],
-          },
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "banner_id",
-          as: "banner",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "featured_id",
-          as: "featured",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "og_id",
-          as: "og",
-        },
-        {
-          model: blogSectionModel,
-          foreignKey: "blog_id",
-          as: "sections",
-        },
-        {
-          model: blogFavouriteModel,
-          foreignKey: "blog_id",
-          as: "favourite",
-        },
-        {
-          model: blogCommentModel,
-          foreignKey: "blog_id",
-          as: "comments",
-          include: [
-            {
-              model: userModel,
-              foreignKey: "user_id",
-              as: "commented_by",
-              attributes: {
-                exclude: ["password"],
-              },
-            },
-            {
-              model: blogLikeModel,
-              foreignKey: "comment_id",
-              as: "likes",
-              include: [
-                {
-                  model: userModel,
-                  foreignKey: "user_id",
-                  as: "liked_by",
-                  attributes: {
-                    exclude: ["password"],
-                  },
-                },
-              ],
-            },
-            {
-              model: blogReplyModel,
-              foreignKey: "comment_id",
-              as: "comment_replies",
-              include: [
-                {
-                  model: userModel,
-                  foreignKey: "user_id",
-                  as: "replied_by",
-                  attributes: {
-                    exclude: ["password"],
-                  },
-                },
-              ],
-            },
-          ],
-          separate: true,
-          order: [["createdAt", "DESC"]],
-        },
-        {
-          model: blogTopicModel,
-          foreignKey: "blog_id",
-          as: "tags",
-        },
-        {
-          model: blogCategoryModel,
-          as: "blog_categories",
-          through: {
-            model: blogCategoryMapModel,
-            unique: false,
-          },
-        },
-      ],
-      where: {
-        premium: false,
-      },
-    });
+    const blogTypes = ["banner", "featured", "standard"];
+    const blogData = {};
 
-    res.json({
-      currentPage: page,
-      totalPages: Math.ceil(count / limit),
-      totalResults: count,
-      nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
-      nextPageUrl:
-        page < Math.ceil(count / limit)
-          ? `${process.env.BACKEND_URL}/blogs?page=${
-              parseInt(page) + 1
-            }&limit=${limit}`
-          : null,
-      previousePageUrl:
-        page > 1
-          ? `${process.env.BACKEND_URL}/blogs?page=${page - 1}&limit=${limit}`
-          : null,
-      firstPageUrl: `${process.env.BACKEND_URL}/blogs?page=1&limit=${limit}`,
-      lastPageUrl: `${process.env.BACKEND_URL}/blogs?page=${Math.ceil(
-        count / limit
-      )}&limit=${limit}`,
-      offset: offset,
-      limit: limit,
-      data: rows,
-    });
+    for (const type of blogTypes) {
+      blogData[type] = await blogModel.findAll({
+        include: [
+          {
+            model: userModel,
+            foreignKey: "author",
+            as: "created_by",
+            attributes: {
+              exclude: ["password"],
+            },
+          },
+          {
+            model: bannerImageModel,
+            foreignKey: "banner_id",
+            as: "banner",
+          },
+          {
+            model: bannerImageModel,
+            foreignKey: "featured_id",
+            as: "featured",
+          },
+          {
+            model: bannerImageModel,
+            foreignKey: "og_id",
+            as: "og",
+          },
+          {
+            model: blogSectionModel,
+            foreignKey: "blog_id",
+            as: "sections",
+          },
+          {
+            model: blogFavouriteModel,
+            foreignKey: "blog_id",
+            as: "favourite",
+          },
+          {
+            model: blogCommentModel,
+            foreignKey: "blog_id",
+            as: "comments",
+            include: [
+              {
+                model: userModel,
+                foreignKey: "user_id",
+                as: "commented_by",
+                attributes: {
+                  exclude: ["password"],
+                },
+              },
+              {
+                model: blogLikeModel,
+                foreignKey: "comment_id",
+                as: "likes",
+                include: [
+                  {
+                    model: userModel,
+                    foreignKey: "user_id",
+                    as: "liked_by",
+                    attributes: {
+                      exclude: ["password"],
+                    },
+                  },
+                ],
+              },
+              {
+                model: blogReplyModel,
+                foreignKey: "comment_id",
+                as: "comment_replies",
+                include: [
+                  {
+                    model: userModel,
+                    foreignKey: "user_id",
+                    as: "replied_by",
+                    attributes: {
+                      exclude: ["password"],
+                    },
+                  },
+                ],
+              },
+            ],
+            separate: true,
+            order: [["createdAt", "DESC"]],
+          },
+          {
+            model: blogTopicModel,
+            foreignKey: "blog_id",
+            as: "tags",
+          },
+          {
+            model: blogCategoryModel,
+            foreignKey: "blog_id",
+            as: "blog_categories",
+            through: {
+              attributes: [],
+            },
+          },
+        ],
+        where: {
+          type: type,
+          premium: false,
+        },
+      });
+    }
+
+    res.status(200).json(blogData);
+
+    // const { count, rows } = await blogModel.findAndCountAll({
+    //   order: [["createdAt", "DESC"]], // Order blogs by latest first
+    //   limit: limit,
+    //   offset: offset,
+    //   include: [
+    //     {
+    //       model: userModel,
+    //       foreignKey: "author",
+    //       as: "created_by",
+    //       attributes: {
+    //         exclude: ["password"],
+    //       },
+    //     },
+    //     {
+    //       model: bannerImageModel,
+    //       foreignKey: "banner_id",
+    //       as: "banner",
+    //     },
+    //     {
+    //       model: bannerImageModel,
+    //       foreignKey: "featured_id",
+    //       as: "featured",
+    //     },
+    //     {
+    //       model: bannerImageModel,
+    //       foreignKey: "og_id",
+    //       as: "og",
+    //     },
+    //     {
+    //       model: blogSectionModel,
+    //       foreignKey: "blog_id",
+    //       as: "sections",
+    //     },
+    //     {
+    //       model: blogFavouriteModel,
+    //       foreignKey: "blog_id",
+    //       as: "favourite",
+    //     },
+    //     {
+    //       model: blogCommentModel,
+    //       foreignKey: "blog_id",
+    //       as: "comments",
+    //       include: [
+    //         {
+    //           model: userModel,
+    //           foreignKey: "user_id",
+    //           as: "commented_by",
+    //           attributes: {
+    //             exclude: ["password"],
+    //           },
+    //         },
+    //         {
+    //           model: blogLikeModel,
+    //           foreignKey: "comment_id",
+    //           as: "likes",
+    //           include: [
+    //             {
+    //               model: userModel,
+    //               foreignKey: "user_id",
+    //               as: "liked_by",
+    //               attributes: {
+    //                 exclude: ["password"],
+    //               },
+    //             },
+    //           ],
+    //         },
+    //         {
+    //           model: blogReplyModel,
+    //           foreignKey: "comment_id",
+    //           as: "comment_replies",
+    //           include: [
+    //             {
+    //               model: userModel,
+    //               foreignKey: "user_id",
+    //               as: "replied_by",
+    //               attributes: {
+    //                 exclude: ["password"],
+    //               },
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //       separate: true,
+    //       order: [["createdAt", "DESC"]],
+    //     },
+    //     {
+    //       model: blogTopicModel,
+    //       foreignKey: "blog_id",
+    //       as: "tags",
+    //     },
+    //     {
+    //       model: blogCategoryModel,
+    //       as: "blog_categories",
+    //       through: {
+    //         model: blogCategoryMapModel,
+    //         unique: false,
+    //       },
+    //     },
+    //   ],
+    //   where: {
+    //     premium: false,
+    //   },
+    // });
+
+    // res.json({
+    //   currentPage: page,
+    //   totalPages: Math.ceil(count / limit),
+    //   totalResults: count,
+    //   nextPage: page < Math.ceil(count / limit) ? page + 1 : null,
+    //   nextPageUrl:
+    //     page < Math.ceil(count / limit)
+    //       ? `${process.env.BACKEND_URL}/blogs?page=${
+    //           parseInt(page) + 1
+    //         }&limit=${limit}`
+    //       : null,
+    //   previousePageUrl:
+    //     page > 1
+    //       ? `${process.env.BACKEND_URL}/blogs?page=${page - 1}&limit=${limit}`
+    //       : null,
+    //   firstPageUrl: `${process.env.BACKEND_URL}/blogs?page=1&limit=${limit}`,
+    //   lastPageUrl: `${process.env.BACKEND_URL}/blogs?page=${Math.ceil(
+    //     count / limit
+    //   )}&limit=${limit}`,
+    //   offset: offset,
+    //   limit: limit,
+    //   data: rows,
+    // });
   } catch (error) {
     res.json({ err: error.message });
   }

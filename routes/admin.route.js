@@ -80,7 +80,7 @@ const {createPage,deletePage,getAllPages,updatePage, getPageDetails}=require('..
 const { getAllNotifications, getNotification, updateNotification, deleteNotification, createNotification } = require("../controller/notification.controller");
 const { getRobotTxt, createRobotTxt } = require("../controller/robot.controller");
 const { getAllRedirects, createRedirect, getRedirect, updateRedirect, deleteRedirect } = require("../controller/redirect.controller");
-const { getBlogCategories, getBlogCategory, createBlogCategory, updateBlogCategory, deleteBlogCategory } = require("../controller/blog.controller");
+const { getBlogCategories, getBlogCategory, createBlogCategory, updateBlogCategory, deleteBlogCategory, getBlogSpecificCategory, createBlogSpecificCategory, deleteBlogSpecificCategory } = require("../controller/blog.controller");
 const blogCategoryModel = require("../models/blogCategory.model");
 
 const storage = multer.diskStorage({
@@ -154,6 +154,9 @@ router.get('/category/create',(req,res)=>{
   res.render('category/create',{title:"Create New Category"})
 })
 router.get('/category/:id',getBlogCategory);
+router.get('/category/blog/:blog_id',getBlogSpecificCategory);
+router.post('/category/blog/:blog_id',createBlogSpecificCategory);
+router.delete('/category/blog/:blog_id',deleteBlogSpecificCategory);
 router.post('/category',createBlogCategory);
 router.put('/category/:id',updateBlogCategory);
 router.delete('/category/:id',deleteBlogCategory);

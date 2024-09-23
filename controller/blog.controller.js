@@ -1,6 +1,7 @@
 const bannerImageModel = require("../models/bannerImage.model");
 const blogModel = require("../models/blog.model");
 const blogCategoryModel = require("../models/blogCategory.model");
+const blogCategoryMapModel = require("../models/blogCategoryMap.model");
 const blogCommentModel = require("../models/blogComment.model");
 const blogFavouriteModel = require("../models/blogFavourite");
 const blogLikeModel = require("../models/blogLike.model");
@@ -996,6 +997,90 @@ const getBlogCategory = async (req, res) => {
   }
 };
 
+const getBlogSpecificCategory = async (req, res) => {
+  const { blog_id } = req.params;
+
+  try {
+    const findBlog = await blogModel.findByPk(blog_id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+    const findCategory = await blogModel.findAll({
+      where: {
+        id: blog_id,
+      },
+      include: [
+        {
+          model: blogCategoryModel,
+          through: {
+            attributes: [],
+          },
+        },
+      ],
+    });
+    res.status(200).json({ data: findCategory });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const createBlogSpecificCategory = async (req, res) => {
+  const { blog_id } = req.params;
+  const { categoryId } = req.body;
+  console.log(req.body);
+
+  try {
+    const findBlog = await blogModel.findByPk(blog_id);
+    if (!findBlog) {
+      return res.status(404).json({ err: "Blog not-found" });
+    }
+
+    const findBlogSpecificCategory = await blogCategoryMapModel.findOne({
+      where: {
+        blog_id: blog_id,
+        category_id: categoryId,
+      },
+    });
+
+    if (findBlogSpecificCategory) {
+      return res.status(400).json({ msg: "Already Exist" });
+    }
+
+    await blogCategoryMapModel.create({
+      blog_id: blog_id,
+      category_id: categoryId,
+    });
+    res.status(201).json({ msg: "Created Successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ err: error.message });
+  }
+};
+
+const deleteBlogSpecificCategory = async (req, res) => {
+  const { blog_id } = req.params;
+  const { categoryId } = req.body;
+
+  try {
+    const findBlogCategoryMap = await blogCategoryMapModel.findOne({
+      where: {
+        blog_id: blog_id,
+        category_id: categoryId,
+      },
+    });
+    if (!findBlogCategoryMap) {
+      return res.status(404).json({ err: "Blog Specific Category not-found" });
+    }
+    await findBlogCategoryMap.destroy();
+
+    res.status(200).json({ msg: "Deleted Successfully" });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ err: error.message });
+  }
+};
+
 const createBlogCategory = async (req, res) => {
   const { title, description, name } = req.body;
   try {
@@ -1094,4 +1179,7 @@ module.exports = {
   createBlogCategory,
   updateBlogCategory,
   deleteBlogCategory,
+  getBlogSpecificCategory,
+  createBlogSpecificCategory,
+  deleteBlogSpecificCategory,
 };

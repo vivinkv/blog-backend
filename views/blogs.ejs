@@ -92,24 +92,39 @@
     <table class="min-w-full bg-white border rounded-lg shadow-lg">
       <thead class="bg-blue-100">
         <tr>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[220px] sm:min-w-[150px] md:min-w-[100px] lg:min-w-[50px] xl:min-w-[20px]"
+          >
             Picture
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[150px]">Title</th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">Type</th>
-          <!--
-         
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[200px]">
-            Description
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[150px] sm:min-w-[100px] md:min-w-[50px] lg:min-w-[20px] xl:min-w-[20px]"
+          >
+            Title
           </th>
-           -->
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[100px] sm:min-w-[50px] md:min-w-[20px] lg:min-w-[20px] xl:min-w-[20px]"
+          >
+            Type
+          </th>
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[50px] sm:min-w-[20px] md:min-w-[20px] lg:min-w-[20px] xl:min-w-[20px]"
+          >
+            Category
+          </th>
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[20px] sm:min-w-[20px] md:min-w-[20px] lg:min-w-[20px] xl:min-w-[20px]"
+          >
             Published
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[20px]">
+          <th
+            class="py-2 px-4 text-left text-blue-900 min-w-[20px] sm:min-w-[20px] md:min-w-[20px] lg:min-w-[20px] xl:min-w-[20px]"
+          >
             Premium
           </th>
-          <th class="py-2 px-4 text-left text-blue-900 min-w-[100px]">
+          <th
+            class="py-2 px-4 space-x-2 border border-gray-200"
+          >
             Action
           </th>
         </tr>
@@ -141,13 +156,25 @@
                 data-id="<%= data[i].dataValues.id %>"
                 data-type="<%= data[i].dataValues.type%>"
               >
-                <span class="px-3 py-1 rounded <%= data[i].dataValues.type === 'featured' ? 'bg-emerald-500' : data[i].dataValues.type === 'banner' ? 'bg-indigo-500' : data[i].dataValues.type === 'standard' ? 'bg-pink-500' : 'bg-black' %>">
-                  <%= data[i].dataValues.type.charAt(0).toUpperCase() + data[i].dataValues.type.slice(1) %>
+                <span
+                  class="px-3 py-1 rounded <%= data[i].dataValues.type === 'featured' ? 'bg-emerald-500' : data[i].dataValues.type === 'banner' ? 'bg-indigo-500' : data[i].dataValues.type === 'standard' ? 'bg-pink-500' : 'bg-black' %>"
+                >
+                  <%= data[i].dataValues.type.charAt(0).toUpperCase() +
+                  data[i].dataValues.type.slice(1) %>
                 </span>
               </a>
             </div>
           </td>
-         
+          <td class="py-2 px-4 text-blue-900 border border-gray-200 w-5">
+            <div class="text-ellipsis overflow-hidden">
+              <button
+                class="flex gap-x-2 items-center px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded show-categories-btn"
+                data-id="<%=data[i].dataValues.id %>"
+              >
+                <img src="/show.svg" class="h-5 w-5" alt="show" />
+              </button>
+            </div>
+          </td>
           <td class="py-2 px-4 text-blue-900 border border-gray-200">
             <div class="text-ellipsis overflow-hidden">
               <a
@@ -175,7 +202,7 @@
             </div>
           </td>
           <td class="py-2 px-4 space-x-2 border border-gray-200">
-            <div class="flex justify-center gap-x-5 max-xl:w-52">
+            <div class="flex justify-start gap-x-5 max-xl:w-52">
               <button
                 class="duplicate-btn bg-[#333333] p-2 rounded hover:text-blue-800"
                 data-title="<%= data[i].dataValues.title%>"
@@ -183,7 +210,7 @@
               >
                 <img
                   src="/duplicate.svg"
-                  class="w-7 h-7"
+                  class="w-10 h-10 max-w-7 max-h-7"
                   alt="duplicate icon"
                 />
               </button>
@@ -193,7 +220,11 @@
                 data-title="<%= data[i].dataValues.title%>"
                 data-id="<%= data[i].dataValues.id%>"
               >
-                <img src="/comment.svg" class="w-7 h-7" alt="comment icon" />
+                <img
+                  src="/comment.svg"
+                  class="w-10 h-10 max-w-7 max-h-7"
+                  alt="comment icon"
+                />
                 <!-- Badge for comment count -->
                 <span
                   class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold rounded-full w-5 h-5 flex items-center justify-center transform translate-x-1/2 -translate-y-1/2"
@@ -206,7 +237,11 @@
                 href="/admin/dashboard/blogs/update/<%= data[i].dataValues.id %>"
                 class="bg-blue-500 p-2 rounded hover:text-blue-800"
               >
-                <img src="/edit.svg" class="w-7 h-7" alt="edit icon" />
+                <img
+                  src="/edit.svg"
+                  class="w-10 h-10 max-w-7 max-h-7"
+                  alt="edit icon"
+                />
               </a>
 
               <% if(!data[i].dataValues.is_published) {%>
@@ -216,7 +251,11 @@
                 data-title="<%= data[i].dataValues.title%>"
                 class="bg-red-500 p-2 rounded text-red-600 hover:text-red-800 delete-link"
               >
-                <img src="/delete.svg" class="w-7 h-7" alt="delete icon" />
+                <img
+                  src="/delete.svg"
+                  class="w-10 h-10 max-w-7 max-h-7"
+                  alt="delete icon"
+                />
               </a>
               <% } %>
             </div>
@@ -323,6 +362,65 @@
     </div>
   </div>
 </div>
+
+<!-- Category Modal -->
+<div
+  id="category-modal"
+  class="fixed inset-0 bg-gray-800 bg-opacity-50 items-center justify-center hidden"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-[40rem] mx-auto relative">
+    <h2 class="text-xl font-semibold mb-4 text-center">Categories</h2>
+    <div id="category-chips" class="flex flex-wrap gap-2 mb-4"></div>
+    <div class="flex gap-2 mb-4">
+      <input
+        type="text"
+        id="new-category"
+        class="flex-grow px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        placeholder="New category"
+        oninput="getSuggestions(this.value)"
+      />
+      <div id="suggestions-list" class="cursor-pointer absolute bg-white shadow-md p-2 rounded-md hidden"></div>
+    
+    </div>
+    <div class="absolute top-0 right-0">
+      <button
+        id="close-category-modal"
+        class="text-gray-800 px-4 py-2 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400"
+      >
+        <img src="/close.png" class="h-7 w-7" alt="close icon" />
+      </button>
+    </div>
+    <button
+      id="save-categories"
+      class="text-white bg-blue-500 px-4 py-2 rounded hover:bg-blue-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
+<script>
+  function getSuggestions(value) {
+    const suggestionsList = document.getElementById('suggestions-list');
+    const categories = JSON.parse('<%- JSON.stringify(categories) %>');
+    const filteredCategories = categories.filter(category => category.name.toLowerCase().includes(value.toLowerCase()));
+    suggestionsList.innerHTML = '';
+    if (filteredCategories.length > 0) {
+      filteredCategories.forEach(category => {
+        const suggestion = document.createElement('div');
+        suggestion.textContent = category.name;
+        suggestion.onclick = () => {
+          addCategory({ id: category.id, name: category.name });
+          suggestionsList.classList.add('hidden');
+        };
+        suggestionsList.appendChild(suggestion);
+      });
+      suggestionsList.classList.remove('hidden');
+    } else {
+      suggestionsList.classList.add('hidden');
+    }
+  }
+</script>
 
 <script>
   const changeTitleModal = document.getElementById("change-title-modal");
@@ -441,4 +539,165 @@
     changeTypeModal.classList.add("hidden");
   });
 </script>
+
+<script>
+  // Category Modal Logic
+  const categoryModal = document.getElementById("category-modal");
+  const categoryChips = document.getElementById("category-chips");
+  const newCategoryInput = document.getElementById("new-category");
+  const addCategoryBtn = document.getElementById("add-category");
+  const closeCategoryModalBtn = document.getElementById("close-category-modal");
+  const showCategoryBtns = document.querySelectorAll(".show-categories-btn");
+
+  let currentCategories = [];
+  let blogid;
+
+  // Fetch categories for the specific blog
+  async function fetchBlogCategories(blogId) {
+    const response = await fetch(`/admin/category/blog/${blogId}`);
+    if (response.ok) {
+      const data = await response.json();
+      currentCategories = data.blog_categories; 
+      blogid = blogId;
+      console.log(data);
+      renderCategoryChips();
+    }
+  }
+
+  // Fetch all categories for autocomplete
+  async function fetchAllCategories() {
+    const response = await fetch("/admin/category");
+    return response.ok ? await response.json() : [];
+  }
+
+  async function renderCategoryChips() {
+    categoryChips.innerHTML = "";
+    // Fetch categories from the server
+    const response = await fetch(`/admin/category/blog/${blogid}`);
+    if (response.ok) {
+      const data = await response.json();
+      currentCategories = data.data; // Update currentCategories with fetched data
+      console.log(data.data);
+      console.log('loop');
+    } else {
+      console.error("Failed to fetch categories from server");
+      return;
+    }
+
+    currentCategories?.forEach((blog) => {
+      blog.blog_categories.forEach((category)=>{
+       const chip = document.createElement("div");
+      chip.className =
+        "bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center";
+      chip.innerHTML = `
+        <span>${category.name}</span>
+        <button class="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none remove-category" data-category-id="${category.id}" data-category-name="${category.name}" data-blog-id="${blogid}">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      `;
+      categoryChips.appendChild(chip);
+      })
+     
+    });
+  }
+
+  async function addCategory(category) {
+    console.log({ category: category });
+    // Ensure currentCategories is defined and is an array
+    if (!Array.isArray(currentCategories)) {
+      console.error("currentCategories is not an array.");
+      currentCategories = []; // Re-initialize it
+    }
+
+    // Check if the category is not empty and does not already exist in the array
+    if (category && !currentCategories.some(cat => cat.name === category.name)) {
+      const categoryObj = { id: category.id, name: category.name }; // Use the real ID from the server
+      
+
+      // Call API to create blogSpecificCategory
+      await fetch(`/admin/category/blog/${blogid}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ categoryId: category.id, categoryName: category.name, blogId: blogid })
+      }).catch(error => console.error("Error adding category:", error)); // Handle errors silently
+
+      currentCategories.push(categoryObj); // Add the new category to the currentCategories array
+      renderCategoryChips(); // Re-render the chips to reflect the new category
+    } else if (!category) {
+      console.log("Category cannot be empty."); // Optionally log a message
+    } else {
+      console.log("Category already exists."); // Optionally log a message
+    }
+
+    newCategoryInput.value = ""; // Clear the input after processing
+  }
+
+  async function removeCategory(categoryId) {
+    currentCategories = currentCategories.filter((cat) => cat.id !== categoryId);
+    // Immediately render the chip removal
+
+    // Call API to delete blogSpecificCategory
+   await fetch(`/admin/category/blog/${blogid}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ categoryId: categoryId, blogId: blogid })
+    }).catch(error => console.error("Error removing category:", error)); // Handle errors silently
+     renderCategoryChips();
+  }
+
+  showCategoryBtns?.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const blogId = btn.getAttribute("data-id"); // Assuming the button has a data-id attribute for the blog ID
+      await fetchBlogCategories(blogId); // Fetch blog-specific categories
+      categoryModal.classList.remove("hidden");
+      categoryModal.classList.add("flex");
+    });
+  });
+
+
+
+  newCategoryInput.addEventListener("keypress", async (e) => {
+    if (e.key === "Enter") {
+      const allCategories = await fetchAllCategories();
+      const filteredCategories = allCategories.filter((category) =>
+        category.toLowerCase().includes(newCategoryInput.value.toLowerCase())
+      );
+      // Implement dropdown logic here to show filteredCategories
+      addCategory({ id: Date.now(), name: newCategoryInput.value.trim() }); // Assuming a new category is created with a unique ID
+    }
+  });
+
+  // Use event delegation for removing categories
+  categoryChips.addEventListener("click", (e) => {
+    if (e.target.closest(".remove-category")) {
+      const categoryId = e.target.closest(".remove-category").getAttribute("data-category-id");
+      removeCategory(categoryId);
+    }
+  });
+
+  closeCategoryModalBtn.addEventListener("click", () => {
+    categoryModal.classList.add("hidden");
+    categoryModal.classList.remove("flex");
+  });
+
+  const saveCategoriesBtn = document.getElementById("save-categories");
+
+  saveCategoriesBtn.addEventListener("click", async () => {
+    const selectedCategories = currentCategories; // Get the selected categories
+    console.log("Selected Categories:", selectedCategories); // Log the selected categories
+
+      window.location.reload();
+    
+
+    // Optionally, you can add logic to save these categories to the server here
+  });
+
+</script>
+
 <%- include('wrapper/footer') %>

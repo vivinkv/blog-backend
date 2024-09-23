@@ -13,7 +13,7 @@ const blogCategoryModel = sequelizeConfig.define("blog_category", {
     allowNull: false,
     validate: {
       len: {
-        args: [5, 100],
+        args: [3, 100],
         msg: "Name must be between 5 and 100 characters",
       },
     },
@@ -23,7 +23,7 @@ const blogCategoryModel = sequelizeConfig.define("blog_category", {
     allowNull: false,
     validate: {
       len: {
-        args: [10, 100],
+        args: [3, 100],
         msg: "Title must be between 10 and 100 characters",
       },
     },
@@ -34,7 +34,7 @@ const blogCategoryModel = sequelizeConfig.define("blog_category", {
     validate: {
       len: {
         args: [10],
-        msg: "Title must be between 10 and 100 characters",
+        msg: "Description must be between 10 and 100 characters",
       },
     },
   },

@@ -13,6 +13,7 @@ const blogCommentModel = require("../models/blogComment.model");
 const blogLikeModel = require("../models/blogLike.model");
 const blogReplyModel = require("../models/blogReply.model");
 const blogSaveModel = require("../models/blogSave.model");
+const blogCategoryModel = require("../models/blogCategory.model");
 
 //Create a new User
 const createAdmin = async (req, res) => {
@@ -206,7 +207,10 @@ const getAllBlogs = async (req, res) => {
         },
       ],
     });
-    res.render("blogs", { data: blogs, title: "Blogs List", query: {} });
+
+    const categories=await blogCategoryModel.findAll({});
+
+    res.render("blogs", { data: blogs,categories:categories, title: "Blogs List", query: {} });
   } catch (error) {
     res.json({ err: error.message });
   }
