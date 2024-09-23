@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const pageModel = require("../models/page/page.model");
 const pageSectionModel = require("../models/page/section.model");
 const pageSeoModel = require("../models/page/seo.model");
@@ -76,14 +77,27 @@ const createPage = async (req, res) => {
     top_description,
     bottom_description,
     sections, 
-    is_dynamic
+    is_dynamic,
+    page_name
   } = req.body;
 
   try {
 
+    const findPageName=await pageModel.findOne({
+      where:{
+        page_name:{
+          [Op.iLike]:page_name
+        }
+      }
+    })
+
+    if(findPageName){
+      return res.status(400).json({err:'Page Name Already Exists'});
+    }
 
     // Create the main page entry
     const createPage = await pageModel.create({
+      page_name:page_name,
       title: title,
       is_published: is_published,
       short_description: short_description,

@@ -23,6 +23,7 @@ $(".summernote").summernote({
     document.getElementById("shortdescriptionError").style.display = "none";
     document.getElementById("contentError").style.display = "none";
 
+    const page_name=document.getElementById('pagename').value;
     const title = document.getElementById("title").value;
     const shortDescription = document.getElementById("shortdescription").value;
     const is_published = document.getElementById("is_published").checked;
@@ -45,7 +46,8 @@ $(".summernote").summernote({
       sections: sectionData,
       top_description,
       bottom_description,
-      is_dynamic
+      is_dynamic,
+      page_name
     };
 
     try {

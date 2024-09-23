@@ -10,6 +10,11 @@ const pageModel = sequelizeConfig.define(
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
     },
+    page_name:{
+      type:DataTypes.STRING,
+      allowNull:false,
+      defaultValue:'static pages'
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,

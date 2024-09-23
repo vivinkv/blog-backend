@@ -146,13 +146,17 @@ const addNewPageColumn=async()=>{
 // addNewBlogColumn();
 
 
-const addNewStaticPageColumn=async()=>{
-  await queryInterface.addColumn('pages','is_dynamic',{
-    type:DataTypes.BOOLEAN,
-    allowNull:false,
-    defaultValue:'true'
+const addNewPagesColumn=async()=>{
+  // await queryInterface.addColumn('pages','is_dynamic',{
+  //   type:DataTypes.BOOLEAN,
+  //   allowNull:false,
+  //   defaultValue:'true'
+  // })
+  await queryInterface.addColumn('pages','page_name',{
+    type:DataTypes.STRING,
+    defaultValue:'static pages'
   })
 }
 
 
-addNewStaticPageColumn();
+addNewPagesColumn();

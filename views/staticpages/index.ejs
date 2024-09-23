@@ -57,6 +57,9 @@
       <thead class="bg-blue-100">
         <tr>
           <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">
+            Page Name
+          </th>
+          <th class="py-2 px-4 text-left text-blue-900 min-w-[220px]">
             Title
           </th>
           
@@ -72,7 +75,11 @@
         <% if (data.length > 0) { %> <% for (let i = 0; i < data.length; i++) {
         %>
         <tr class="border border-gray-200">
-          
+          <td class="py-2 px-4 text-blue-900 border border-gray-200 w-72">
+            <a href="" class="text-ellipsis">
+              <%= data[i].dataValues.page_name %>
+            </a>
+          </td>
           <td class="py-2 px-4 text-blue-900 border border-gray-200 w-72">
             <a href="" class="text-ellipsis">
               <%= data[i].dataValues.title %>

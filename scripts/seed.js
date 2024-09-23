@@ -255,8 +255,7 @@ const updatePageData = async () => {
     for (const page of pages) {
       await pageModel.update(
         {
-          meta_title: page.dataValues.title,
-          meta_description: page.dataValues.short_description,
+         page_name:page.dataValues.title
         },
         {
           where: {
