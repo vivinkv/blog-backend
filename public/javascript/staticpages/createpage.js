@@ -1,9 +1,9 @@
-// Initialize Summernote for existing elements
-$("#summernote").summernote({
-    placeholder: "Enter your content here...",
+$(".summernote").summernote({
+    placeholder: "Enter your description here...",
     tabsize: 2,
     height: "30vh",
   });
+  
   $(".top_description_summernote").summernote({
     placeholder: "Enter Section Content",
     tabsize: 2,
@@ -12,33 +12,32 @@ $("#summernote").summernote({
   $(".bottom_description_summernote").summernote({
     placeholder: "Enter Section Content",
     tabsize: 2,
-    height: "30vh",
+    height: "30vh"
   });
   
-  document.getElementById("submitbtn").addEventListener("click", async function (e) {
+  document
+  .getElementById("submitbtn")
+  .addEventListener("click", async function (e) {
     e.preventDefault();
+    document.getElementById("titleError").style.display = "none";
+    document.getElementById("shortdescriptionError").style.display = "none";
+    document.getElementById("contentError").style.display = "none";
+
     const title = document.getElementById("title").value;
     const shortDescription = document.getElementById("shortdescription").value;
     const is_published = document.getElementById("is_published").checked;
     const is_dynamic=document.getElementById('is_dynamic').checked
-    const id = document.getElementById("id").value;
-    
-    // Clear previous errors
-    document.getElementById("titleError").style.display = "none";
-    document.getElementById("contentError").style.display = "none";
-    
-    // Gather sections data
     const sections = Array.from(document.querySelectorAll(".section-item"));
     const sectionData = sections.map((section) => {
       const heading = section.querySelector('input[name="heading"]').value;
-      const content = $(section.querySelector('textarea[name="content"]')).summernote('code');
+      const content = section.querySelector('textarea[name="content"]').value;
       return { heading, content };
     });
-  
     const top_description = $(".top_description_summernote").summernote("code");
-    const bottom_description = $(".bottom_description_summernote").summernote("code");
-  
-    // Prepare data as JSON
+    const bottom_description = $(".bottom_description_summernote").summernote(
+      "code"
+    );
+
     const formData = {
       title,
       short_description: shortDescription,
@@ -48,85 +47,117 @@ $("#summernote").summernote({
       bottom_description,
       is_dynamic
     };
-  
+
     try {
-      const response = await fetch(`${window.location.origin}/admin/pages/${id}/update`, {
-        method: "PUT",
+      const response = await fetch(`${window.location.origin}/admin/pages`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData), // Stringify the JSON object
+        body: JSON.stringify(formData),  // Properly stringify the JSON object
       });
-  
       const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result?.err);
+      }
+
+     
+
+      if (result?.type == "title") {
+        document.getElementById("titleError").innerText = `* ${result?.err}`;
+        document.getElementById("titleError").style.display = "block";
+        return;
+      } else if (result?.type == "banner") {
+        document.getElementById("bannerError").innerText = `* ${result?.err}`;
+        document.getElementById("bannerError").style.display = "block";
+        return;
+      } else if (result?.type == "short_description") {
+        document.getElementById("shortdescriptionError").innerText = `* ${result?.err}`;
+        document.getElementById("shortdescriptionError").style.display = "block";
+        return;
+      }
+      if (result?.err) {
+        document.getElementById("contentError").innerText = `* ${result?.err}`;
+        document.getElementById("contentError").style.display = "block";
+        return;
+      }
+
       console.log(result);
-  
-      if (response.ok) {
+
+      if (response?.ok) {
         // Show the alert message
         const alertMessage = document.getElementById("alertMessage");
+        alertMessage.style.backgroundColor="green"
         alertMessage.innerText = result.msg;
         alertMessage.style.display = "block";
-  
+
         // Hide the alert after 3 seconds
         setTimeout(() => {
           alertMessage.style.display = "none";
-          window.location.href = `${window.location.origin}/admin/pages`;
-        }, 3000);
-      } else if (result?.type === "title") {
-        document.getElementById("titleError").innerText = `* ${result?.err}`;
-        document.getElementById("titleError").style.display = "block";
-      } else if (result?.err) {
-        document.getElementById("contentError").innerText = `* ${result?.err}`;
-        document.getElementById("contentError").style.display = "block";
+          window.location.href = `${window.location.origin}/admin/staticpages`;
+        }, 2000);
       }
     } catch (error) {
-      document.getElementById("contentError").innerText = `* Network error: ${error.message}`;
-      document.getElementById("contentError").style.display = "block";
+      const alertMessage = document.getElementById("alertMessage");
+      alertMessage.style.backgroundColor="red"
+      alertMessage.innerText = error.message;
+      alertMessage.style.display = "block";
     }
   });
+
   
-  
-  // Sidebar and section management functions
-  document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.getElementById("sidebar");
     const toggleButton = document.getElementById("toggle-button");
-    const body = document.body;
+    const body = document.body; // Get the body element
     let isSidebarVisible = false;
   
-    // Sidebar toggle functions
     function showSidebar() {
       sidebar.style.transform = "translateX(0%)";
-      toggleButton.style.display = "none";
+      toggleButton.style.display = "none"; // Hide button when sidebar is visible
       body.classList.add("sidebar-visible");
       isSidebarVisible = true;
     }
   
     function hideSidebar() {
       sidebar.style.transform = "translateX(-100%)";
-      toggleButton.style.display = "block";
+      toggleButton.style.display = "block"; // Show button when sidebar is hidden
       body.classList.remove("sidebar-visible");
       isSidebarVisible = false;
     }
   
     toggleButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (isSidebarVisible) hideSidebar();
-      else showSidebar();
+      e.stopPropagation(); // Prevent click event from bubbling up
+      if (isSidebarVisible) {
+        hideSidebar();
+      } else {
+        showSidebar();
+      }
     });
   
+    // Hide sidebar when clicking outside of it
     document.addEventListener("click", (e) => {
-      if (isSidebarVisible && !sidebar.contains(e.target) && !toggleButton.contains(e.target)) {
+      if (
+        isSidebarVisible &&
+        !sidebar.contains(e.target) &&
+        !toggleButton.contains(e.target)
+      ) {
         hideSidebar();
       }
     });
   
+    // Stop propagation when clicking inside the sidebar to prevent it from closing
     sidebar.addEventListener("click", (e) => {
       e.stopPropagation();
     });
+  });
   
-    // Section management
+  //   add new sections
+  
+  document.addEventListener("DOMContentLoaded", function () {
     const formSections = document.getElementById("formSections");
   
+    // Function to add a new section
     function addNewSection() {
       const newSection = document.createElement("div");
       newSection.classList.add("section-item");
@@ -142,20 +173,33 @@ $("#summernote").summernote({
           <button type="button" class="delete-btn deleteSection">
             <img src="/delete.svg" width="30" height="30" alt="delete" />
           </button>
+        
           <button type="button" class="swap-btn swapBottom">
             <img src="/swapdown.svg" width="30" height="30" alt="swap bottom" />
           </button>
         </div>
         <div class="section" style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
-          <input type="text" name="heading" class="form-input" placeholder="Title" />
-          <textarea name="content" class="form-textarea summernote-section" placeholder="Message"></textarea>
+          <input
+            type="text"
+            name="heading"
+            class="form-input"
+            placeholder="Title"
+          />
+          <textarea
+            name="content"
+            class="form-textarea summernote-section"
+            placeholder="Message"
+          ></textarea>
         </div>
       `;
   
       formSections.appendChild(newSection);
   
-      // Reattach event listeners to new buttons
-      attachListenersToButtons(newSection);
+      // Reattach event listeners to the new buttons
+      attachAddSectionListener(newSection.querySelector(".addSection"));
+      attachDeleteSectionListener(newSection.querySelector(".deleteSection"));
+      attachSwapTopListener(newSection.querySelector(".swapTop"));
+      attachSwapBottomListener(newSection.querySelector(".swapBottom"));
   
       // Initialize Summernote for the new textarea
       $(newSection.querySelector(".summernote-section")).summernote({
@@ -165,30 +209,25 @@ $("#summernote").summernote({
       });
     }
   
-    function attachListenersToButtons(sectionElement) {
-      attachAddSectionListener(sectionElement.querySelector(".addSection"));
-      attachDeleteSectionListener(sectionElement.querySelector(".deleteSection"));
-      attachSwapTopListener(sectionElement.querySelector(".swapTop"));
-      attachSwapBottomListener(sectionElement.querySelector(".swapBottom"));
-    }
-  
+    // Function to attach event listener to "+" buttons
     function attachAddSectionListener(button) {
       button.addEventListener("click", addNewSection);
-    }
-  
-    function attachDeleteSectionListener(button) {
-      button.addEventListener("click", function () {
-        const sectionToDelete = button.closest(".section-item");
-        if (sectionToDelete) {
-          document.getElementById("delete-confirmation-modal").style.display = "flex";
-          document.getElementById("confirm-delete").onclick = function () {
-            sectionToDelete.remove();
-            document.getElementById("delete-confirmation-modal").style.display = "none";
-          };
-        }
+      $(".summernote-section").summernote({
+        placeholder: "Enter Section here...",
+        tabsize: 2,
+        height: "30vh",
       });
     }
   
+    // Function to attach event listener to "-" buttons
+    function attachDeleteSectionListener(button) {
+      button.addEventListener("click", function () {
+        document.getElementById("delete-confirmation-modal").style.display =
+          "flex";
+      });
+    }
+  
+    // Function to attach event listener to "Swap Top" buttons
     function attachSwapTopListener(button) {
       button.addEventListener("click", function () {
         const currentSection = button.closest(".section-item");
@@ -199,6 +238,7 @@ $("#summernote").summernote({
       });
     }
   
+    // Function to attach event listener to "Swap Bottom" buttons
     function attachSwapBottomListener(button) {
       button.addEventListener("click", function () {
         const currentSection = button.closest(".section-item");
@@ -214,7 +254,16 @@ $("#summernote").summernote({
       document.getElementById("delete-confirmation-modal").style.display = "none";
     });
   
-    // Attach listeners to initial section buttons
-    attachListenersToButtons(document.querySelector(".section-item"));
-  });
+    // Event listener for confirming the delete action
+    document.getElementById("confirm-delete").addEventListener("click", () => {
+      const sectionToDelete = document.querySelector(".deleteSection").closest(".section-item");
+      sectionToDelete.remove();
+      document.getElementById("delete-confirmation-modal").style.display = "none";
+    });
   
+    // Attach listeners to the initial "+" and "-" buttons
+    attachAddSectionListener(document.querySelector(".addSection"));
+    attachDeleteSectionListener(document.querySelector(".deleteSection"));
+    attachSwapTopListener(document.querySelector(".swapTop"));
+    attachSwapBottomListener(document.querySelector(".swapBottom"));
+  });

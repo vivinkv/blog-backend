@@ -26,6 +26,7 @@ $(".summernote").summernote({
     const title = document.getElementById("title").value;
     const shortDescription = document.getElementById("shortdescription").value;
     const is_published = document.getElementById("is_published").checked;
+    const is_dynamic=document.getElementById('is_dynamic').checked
     const sections = Array.from(document.querySelectorAll(".section-item"));
     const sectionData = sections.map((section) => {
       const heading = section.querySelector('input[name="heading"]').value;
@@ -43,7 +44,8 @@ $(".summernote").summernote({
       is_published,
       sections: sectionData,
       top_description,
-      bottom_description
+      bottom_description,
+      is_dynamic
     };
 
     try {

@@ -2,30 +2,30 @@ const pageModel = require("../models/page/page.model");
 const pageSectionModel = require("../models/page/section.model");
 const pageSeoModel = require("../models/page/seo.model");
 
-const getAllPages = async (req, res) => {
+const getAllStaticPages = async (req, res) => {
   try {
     const pages = await pageModel.findAll({
-      where:{
-        is_dynamic:true
+      where: {
+        is_dynamic: false,
       },
       include: [
         {
           model: pageSectionModel,
           as: "page_sections",
         },
-        {
-          model: pageSeoModel,
-          as: "page_seo",
-        },
       ],
     });
-    res.render("page/index", { title: "Dynamic Pages", data: pages,query:{} });
+    res.render("staticpages/index", {
+      title: "Static Pages",
+      data: pages,
+      query: {},
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
 
-const getPageDetails = async (req, res) => {
+const getStaticPageDetails = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -38,10 +38,6 @@ const getPageDetails = async (req, res) => {
           model: pageSectionModel,
           as: "page_sections",
         },
-        {
-          model: pageSeoModel,
-          as: "page_seo",
-        },
       ],
     });
 
@@ -49,19 +45,24 @@ const getPageDetails = async (req, res) => {
       return res.status(404).json({ err: "Page not-found" });
     }
 
-    if(req?.query?.publish){
-      await pageModel.update({
-        is_published:req?.query?.publish=='true' ? 'false':'true'
-      },{
-        where:{
-          id:id
+    if (req?.query?.publish) {
+      await pageModel.update(
+        {
+          is_published: req?.query?.publish == "true" ? "false" : "true",
+        },
+        {
+          where: {
+            id: id,
+          },
         }
-      })
-      res.redirect('/admin/pages')
+      );
+      res.redirect("/admin/staticpages");
     }
 
-    res.render('page/update',{data:findPage.dataValues,title:"Update Page"})
-
+    res.render("staticpages/update", {
+      data: findPage.dataValues,
+      title: "Update Static Page",
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -74,12 +75,17 @@ const createPage = async (req, res) => {
     short_description,
     top_description,
     bottom_description,
-    sections, 
-    is_dynamic
+    sections, // sections will already be a parsed JSON object
   } = req.body;
 
   try {
-
+    // Validate title length
+    if (title?.length > 14 || title?.length < 4) {
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 4 and 14 characters",
+      });
+    }
 
     // Create the main page entry
     const createPage = await pageModel.create({
@@ -88,13 +94,13 @@ const createPage = async (req, res) => {
       short_description: short_description,
       top_description: top_description,
       bottom_description: bottom_description,
-      meta_title:title,
-      meta_description:short_description,
-      is_dynamic:is_dynamic
+      meta_title: title,
+      meta_description: short_description,
     });
 
     // Create sections associated with the page
-    for (const section of sections) {  // sections is already an array, no need to parse
+    for (const section of sections) {
+      // sections is already an array, no need to parse
       try {
         const sectionData = await pageSectionModel.create({
           page_id: createPage.dataValues.id,
@@ -104,20 +110,23 @@ const createPage = async (req, res) => {
         console.log(sectionData); // Logs each section data created
       } catch (error) {
         // If any error occurs while creating sections, return the error
-        return res.status(500).json({ err: `Error creating section: ${error.message}` });
+        return res
+          .status(500)
+          .json({ err: `Error creating section: ${error.message}` });
       }
     }
 
     // Return success response after creating the page and sections
-    res.status(200).json({ data: createPage.dataValues, msg: "Created Successfully" });
+    res
+      .status(200)
+      .json({ data: createPage.dataValues, msg: "Created Successfully" });
   } catch (error) {
     // Catch all other errors and return them
     res.status(500).json({ err: `Error creating page: ${error.message}` });
   }
 };
 
-
-const updatePage = async (req, res) => {
+const updateStaticPage = async (req, res) => {
   const {
     title,
     short_description,
@@ -127,13 +136,19 @@ const updatePage = async (req, res) => {
     sections, // sections will already be a parsed JSON object
     meta_title,
     meta_description,
-    is_dynamic
   } = req.body;
 
   const { id } = req.params;
 
   try {
-    
+    // Validate title length
+    if (!title || title.length > 14 || title.length < 4) {
+      return res.status(400).json({
+        type: "title",
+        err: "Title must be between 4 and 14 characters",
+      });
+    }
+
     // Load the existing page and its sections
     const page = await pageModel.findByPk(id, {
       include: [
@@ -207,7 +222,6 @@ const updatePage = async (req, res) => {
         is_published,
         top_description,
         bottom_description,
-        is_dynamic
       },
       {
         where: { id },
@@ -233,9 +247,7 @@ const updatePage = async (req, res) => {
   }
 };
 
-
-
-const deletePage = async (req, res) => {
+const deleteStaticPage = async (req, res) => {
   const { id } = req.params;
   try {
     const findPage = await pageModel.findByPk(id, {
@@ -256,16 +268,16 @@ const deletePage = async (req, res) => {
     }
     await findPage.destroy();
 
-    res.redirect("/admin/pages");
+    res.redirect("/admin/staticpages");
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
 };
 
 module.exports = {
-  getAllPages,
-  getPageDetails,
+  getAllStaticPages,
+  getStaticPageDetails,
   createPage,
-  updatePage,
-  deletePage,
+  updateStaticPage,
+  deleteStaticPage,
 };

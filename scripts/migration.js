@@ -142,5 +142,17 @@ const addNewPageColumn=async()=>{
 
 }
 
-addNewPageColumn();
-addNewBlogColumn();
+// addNewPageColumn();
+// addNewBlogColumn();
+
+
+const addNewStaticPageColumn=async()=>{
+  await queryInterface.addColumn('pages','is_dynamic',{
+    type:DataTypes.BOOLEAN,
+    allowNull:false,
+    defaultValue:'true'
+  })
+}
+
+
+addNewStaticPageColumn();

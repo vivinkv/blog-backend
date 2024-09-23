@@ -16,8 +16,8 @@ const pageModel = sequelizeConfig.define(
       unique: true,
       validate: {
         len: {
-          args: [5, 15],
-          msg: "Title Must be Between 5 and 15 characters",
+          args: [3, 15],
+          msg: "Title Must be Between 3 and 15 characters",
         },
       },
     },
@@ -51,6 +51,11 @@ const pageModel = sequelizeConfig.define(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    is_dynamic:{
+      type:DataTypes.BOOLEAN,
+      allowNull:false,
+      defaultValue:'true'
+    }
   },
   {
     freezeTableName: true,

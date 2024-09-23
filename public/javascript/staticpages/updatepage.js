@@ -70,7 +70,7 @@ $("#summernote").summernote({
         // Hide the alert after 3 seconds
         setTimeout(() => {
           alertMessage.style.display = "none";
-          window.location.href = `${window.location.origin}/admin/pages`;
+          window.location.href = `${window.location.origin}/admin/staticpages`;
         }, 3000);
       } else if (result?.type === "title") {
         document.getElementById("titleError").innerText = `* ${result?.err}`;

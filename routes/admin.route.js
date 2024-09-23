@@ -82,6 +82,7 @@ const { getRobotTxt, createRobotTxt } = require("../controller/robot.controller"
 const { getAllRedirects, createRedirect, getRedirect, updateRedirect, deleteRedirect } = require("../controller/redirect.controller");
 const { getBlogCategories, getBlogCategory, createBlogCategory, updateBlogCategory, deleteBlogCategory, getBlogSpecificCategory, createBlogSpecificCategory, deleteBlogSpecificCategory } = require("../controller/blog.controller");
 const blogCategoryModel = require("../models/blogCategory.model");
+const { getAllStaticPages, getStaticPageDetails, updateStaticPage, deleteStaticPage } = require("../controller/staticpage.controller");
 
 const storage = multer.diskStorage({
   destination: "./uploads",
@@ -284,7 +285,7 @@ router.put("/settings/:id", updateSettings);
 router.get("/settings/:id/delete");
 
 
-//pages
+//dynamic pages
 router.get('/pages',getAllPages);
 router.get('/pages/create',(req,res)=>{
   res.render('page/create',{title:'Create Page'})
@@ -293,6 +294,17 @@ router.get('/pages/:id',getPageDetails);
 router.post('/pages',createPage);
 router.put('/pages/:id/update',updatePage);
 router.get('/pages/:id/delete',deletePage);
+
+
+//static pages
+
+router.get('/staticpages',getAllStaticPages);
+router.get('/staticpages/create',(req,res)=>{
+  res.render('staticpages/create',{title:'Create Static Page'})
+})
+router.get('/staticpages/:id',getStaticPageDetails);
+router.put('/staticpages/:id/update',updateStaticPage);
+router.get('/staticpages/:id/delete',deleteStaticPage);
 
 // notification
 
