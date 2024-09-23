@@ -57,7 +57,8 @@ const getPageDetails = async (req, res) => {
           id:id
         }
       })
-      res.redirect('/admin/pages')
+      res.redirect('/admin/pages');
+      return;
     }
 
     res.render('page/update',{data:findPage.dataValues,title:"Update Page"})

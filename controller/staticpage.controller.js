@@ -57,6 +57,7 @@ const getStaticPageDetails = async (req, res) => {
         }
       );
       res.redirect("/admin/staticpages");
+      return;
     }
 
     res.render("staticpages/update", {
