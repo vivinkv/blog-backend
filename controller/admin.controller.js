@@ -146,7 +146,14 @@ const login = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   console.log(req?.query);
   try {
-    const blogs = await blogModel.findAll({
+    const page = parseInt(req.query.page) || 1; // Get the current page from query, default to 1
+    const limit = parseInt(req.query.limit) || 10; // Get the limit from query, default to 10
+    const offset = (page - 1) * limit; // Calculate the offset for pagination
+
+    let blogs;
+    let categories;
+
+    blogs = await blogModel.findAndCountAll({
       order: [["createdAt", "DESC"]],
       include: [
         {
@@ -206,11 +213,20 @@ const getAllBlogs = async (req, res) => {
           order: [["createdAt", "DESC"]],
         },
       ],
+      limit: limit, // Limit the number of results
+      offset: offset, // Offset for pagination
     });
 
-    const categories=await blogCategoryModel.findAll({});
+    categories = await blogCategoryModel.findAll({});
 
-    res.render("blogs", { data: blogs,categories:categories, title: "Blogs List", query: {} });
+    const totalPages = Math.ceil(blogs.count / limit); // Calculate total pages
+    console.log({page,limit,totalPages});
+    res.render("blogs", {
+      data: blogs.rows, // Use rows for the actual blog data
+      categories: categories,
+      title: "Blogs List",
+      query: { page, limit, totalPages }, // Pass pagination info to the view
+    });
   } catch (error) {
     res.json({ err: error.message });
   }
@@ -422,20 +438,22 @@ const deleteBlog = async (req, res) => {
 
 const getUpdateBlog = async (req, res) => {
   const { id } = req.params;
-  console.log('start');
+  console.log("start");
   console.log({ query: req?.query });
   try {
-
-    if(req?.query?.type){
-      await blogModel.update({
-        type:req?.query?.type
-      },{
-        where:{
-          id:id
+    if (req?.query?.type) {
+      await blogModel.update(
+        {
+          type: req?.query?.type,
+        },
+        {
+          where: {
+            id: id,
+          },
         }
-      })
+      );
       res.redirect("/admin/dashboard/blogs");
-      return
+      return;
     }
 
     if (req?.query?.publish) {
@@ -710,41 +728,55 @@ const updateUser = async (req, res) => {
 };
 
 const dashboard = async (req, res) => {
-  const page=req?.query?.page||1;
-  const limit=req?.query?.limit||10;
-  const role=req?.query?.role||'all'
-  const offset=(page-1)*limit;
+  const page = req?.query?.page || 1;
+  const limit = req?.query?.limit || 10;
+  const role = req?.query?.role || "all";
+  const offset = (page - 1) * limit;
   try {
-    if (role!='all') {
-      const {rows,count} = await userModel.findAndCountAll({
+    if (role != "all") {
+      const { rows, count } = await userModel.findAndCountAll({
         where: {
           role: role,
         },
-        limit:limit,
-        offset:offset,
+        limit: limit,
+        offset: offset,
         attributes: {
           exclude: ["password"],
         },
       });
       // res.status(200).json({ data: users });
       // console.log({ data: users });
-      res.render("dashboard", { title: "Users List",role:role, data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
+      res.render("dashboard", {
+        title: "Users List",
+        role: role,
+        data: rows,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        lastPage: count / parseInt(limit),
+      });
     } else {
-      const {count,rows} = await userModel.findAndCountAll({
+      const { count, rows } = await userModel.findAndCountAll({
         where: {
           role: {
             [Op.ne]: "admin",
           },
         },
-        limit:limit,
-        offset:offset,
+        limit: limit,
+        offset: offset,
         attributes: {
           exclude: ["password"],
         },
       });
-      console.log({count:count});
-    
-      res.render("dashboard", { title: "Users List",role:role, data: rows,page:parseInt(page),limit:parseInt(limit),lastPage:count/parseInt(limit) });
+      console.log({ count: count });
+
+      res.render("dashboard", {
+        title: "Users List",
+        role: role,
+        data: rows,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        lastPage: count / parseInt(limit),
+      });
     }
   } catch (error) {
     res.status(500).json({ err: error.message });

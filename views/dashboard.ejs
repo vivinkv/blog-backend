@@ -93,9 +93,9 @@
             </td>
             <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
               <a href="/admin/user/<%= data[i].dataValues.id %>">
-              <%= data[i].dataValues.name?.charAt(0).toUpperCase()
-              +data[i].dataValues.name?.slice(1) %>
-            </a>
+                <%= data[i].dataValues.name?.charAt(0).toUpperCase() +
+                data[i].dataValues.name?.slice(1) %>
+              </a>
             </td>
             <td class="py-2 px-4 text-blue-900 w-48 border border-gray-200">
               <%= data[i].dataValues.email %>
@@ -104,23 +104,23 @@
             <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
               <%= data[i].dataValues.phone %>
             </td>
-            <% }else{ %>
+            <% } else { %>
             <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
               <img src="/close.png" alt="cross icon" class="h-10 w-10" />
             </td>
             <% } %> <% if (data[i].dataValues.bio) { %>
             <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
-              <%= data[i].dataValues.bio?.charAt(0).toUpperCase()
-              +data[i].dataValues.bio?.slice(1) %>
+              <%= data[i].dataValues.bio?.charAt(0).toUpperCase() +
+              data[i].dataValues.bio?.slice(1) %>
             </td>
-            <% }else{ %>
+            <% } else { %>
             <td class="py-2 px-4 text-blue-900 w-64 border border-gray-200">
               <img src="/close.png" alt="cross icon" class="h-10 w-10" />
             </td>
             <% } %>
             <td class="py-2 px-4 text-blue-900 w-32 border border-gray-200">
-              <%= data[i].dataValues.role?.charAt(0).toUpperCase()
-              +data[i].dataValues.role?.slice(1) %>
+              <%= data[i].dataValues.role?.charAt(0).toUpperCase() +
+              data[i].dataValues.role?.slice(1) %>
             </td>
             <td
               class="py-2 px-4 flex space-x-2 w-32 border border-gray-200 border-r-0"
@@ -145,17 +145,19 @@
           <% } %> <% } %>
         </tbody>
       </table>
-      <div class="flex items-center justify-center gap-x-10 mt-4 space-x-1">
+      <div class="flex items-center justify-between gap-x-10 mt-4 space-x-1">
         <a
-          href="/admin/dashboard?role=<%=role %>&page=<%=page==1 ? 1: page-1 %>&limit=<%=limit %>"
-          class="px-3 py-2 <%=page==1 ? 'hidden': '' %> text-white bg-blue-600 border border-blue-300 rounded-md hover:bg-blue-500"
+          href="/admin/dashboard?role=<%= role %>&page=<%= page === 1 ? 1 : page - 1 %>&limit=<%= limit %>"
+          class="px-3 py-2 text-white bg-blue-600 border border-blue-300 rounded-md hover:bg-blue-500 <%= page === 1 ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' %>"
+          <%= page === 1 ? 'tabindex="-1"' : '' %>
         >
           Previous
         </a>
 
         <a
-          href="/admin/dashboard?role=<%=role %>&page=<%=page+1 %>&limit=<%=limit %>"
-          class="px-3 py-2 text-white bg-blue-600 border <%=page>lastPage ? 'hidden': '' %> border-blue-300 rounded-md hover:bg-blue-500"
+          href="/admin/dashboard?role=<%= role %>&page=<%= page + 1 %>&limit=<%= limit %>"
+          class="px-3 py-2 text-white bg-blue-600 border border-blue-300 rounded-md hover:bg-blue-500 <%= page === lastPage ? 'opacity-50 cursor-not-allowed pointer-events-none' : '' %>"
+          <%= page === lastPage ? 'tabindex="-1"' : '' %>
         >
           Next
         </a>
