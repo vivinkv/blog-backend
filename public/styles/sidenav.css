@@ -143,10 +143,11 @@
   
   /* For custom scrollbar */
   ::-webkit-scrollbar-thumb {
-    background: #dedede; 
+    background: #ededed; 
+     
   }
   
   /* For custom scrollbar */
   ::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+    background: #dedede;
   }
