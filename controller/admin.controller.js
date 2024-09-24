@@ -6,7 +6,7 @@ var { passwordStrength } = require("check-password-strength");
 const userModel = require("../models/user.model");
 const blogModel = require("../models/blog.model");
 const bannerImageModel = require("../models/bannerImage.model");
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 const fs = require("fs");
 const blogSectionModel = require("../models/blogSection.model");
 const blogCommentModel = require("../models/blogComment.model");
@@ -544,6 +544,8 @@ const updateBlog = async (req, res) => {
   } = req.body;
   const parseSection = JSON.parse(sections);
 
+  console.log({file:req.files});
+
   try {
     // Validate title length
     if (title?.length > 100 || title?.length < 10) {
@@ -617,6 +619,58 @@ const updateBlog = async (req, res) => {
           blog_id: id,
         },
       });
+    }
+
+    // Handle file upload and update blog details
+    if (req?.files.length > 0) {
+      const bannerImage = await bannerImageModel.create({
+        path: `/uploads/${req?.files[0]?.filename}`,
+        fieldname: req?.files[0]?.fieldname,
+        originalname: req?.files[0]?.originalname,
+        encoding: req?.files[0]?.encoding,
+        mimetype: req?.files[0]?.mimetype,
+        destination: req?.files[0]?.destination,
+        filename: req?.files[0]?.filename,
+        size: req?.files[0]?.size,
+      });
+
+      const findBlogs = await blogModel.findAll({
+        where: {
+          banner_id: findBlog.dataValues.banner_id,
+        },
+      });
+
+      if (findBlogs.length === 1) {
+        const oldBannerPath = `uploads/${findBlog?.dataValues?.banner?.path
+          ?.split("/")
+          ?.pop()}`;
+        if (fs.existsSync(oldBannerPath)) {
+          try {
+            await fs.promises.unlink(oldBannerPath);
+            console.log("Deleted successfully");
+          } catch (err) {
+            return res.json({ err: err.message });
+          }
+        }
+      }
+
+      await blogModel.update(
+        {
+          title,
+          description: top_description,
+          short_description,
+          is_published,
+          premium,
+          top_description,
+          bottom_description,
+          banner_id: bannerImage.dataValues.id,
+        },
+        {
+          where: { id },
+        }
+      );
+
+      return res.status(200).json({ msg: "Blog updated successfully" });
     }
 
     res.status(200).json({ msg: "Blog updated successfully" });
