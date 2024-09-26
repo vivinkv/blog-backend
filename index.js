@@ -522,6 +522,221 @@ app.get("/contact", async (req, res) => {
   res.json({data:contactDetails.dataValues})
 });
 
+app.get('/test',async(req,res)=>{
+  const { count, rows } = await blogModel.findAndCountAll({
+      order: [["createdAt", "DESC"]], // Order blogs by latest first
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          as: "created_by",
+          attributes: {
+            exclude: ["password"],
+          },
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+          as: "banner",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "featured_id",
+          as: "featured",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "og_id",
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogFavouriteModel,
+          foreignKey: "blog_id",
+          as: "favourite",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "commented_by",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+            {
+              model: blogLikeModel,
+              foreignKey: "comment_id",
+              as: "likes",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "liked_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+            {
+              model: blogReplyModel,
+              foreignKey: "comment_id",
+              as: "comment_replies",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "replied_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
+        {
+          model: blogTopicModel,
+          foreignKey: "blog_id",
+          as: "tags",
+        },
+        {
+          model: blogCategoryModel,
+          as: "blog_categories",
+          through: {
+            model: blogCategoryMapModel,
+            unique: false,
+          },
+        },
+      ],
+      where: {
+        premium: false,
+      },
+    });
+
+    res.json({
+      totalResults: count,
+      data: rows,
+    });
+})
+
+app.get('/allblogs',async(req,res)=>{
+  try {
+    const blogs=await blogModel.findAll({
+      include: [
+        {
+          model: userModel,
+          foreignKey: "author",
+          as: "created_by",
+          attributes: {
+            exclude: ["password"],
+          },
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "banner_id",
+          as: "banner",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "featured_id",
+          as: "featured",
+        },
+        {
+          model: bannerImageModel,
+          foreignKey: "og_id",
+          as: "og",
+        },
+        {
+          model: blogSectionModel,
+          foreignKey: "blog_id",
+          as: "sections",
+        },
+        {
+          model: blogFavouriteModel,
+          foreignKey: "blog_id",
+          as: "favourite",
+        },
+        {
+          model: blogCommentModel,
+          foreignKey: "blog_id",
+          as: "comments",
+          include: [
+            {
+              model: userModel,
+              foreignKey: "user_id",
+              as: "commented_by",
+              attributes: {
+                exclude: ["password"],
+              },
+            },
+            {
+              model: blogLikeModel,
+              foreignKey: "comment_id",
+              as: "likes",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "liked_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+            {
+              model: blogReplyModel,
+              foreignKey: "comment_id",
+              as: "comment_replies",
+              include: [
+                {
+                  model: userModel,
+                  foreignKey: "user_id",
+                  as: "replied_by",
+                  attributes: {
+                    exclude: ["password"],
+                  },
+                },
+              ],
+            },
+          ],
+          separate: true,
+          order: [["createdAt", "DESC"]],
+        },
+        {
+          model: blogTopicModel,
+          foreignKey: "blog_id",
+          as: "tags",
+        },
+        {
+          model: blogCategoryModel,
+          as: "blog_categories",
+          through: {
+            model: blogCategoryMapModel,
+            unique: false,
+          },
+        },
+      ],
+    })
+
+    res.status(200).json({data:blogs})
+  } catch (error) {
+    res.status(500).json({err:error.message})
+  }
+})
+
 app.get("/:id", async (req, res) => {
   console.log(req?.user);
   try {
