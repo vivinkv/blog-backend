@@ -31,8 +31,8 @@ const pageModel = sequelizeConfig.define(
       allowNull: false,
       validate: {
         len: {
-          args: [10, 50],
-          msg: "Description Must be Between 10 and 50 characters",
+          args: [10, 1000],
+          msg: "Description Must be Between 10 and 1000 characters",
         },
       },
     },
