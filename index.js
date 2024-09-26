@@ -45,6 +45,7 @@ const blogCategoryMapModel = require("./models/blogCategoryMap.model");
 
 const errorHandler = require("./middleware/error.middleware");
 const redirection = require("./middleware/redirection.middleware");
+const { Op } = require("sequelize");
 
 // const limiter = rateLimit({
 //   windowMs: 60 * 1000,
@@ -509,6 +510,17 @@ app.get("/", async (req, res) => {
 
 app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
+app.get("/contact", async (req, res) => {
+  const contactDetails = await pageModel.findOne({
+    where: {
+      page_name: {
+        [Op.iLike]: '%contact%'
+      },
+    },
+  });
+
+  res.json({data:contactDetails.dataValues})
+});
 
 app.get("/:id", async (req, res) => {
   console.log(req?.user);

@@ -30,6 +30,7 @@ const addNewBlogs = async (req, res) => {
           const beforeBannerCount = await bannerImageModel.count();
           const beforeCommentCount = await blogCommentModel.count();
           const beforeUserCount = await userModel.count();
+          let thumbnail;
 
           for (const blog of blogs.data) {
             let user = await userModel.findOne({
@@ -55,6 +56,44 @@ const addNewBlogs = async (req, res) => {
                 id: blog.ID.toString(),
               },
             });
+
+            if (
+              !fs.existsSync(`uploads/attachments/thumbnail/${blog.Thumbnail}`)
+            ) {
+              await storeImageOnServer(
+                `http://www.thehappyhomes.com/attachments/Resources/${blog.Thumbnail}`,
+                path.join(
+                  "",
+                  "uploads",
+                  "attachments",
+                  "thumbnail",
+                  blog.Thumbnail
+                )
+              );
+
+              thumbnail = await bannerImageModel.create({
+                filename: blog.Thumbnail,
+                originalname: blog.Thumbnail,
+                fieldname:blog.Thumbnail,
+                encoding: blog.Thumbnail,
+                mimetype: blog.Thumbnail,
+                destination: "/uploads/attachments/resources/thumbnail",
+                path: `/uploads/attachments/resources/thumbnail/${blog.Thumbnail}`,
+                size: 1000,
+                image_type: "thumbanil",
+              });
+
+              blogModel.update({
+                banner_id: thumbnail ? thumbnail.dataValues.id : "null",
+              },{
+                where:{
+                  id:findBlog.dataValues.id
+                }
+              })
+             
+              // await fs.promises.unlink(`uploads/${attachments.Filename}`);
+            }
+
             if (!findBlog) {
               const updatedDescription = replaceURL(blog.Description);
 
@@ -78,7 +117,11 @@ const addNewBlogs = async (req, res) => {
                 },
               });
 
-              if (!fs.existsSync(`uploads/attachments/resources/${attachments.Filename}`)) {
+              if (
+                !fs.existsSync(
+                  `uploads/attachments/resources/${attachments.Filename}`
+                )
+              ) {
                 await storeImageOnServer(
                   `http://www.thehappyhomes.com/attachments/Resources/${attachments.Filename}`,
                   path.join(
