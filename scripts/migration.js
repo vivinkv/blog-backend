@@ -168,7 +168,7 @@ const addNewCategoryColumn=async()=>{
   })
 }
 
-// addNewCategoryColumn()
+addNewCategoryColumn()
 
 
 const updateBlogCategoryConstraint=async()=>{
@@ -187,7 +187,7 @@ const updateBlogCategoryConstraint=async()=>{
   });
 }
 
-updateBlogCategoryConstraint()
+// updateBlogCategoryConstraint()
 
 
 
