@@ -14,6 +14,7 @@ const forumRoute = require("./routes/forum.route");
 const careerRoute = require("./routes/career.route");
 const serviceRoute = require("./routes/service.route");
 const menuRoute = require("./routes/menu.route");
+const blogCategoryRoute=require('./routes/category.route');
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -514,6 +515,7 @@ app.get("/", async (req, res) => {
 
 app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
+app.use('/category',blogCategoryRoute);
 app.get("/contact", async (req, res) => {
   const contactDetails = await pageModel.findOne({
     where: {

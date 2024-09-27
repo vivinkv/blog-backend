@@ -1,6 +1,6 @@
 const storeImageOnServer = require("./storeImagetoServer");
 const path = require('path');
-const regex = /http:\/\/www\.TheHappyHomes\.com\/attachments\/Resources\/([^\s]+)\.(png|jpg|jpeg|gif)/gi;
+const regex = /http:\/\/www\.thehappyhomes\.com\/attachments\/resources\/([^\s]+)\.(png|jpg|jpeg|gif)/gi;
 require('dotenv').config();
 const replaceURL = (description) => {
   // Check if the description is an array
