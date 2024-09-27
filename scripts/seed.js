@@ -282,16 +282,21 @@ const addCategory=async()=>{
   const categoryList=await readExcelFile("utils/THH.xlsx")
 console.log(categoryList);
   for(const category of categoryList){
-    await blogCategoryModel.create({
-      id:category.Id.toString(),
-      name:category.CategoryName,
-      title:category.PageTitle,
-      description:category.Description?.length==0 ? category.PageTitle : category.Description,
-      status:category.Status,
-      slug:category.Slub,
-      meta_title:category.MetaTitle,
-      meta_description:category.Description
-    });
+    const findCategory=await blogCategoryModel.findByPk(category.Id.toString());
+    console.log(category.Description);
+    if(!findCategory){
+      await blogCategoryModel.create({
+        id:category.Id.toString(),
+        name:category.CategoryName,
+        title:category.PageTitle,
+        description:category.Description==undefined ? category.PageTitle : category.Description,
+        status:category.Status,
+        slug:category.Slub,
+        meta_title:category.MetaTitle,
+        meta_description:category.Description
+      });
+    }
+    
   }
   
   // for(const category of categoryData.ResourceCategories){
