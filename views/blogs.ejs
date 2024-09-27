@@ -404,27 +404,43 @@
 </div>
 
 <script>
+  
+  const categories = <%- JSON.stringify(categories) %>;
+
+  // Function to get suggestions based on user input
   function getSuggestions(value) {
     const suggestionsList = document.getElementById('suggestions-list');
-    const categories = JSON.parse('<%- JSON.stringify(categories) %>');
-    const filteredCategories = categories.filter(category => category.name.toLowerCase().includes(value.toLowerCase()));
+    // Filter categories based on the user's input (case-insensitive)
+    const filteredCategories = categories.filter(category => 
+      category.name.toLowerCase().includes(value.toLowerCase())
+    );
+    
+    // Clear previous suggestions
     suggestionsList.innerHTML = '';
-    if (filteredCategories.length > 0) {
+
+    // If there are matching categories, render them
+    if (filteredCategories.length > 0 && value.trim() !== '') {
       filteredCategories.forEach(category => {
         const suggestion = document.createElement('div');
         suggestion.textContent = category.name;
+        suggestion.classList.add('cursor-pointer', 'p-2', 'hover:bg-gray-100');
+        
+        // Add category to the list when a suggestion is clicked
         suggestion.onclick = () => {
           addCategory({ id: category.id, name: category.name });
-          suggestionsList.classList.add('hidden');
+          suggestionsList.classList.add('hidden');  // Hide suggestions after selection
+          document.getElementById('new-category').value = '';  // Clear input after selection
         };
         suggestionsList.appendChild(suggestion);
       });
       suggestionsList.classList.remove('hidden');
     } else {
+      // Hide suggestions if no match is found
       suggestionsList.classList.add('hidden');
     }
   }
 </script>
+
 
 <script>
   const changeTitleModal = document.getElementById("change-title-modal");
@@ -543,7 +559,6 @@
     changeTypeModal.classList.add("hidden");
   });
 </script>
-
 <script>
   // Category Modal Logic
   const categoryModal = document.getElementById("category-modal");
@@ -582,28 +597,27 @@
       const data = await response.json();
       currentCategories = data.data; // Update currentCategories with fetched data
       console.log(data.data);
-      console.log('loop');
+      console.log("loop");
     } else {
       console.error("Failed to fetch categories from server");
       return;
     }
 
     currentCategories?.forEach((blog) => {
-      blog.blog_categories.forEach((category)=>{
-       const chip = document.createElement("div");
-      chip.className =
-        "bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center";
-      chip.innerHTML = `
-        <span>${category.name}</span>
-        <button class="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none remove-category" data-category-id="${category.id}" data-category-name="${category.name}" data-blog-id="${blogid}">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      `;
-      categoryChips.appendChild(chip);
-      })
-     
+      blog.blog_categories.forEach((category) => {
+        const chip = document.createElement("div");
+        chip.className =
+          "bg-blue-100 text-blue-800 px-2 py-1 rounded-full flex items-center";
+        chip.innerHTML = `
+          <span>${category.name}</span>
+          <button class="ml-1 text-blue-600 hover:text-blue-800 focus:outline-none remove-category" data-category-id="${category.id}" data-category-name="${category.name}" data-blog-id="${blogid}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        `;
+        categoryChips.appendChild(chip);
+      });
     });
   }
 
@@ -618,13 +632,12 @@
     // Check if the category is not empty and does not already exist in the array
     if (category && !currentCategories.some(cat => cat.name === category.name)) {
       const categoryObj = { id: category.id, name: category.name }; // Use the real ID from the server
-      
 
       // Call API to create blogSpecificCategory
       await fetch(`/admin/category/blog/${blogid}`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ categoryId: category.id, categoryName: category.name, blogId: blogid })
       }).catch(error => console.error("Error adding category:", error)); // Handle errors silently
@@ -645,14 +658,14 @@
     // Immediately render the chip removal
 
     // Call API to delete blogSpecificCategory
-   await fetch(`/admin/category/blog/${blogid}`, {
-      method: 'DELETE',
+    await fetch(`/admin/category/blog/${blogid}`, {
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ categoryId: categoryId, blogId: blogid })
     }).catch(error => console.error("Error removing category:", error)); // Handle errors silently
-     renderCategoryChips();
+    renderCategoryChips();
   }
 
   showCategoryBtns?.forEach((btn) => {
@@ -664,11 +677,11 @@
     });
   });
 
-
-
   newCategoryInput.addEventListener("keypress", async (e) => {
+    console.log("yes");
     if (e.key === "Enter") {
       const allCategories = await fetchAllCategories();
+      console.log(allCategories);
       const filteredCategories = allCategories.filter((category) =>
         category.toLowerCase().includes(newCategoryInput.value.toLowerCase())
       );
@@ -696,8 +709,7 @@
     const selectedCategories = currentCategories; // Get the selected categories
     console.log("Selected Categories:", selectedCategories); // Log the selected categories
 
-      window.location.reload();
-    
+    window.location.reload();
 
     // Optionally, you can add logic to save these categories to the server here
   });

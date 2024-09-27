@@ -186,10 +186,14 @@ blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 blogModel.belongsToMany(blogCategoryModel, {
   foreignKey: "blog_id",
   through: blogCategoryMapModel,
+  onUpdate:'CASCADE',
+  onDelete:'CASCADE'
 });
 blogCategoryModel.belongsToMany(blogModel, {
   foreignKey: "category_id",
   through: blogCategoryMapModel,
+  onUpdate:'CASCADE',
+  onDelete:'CASCADE'
 });
 
 userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user" });

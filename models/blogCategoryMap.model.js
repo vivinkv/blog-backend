@@ -15,21 +15,25 @@ const blogCategoryMapModel = sequelizeConfig.define(
       allowNull: true,
       references: {
         model: "blog",
-        key:'id'
+        key: "id",
       },
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
     },
     category_id: {
-        type: DataTypes.STRING,
-        allowNull: true,
-        references: {
-          model: "blog_category",
-          key:'id'
-        },
+      type: DataTypes.STRING,
+      allowNull: true,
+      references: {
+        model: "blog_category",
+        key: "id",
       },
-    type:{
-        type:DataTypes.ENUM('banner','featured','standard','none'),
-        defaultValue:'none'
-    }
+      onDelete: "RESTRICT",
+      onUpdate: "CASCADE",
+    },
+    type: {
+      type: DataTypes.ENUM("banner", "featured", "standard", "none"),
+      defaultValue: "none",
+    },
   },
   {
     freezeTableName: true,
@@ -38,5 +42,4 @@ const blogCategoryMapModel = sequelizeConfig.define(
   }
 );
 
-
-module.exports=blogCategoryMapModel
+module.exports = blogCategoryMapModel;

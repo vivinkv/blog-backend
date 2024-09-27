@@ -168,11 +168,12 @@ const addNewCategoryColumn=async()=>{
   })
 }
 
-addNewCategoryColumn()
+// addNewCategoryColumn()
 
 
 const updateBlogCategoryConstraint=async()=>{
   await queryInterface.removeConstraint('blog_category_map', 'blog_category_map_category_id_fkey');
+  await queryInterface.removeConstraint('blog_category_map', 'blog_category_map_blog_id_fkey');
   await queryInterface.addConstraint('blog_category_map', {
     fields: ['category_id'],
     type: 'foreign key',
@@ -183,11 +184,23 @@ const updateBlogCategoryConstraint=async()=>{
     },
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
-    deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+    // deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+  });
+  await queryInterface.addConstraint('blog_category_map', {
+    fields: ['blog_id'],
+    type: 'foreign key',
+    name: 'blog_category_map_blog_id_fkey',
+    references: {
+      table: 'blog',
+      field: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    // deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
   });
 }
 
-// updateBlogCategoryConstraint()
+updateBlogCategoryConstraint()
 
 
 
