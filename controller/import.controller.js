@@ -3,6 +3,7 @@ const blogModel = require("../models/blog.model");
 const blogCommentModel = require("../models/blogComment.model");
 const userModel = require("../models/user.model");
 const bannerImageModel = require("../models/bannerImage.model");
+const blogCategoryMapModel = require("../models/blogCategoryMap.model");
 const { v4: uuidv4 } = require("uuid");
 const storeImageOnServer = require("../utils/storeImagetoServer");
 const path = require("path");
@@ -57,6 +58,32 @@ const addNewBlogs = async (req, res) => {
               },
             });
 
+            const updatedDescription = replaceURL(blog.Description);
+            if (findBlog) {
+              await blogModel.update(
+                {
+                  description: updatedDescription,
+                },
+                {
+                  where: {
+                    id: findBlog.dataValues.id,
+                  },
+                }
+              );
+            } else {
+              findBlog = await blogModel.create({
+                id: blog.ID.toString(),
+                title: blog.Title,
+                meta_title: blog.MetaTitle,
+                short_description: blog.MetaDescription,
+                meta_description: blog.MetaDescription,
+                description: updatedDescription,
+                author: user.dataValues.id,
+                publish_date: blog.PostedDate,
+                is_published: blog.PublishStatus,
+              });
+            }
+
             if (
               !fs.existsSync(`uploads/attachments/thumbnail/${blog.Thumbnail}`)
             ) {
@@ -74,39 +101,13 @@ const addNewBlogs = async (req, res) => {
               thumbnail = await bannerImageModel.create({
                 filename: blog.Thumbnail,
                 originalname: blog.Thumbnail,
-                fieldname:blog.Thumbnail,
+                fieldname: blog.Thumbnail,
                 encoding: blog.Thumbnail,
                 mimetype: blog.Thumbnail,
                 destination: "/uploads/attachments/resources/thumbnail",
                 path: `/uploads/attachments/resources/thumbnail/${blog.Thumbnail}`,
                 size: 1000,
-                image_type: "thumbanil",
-              });
-
-              blogModel.update({
-                banner_id: thumbnail ? thumbnail.dataValues.id : "null",
-              },{
-                where:{
-                  id:findBlog.dataValues.id
-                }
-              })
-             
-              // await fs.promises.unlink(`uploads/${attachments.Filename}`);
-            }
-
-            if (!findBlog) {
-              const updatedDescription = replaceURL(blog.Description);
-
-              findBlog = await blogModel.create({
-                id: blog.ID.toString(),
-                title: blog.Title,
-                meta_title: blog.MetaTitle,
-                short_description: blog.MetaDescription,
-                meta_description: blog.MetaDescription,
-                description: updatedDescription,
-                author: user.dataValues.id,
-                publish_date: blog.PostedDate,
-                is_published: blog.PublishStatus,
+                image_type: "thumbnail",
               });
             }
 
@@ -132,7 +133,6 @@ const addNewBlogs = async (req, res) => {
                     attachments.Filename
                   )
                 );
-                // await fs.promises.unlink(`uploads/${attachments.Filename}`);
               }
 
               if (!attachment) {
@@ -153,6 +153,7 @@ const addNewBlogs = async (req, res) => {
                 });
               }
             }
+
             for (const comments of blog.Responses) {
               let comment = await blogCommentModel.findOne({
                 where: {
@@ -165,38 +166,37 @@ const addNewBlogs = async (req, res) => {
                   email: comments?.Email,
                 },
               });
-              if (!commentedUser) {
-                if (comments.Email) {
-                  commentedUser = await userModel.create({
-                    email: comments.Email,
-                    password: uuidv4(),
-                    name: comments.AuthorName,
-                    user_id: comments.Email,
-                  });
-                }
+              if (!commentedUser && comments.Email) {
+                commentedUser = await userModel.create({
+                  email: comments.Email,
+                  password: uuidv4(),
+                  name: comments.AuthorName,
+                  user_id: comments.Email,
+                });
               }
               if (!comment) {
                 comment = await blogCommentModel.create({
                   comment: comments.Description,
-                  user_id: commentedUser.dataValues.id,
+                  user_id: commentedUser ? commentedUser.dataValues.id : null,
                   blog_id: findBlog.dataValues.id,
                   createdAt: comments.PostedDate,
                   status: comments.Status,
                 });
               }
-              // } else {
-              //   comment = await blogCommentModel.update(
-              //     {
-              //       user_id: commentedUser.dataValues.id,
-              //     },
-              //     {
-              //       where: {
-              //         comment: comments.Description,
-              //         blog_id: findBlog.dataValues.id,
-              //       },
-              //     }
-              //   );
-              // }
+            }
+
+            const findCategoryMap = await blogCategoryMapModel.findOne({
+              where: {
+                blog_id: blog.ID.toString(),
+                category_id: blog.CategoryId.toString(),
+              },
+            });
+
+            if (!findCategoryMap) {
+              await blogCategoryMapModel.create({
+                blog_id: blog.ID.toString(),
+                category_id: blog.CategoryId.toString(),
+              });
             }
           }
 

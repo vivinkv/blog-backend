@@ -5,6 +5,11 @@ const bannerImageModel = require("../models/bannerImage.model");
 const { v4: uuidv4 } = require("uuid");
 const blogCommentModel = require("../models/blogComment.model");
 const pageModel = require("../models/page/page.model");
+const blogCategoryModel = require("../models/blogCategory.model");
+// const readExcelFile = require("../utils/readExcelFile");
+const path=require('path');
+const categoryData = require("../utils/data");
+const readExcelFile = require("../utils/readExcelFile");
 
 async function fetchData() {
   try {
@@ -269,4 +274,41 @@ const updatePageData = async () => {
   }
 };
 
-updatePageData();
+// updatePageData();
+
+
+const addCategory=async()=>{
+
+  const categoryList=await readExcelFile("utils/THH.xlsx")
+console.log(categoryList);
+  for(const category of categoryList){
+    await blogCategoryModel.create({
+      id:category.Id.toString(),
+      name:category.CategoryName,
+      title:category.PageTitle,
+      description:category.Description?.length==0 ? category.PageTitle : category.Description,
+      status:category.Status,
+      slug:category.Slub,
+      meta_title:category.MetaTitle,
+      meta_description:category.Description
+    });
+  }
+  
+  // for(const category of categoryData.ResourceCategories){
+  //   await blogCategoryModel.create({
+  //     id:category.Id.toString(),
+  //     name:category.CategoryName,
+  //     title:category.PageTitle,
+  //     description:category.Description?.length==0 ? category.PageTitle : category.Description,
+  //     status:category.Status,
+  //     slug:category.Slub,
+  //     meta_title:category.MetaTitle,
+  //     meta_description:category.Description
+  //   });
+  // }
+}
+addCategory();
+
+
+
+

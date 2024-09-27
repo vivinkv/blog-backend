@@ -13,12 +13,14 @@ $(document).ready(function () {
     const name = $("#category-name").val().trim();
     const title = $("#category-title").val().trim();
     const description = $("#category-description").summernote("code");
+    const metaTitle = $("#meta-title").val().trim(); // Fetching meta title
+    const metaDescription = $("#meta-description").val().trim(); // Fetching meta description
     const categoryId = document.getElementById("id").value; // Assuming you add this data attribute to the form
     const alertBox = document.createElement("div");
     alertBox.className = "alert-box";
     alertBox.style.position = "absolute";
-    alertBox.style.bottom = "3%";
-    alertBox.style.right = "3%";
+    alertBox.style.bottom = "0%";
+    alertBox.style.right = "0%";
     alertBox.style.padding = "20px";
     alertBox.style.borderRadius = "10px";
     alertBox.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.2)";
@@ -54,6 +56,8 @@ $(document).ready(function () {
           name: name,
           title: title,
           description: description,
+          meta_title: metaTitle,
+          meta_description: metaDescription 
         }),
       })
         .then((response) => response.json())
@@ -63,7 +67,7 @@ $(document).ready(function () {
           if (!data?.err) {
             alertBox.style.background = "green";
             alertBox.style.color = "white";
-            alertBox.innerHTML = "Created successfully!";
+            alertBox.innerHTML = "Updated successfully!";
 
             document.body.appendChild(alertBox);
             setTimeout(() => {

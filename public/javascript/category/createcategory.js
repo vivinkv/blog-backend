@@ -13,11 +13,13 @@ $(document).ready(function () {
     const name = $("#category-name").val().trim();
     const title = $("#category-title").val().trim();
     const description = $("#category-description").summernote("code");
+    const metaTitle = $("#meta-title").val().trim(); // New meta title input
+    const metaDescription = $("#meta-description").val().trim(); // New meta description input
     const alertBox = document.createElement("div");
     alertBox.className = "alert-box";
     alertBox.style.position = "absolute";
-    alertBox.style.bottom = "3%";
-    alertBox.style.right = "3%";
+    alertBox.style.bottom = "0%";
+    alertBox.style.right = "0%";
     alertBox.style.padding = "20px";
     alertBox.style.borderRadius = "10px";
     alertBox.style.boxShadow = "0 0 10px rgba(0, 0, 0, 0.2)";
@@ -54,6 +56,8 @@ $(document).ready(function () {
           name: name,
           title: title,
           description: description,
+          meta_title: metaTitle, // Append meta title
+          meta_description: metaDescription // Append meta description
         }),
       })
         .then((response) => response.json())

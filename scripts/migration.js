@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes,Sequelize } = require("sequelize");
 const sequelizeConfig = require("../config/sequelize.config");
 
 const queryInterface = sequelizeConfig.getQueryInterface();
@@ -159,4 +159,36 @@ const addNewPagesColumn=async()=>{
 }
 
 
-addNewPagesColumn();
+// addNewPagesColumn();
+
+const addNewCategoryColumn=async()=>{
+  await queryInterface.addColumn('blog_category','status',{
+    type:DataTypes.INTEGER,
+    defaultValue:1,
+  })
+}
+
+// addNewCategoryColumn()
+
+
+const updateBlogCategoryConstraint=async()=>{
+  await queryInterface.removeConstraint('blog_category_map', 'blog_category_map_category_id_fkey');
+  await queryInterface.addConstraint('blog_category_map', {
+    fields: ['category_id'],
+    type: 'foreign key',
+    name: 'blog_category_map_category_id_fkey',
+    references: {
+      table: 'blog_category',
+      field: 'id',
+    },
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+    deferrable: Sequelize.Deferrable.INITIALLY_DEFERRED,
+  });
+}
+
+updateBlogCategoryConstraint()
+
+
+
+
