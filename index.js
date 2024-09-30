@@ -743,6 +743,10 @@ app.get('/allblogs',async(req,res)=>{
   }
 })
 
+app.get('/msg',(req,res)=>{
+  res.json({msg:'Server Run Successfully'})
+})
+
 app.get("/:id", async (req, res) => {
   console.log(req?.user);
   try {
