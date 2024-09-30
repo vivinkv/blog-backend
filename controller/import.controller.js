@@ -63,9 +63,7 @@ const addNewBlogs = async (req, res) => {
             if (findBlog) {
               await blogModel.update(
                 {
-                  slug: blog?.Slug
-                  ? blog.Slug
-                  : slugify(blog.Title, {
+                  slug:  slugify(blog.Title, {
                       replacement: "-",
                       remove: undefined,
                       lower: true,
@@ -91,9 +89,7 @@ const addNewBlogs = async (req, res) => {
                 author: user.dataValues.id,
                 publish_date: blog.PostedDate,
                 is_published: blog.PublishStatus,
-                slug: blog?.Slug
-                  ? blog.Slug
-                  : slugify(blog.Title, {
+                slug: slugify(blog.Title, {
                       replacement: "-",
                       remove: undefined,
                       lower: true,
