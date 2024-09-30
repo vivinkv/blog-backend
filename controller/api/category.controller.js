@@ -15,12 +15,11 @@ const getAllCategory = async (req, res) => {
 };
 
 const getCategoryBasedBlog = async (req, res) => {
-  const { id, slug } = req.params;
+  const { id } = req.params;
   try {
     const findCategoryBlog = await blogCategoryModel.findOne({
       where: {
         id,
-        slug,
       },
       include: [
         {

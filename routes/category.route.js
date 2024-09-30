@@ -3,7 +3,7 @@ const { getAllCategory,getCategoryBasedBlog } = require('../controller/api/categ
 const router=express.Router();
 
 router.get('/',getAllCategory);
-router.get('/:id/:slug',getCategoryBasedBlog);
+router.get('/:id',getCategoryBasedBlog);
 
 
 module.exports=router
