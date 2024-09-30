@@ -200,7 +200,17 @@ const updateBlogCategoryConstraint=async()=>{
   });
 }
 
-updateBlogCategoryConstraint()
+// updateBlogCategoryConstraint()
+
+const addNewColumnToBlog=async()=>{
+await queryInterface.addColumn('blog','slug',{
+  type:DataTypes.STRING,
+  allowNull:true,
+})
+}
+
+
+addNewColumnToBlog();
 
 
 

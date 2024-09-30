@@ -9,6 +9,7 @@ const storeImageOnServer = require("../utils/storeImagetoServer");
 const path = require("path");
 const fs = require("fs");
 const replaceURL = require("../utils/replaceUrl");
+const slugify = require("slugify");
 
 const getDetails = (req, res) => {
   res.render("import/index", {
@@ -62,7 +63,16 @@ const addNewBlogs = async (req, res) => {
             if (findBlog) {
               await blogModel.update(
                 {
-                  description: updatedDescription,
+                  slug: blog?.Slug
+                  ? blog.Slug
+                  : slugify(blog.Title, {
+                      replacement: "-",
+                      remove: undefined,
+                      lower: true,
+                      strict: false,
+                      locale: "vi",
+                      trim: true,
+                    }),
                 },
                 {
                   where: {
@@ -81,6 +91,16 @@ const addNewBlogs = async (req, res) => {
                 author: user.dataValues.id,
                 publish_date: blog.PostedDate,
                 is_published: blog.PublishStatus,
+                slug: blog?.Slug
+                  ? blog.Slug
+                  : slugify(blog.Title, {
+                      replacement: "-",
+                      remove: undefined,
+                      lower: true,
+                      strict: false,
+                      locale: "vi",
+                      trim: true,
+                    }),
               });
             }
 
