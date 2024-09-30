@@ -10,6 +10,7 @@ const blogCategoryModel = require("../models/blogCategory.model");
 const path=require('path');
 const categoryData = require("../utils/data");
 const readExcelFile = require("../utils/readExcelFile");
+const slugify=require('slugify');
 
 async function fetchData() {
   try {
@@ -312,7 +313,35 @@ console.log(categoryList);
   //   });
   // }
 }
-addCategory();
+// addCategory();
+
+const addSlugs=async()=>{
+  const blogs=await blogModel.findAll({
+    where:{
+     slug:null
+    }
+  })
+
+  for(const blog of blogs){
+    await blogModel.update({
+      slug:slugify(blog.dataValues.title,{
+        replacement:"-",
+        remove:undefined,
+        lower:true,
+        strict:false,
+        trim:true
+      })
+    },{
+      where:{
+        id:blog.dataValues.id
+      }
+    })
+  }
+
+  console.log('Slug Added Successfully');
+}
+addSlugs();
+
 
 
 
