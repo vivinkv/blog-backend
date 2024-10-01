@@ -33,8 +33,13 @@ const addNewBlogs = async (req, res) => {
           const beforeCommentCount = await blogCommentModel.count();
           const beforeUserCount = await userModel.count();
           let thumbnail;
+          console.log(blogs);
 
           for (const blog of blogs.data) {
+            
+            if(typeof(blog)!==Object){
+              continue;
+            }
             let user = await userModel.findOne({
               where: {
                 email: blog.Member.Email,
@@ -214,7 +219,10 @@ const addNewBlogs = async (req, res) => {
                 category_id: blog.CategoryId.toString(),
               });
             }
+            
           }
+
+          
 
           const lastId = await blogModel.findOne({
             order: [["createdAt", "DESC"]],
