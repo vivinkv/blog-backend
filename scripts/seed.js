@@ -11,6 +11,7 @@ const path = require("path");
 const categoryData = require("../utils/data");
 const readExcelFile = require("../utils/readExcelFile");
 const slugify = require("slugify");
+const replaceURL = require("../utils/replaceUrl");
 
 async function fetchData() {
   try {
@@ -361,7 +362,6 @@ const addBlogs = async () => {
       );
 
       if (Array.isArray(blogDetails?.data)) {
-        console.log("working");
         console.log(blogDetails.data?.length);
        
          
@@ -465,9 +465,38 @@ const addBlogs = async () => {
       } else {
         not_working.push(id);
       }
+    }else{
+      const blogDetails = await axios.get(
+        `http://www.thehappyhomes.com/getresources.aspx?MaxCount=1&StartId=${id}`
+      );
+
+      if (Array.isArray(blogDetails?.data)) {
+        working.push(id)
+      }
+      
     }
   }
   console.log("Data Stored Successfully");
+  console.log(working);
 };
 
-addBlogs();
+// addBlogs();
+
+const updateBlog=async()=>{
+  const blogs=await blogModel.findAll({});
+
+  for(const blog of blogs){
+    // console.log(blog);
+    const updatedDescription = replaceURL(blog.dataValues.description);
+    console.log(updatedDescription);
+    await blogModel.update({
+      description: updatedDescription,
+    },{
+      where:{
+        id:blog.dataValues.id
+      }
+    })
+  }
+}
+
+updateBlog();
