@@ -499,4 +499,7 @@ const updateBlog=async()=>{
   }
 }
 
+addCategory();
+addBlogs();
 updateBlog();
+addSlugs();

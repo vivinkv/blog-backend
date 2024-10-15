@@ -210,7 +210,27 @@ await queryInterface.addColumn('blog','slug',{
 }
 
 
-addNewColumnToBlog();
+// addNewColumnToBlog();
+
+const changeTableName=async()=>{
+  await queryInterface.renameTable('bannerimg','blogimg');
+  console.log('Rename Table Successfully');
+}
+
+const removeConstraints=async()=>{
+  await queryInterface.removeConstraint('blog','blog_banner_id_fkey');
+  await queryInterface.addConstraint('blog','blog_banner_id_fkey');
+  console.log('Remove Constraint Successfully');
+}
+
+removeConstraints();
+changeTableName();
+updateBlogCategoryConstraint();
+jobdown()
+jobaddColumn();
+menuAddColumn();
+
+
 
 
 

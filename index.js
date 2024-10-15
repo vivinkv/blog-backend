@@ -19,9 +19,7 @@ const blogCategoryRoute=require('./routes/category.route');
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
 const cors = require("cors");
-const featuredImageModel = require("./models/featuredImage.model");
 const bannerImageModel = require("./models/bannerImage.model");
-const ogImageModel = require("./models/ogImage.model");
 const blogSectionModel = require("./models/blogSection.model");
 const blogCommentModel = require("./models/blogComment.model");
 const forumModel = require("./models/forum/forum.model");
@@ -73,7 +71,7 @@ app.set("views", "./views");
 const allowedOrigins = [
   "http://localhost:3000",
   "https://swblogs.vercel.app",
-  "http://localhost:4000",
+  "http://localhost:5000",
   "https://blogs-23vc.onrender.com",
 ];
 

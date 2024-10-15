@@ -1,7 +1,7 @@
 const sequelizeConfig = require("../config/sequelize.config");
 const { DataTypes } = require("sequelize");
 const bannerImageModel = sequelizeConfig.define(
-  "bannerimg",
+  "blogimg",
   {
     id: {
       type: DataTypes.STRING,
