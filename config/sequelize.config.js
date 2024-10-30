@@ -1,5 +1,6 @@
-require('dotenv').config();
 const {Sequelize}=require('sequelize');
+
+console.log(process.env.USERNAME);
 
 const sequelizeConfig=new Sequelize({
     port:process.env.DBPORT,

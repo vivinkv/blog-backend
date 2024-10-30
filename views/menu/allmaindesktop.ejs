@@ -360,7 +360,7 @@ modal.classList.remove('hidden');
       body: formData
     })
     .then(response => response.json())
-    .then(() => {
+    .then((data) => {
       location.reload(); // Refresh the page to show new route
     });
   }

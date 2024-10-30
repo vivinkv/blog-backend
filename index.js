@@ -6,6 +6,8 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const { rateLimit } = require("express-rate-limit");
 
+console.log("index file started")
+
 //routes
 const userRoute = require("./routes/user.route");
 const blogRoute = require("./routes/blog.route");

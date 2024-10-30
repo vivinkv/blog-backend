@@ -267,10 +267,13 @@ const addSoftDelete=async()=>{
   
  
 
-  await queryInterface.addColumn('replies','deletedAt',{
-    type:DataTypes.DATE,
-    allowNull:true
-  })
+  // await queryInterface.addColumn('replies','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+
+  console.log('migration done');
+  
 
  
 
@@ -281,8 +284,9 @@ const addSoftDelete=async()=>{
 // updateBlogCategoryConstraint();
 // jobdown()
 // jobaddColumn();
-// menuAddColumn();
-addSoftDelete();
+Menudown()
+menuAddColumn();
+// addSoftDelete();
 
 
 
