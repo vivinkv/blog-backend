@@ -116,7 +116,9 @@
           </div>
 
           <div class="form-group">
+            <% if (data.sections && data.sections.length > 0) { %>
             <label for="content" class="form-label">Sections</label>
+            <% } %>
             <div class="section-container" id="formSections">
               <% if (data.sections && data.sections.length > 0) { %> <% for (let
               i = 0; i < data.sections.length; i++) { %>

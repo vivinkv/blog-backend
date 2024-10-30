@@ -57,6 +57,7 @@ const userModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid:true
   }
 );
 

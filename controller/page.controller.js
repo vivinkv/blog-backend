@@ -6,21 +6,21 @@ const pageSeoModel = require("../models/page/seo.model");
 const getAllPages = async (req, res) => {
   try {
     const pages = await pageModel.findAll({
-      where:{
-        is_dynamic:true
+      where: {
+        is_dynamic: true,
       },
       include: [
         {
           model: pageSectionModel,
           as: "page_sections",
         },
-        {
-          model: pageSeoModel,
-          as: "page_seo",
-        },
       ],
     });
-    res.render("page/index", { title: "Dynamic Pages", data: pages,query:{} });
+    res.render("page/index", {
+      title: "Dynamic Pages",
+      data: pages,
+      query: {},
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -39,10 +39,6 @@ const getPageDetails = async (req, res) => {
           model: pageSectionModel,
           as: "page_sections",
         },
-        {
-          model: pageSeoModel,
-          as: "page_seo",
-        },
       ],
     });
 
@@ -50,20 +46,25 @@ const getPageDetails = async (req, res) => {
       return res.status(404).json({ err: "Page not-found" });
     }
 
-    if(req?.query?.publish){
-      await pageModel.update({
-        is_published:req?.query?.publish=='true' ? 'false':'true'
-      },{
-        where:{
-          id:id
+    if (req?.query?.publish) {
+      await pageModel.update(
+        {
+          is_published: req?.query?.publish == "true" ? "false" : "true",
+        },
+        {
+          where: {
+            id: id,
+          },
         }
-      })
-      res.redirect('/admin/pages');
+      );
+      res.redirect("/admin/pages");
       return;
     }
 
-    res.render('page/update',{data:findPage.dataValues,title:"Update Page"})
-
+    res.render("page/update", {
+      data: findPage.dataValues,
+      title: "Update Page",
+    });
   } catch (error) {
     res.status(500).json({ err: error.message });
   }
@@ -76,40 +77,40 @@ const createPage = async (req, res) => {
     short_description,
     top_description,
     bottom_description,
-    sections, 
+    sections,
     is_dynamic,
-    page_name
+    page_name,
   } = req.body;
 
   try {
+    const findPageName = await pageModel.findOne({
+      where: {
+        page_name: {
+          [Op.iLike]: page_name,
+        },
+      },
+    });
 
-    const findPageName=await pageModel.findOne({
-      where:{
-        page_name:{
-          [Op.iLike]:page_name
-        }
-      }
-    })
-
-    if(findPageName){
-      return res.status(400).json({err:'Page Name Already Exists'});
+    if (findPageName) {
+      return res.status(400).json({ err: "Page Name Already Exists" });
     }
 
     // Create the main page entry
     const createPage = await pageModel.create({
-      page_name:page_name,
+      page_name: page_name,
       title: title,
       is_published: is_published,
       short_description: short_description,
       top_description: top_description,
       bottom_description: bottom_description,
-      meta_title:title,
-      meta_description:short_description,
-      is_dynamic:is_dynamic
+      meta_title: title,
+      meta_description: short_description,
+      is_dynamic: is_dynamic,
     });
 
     // Create sections associated with the page
-    for (const section of sections) {  // sections is already an array, no need to parse
+    for (const section of sections) {
+      // sections is already an array, no need to parse
       try {
         const sectionData = await pageSectionModel.create({
           page_id: createPage.dataValues.id,
@@ -119,18 +120,21 @@ const createPage = async (req, res) => {
         console.log(sectionData); // Logs each section data created
       } catch (error) {
         // If any error occurs while creating sections, return the error
-        return res.status(500).json({ err: `Error creating section: ${error.message}` });
+        return res
+          .status(500)
+          .json({ err: `Error creating section: ${error.message}` });
       }
     }
 
     // Return success response after creating the page and sections
-    res.status(200).json({ data: createPage.dataValues, msg: "Created Successfully" });
+    res
+      .status(200)
+      .json({ data: createPage.dataValues, msg: "Created Successfully" });
   } catch (error) {
     // Catch all other errors and return them
     res.status(500).json({ err: `Error creating page: ${error.message}` });
   }
 };
-
 
 const updatePage = async (req, res) => {
   const {
@@ -142,13 +146,12 @@ const updatePage = async (req, res) => {
     sections, // sections will already be a parsed JSON object
     meta_title,
     meta_description,
-    is_dynamic
+    is_dynamic,
   } = req.body;
 
   const { id } = req.params;
 
   try {
-    
     // Load the existing page and its sections
     const page = await pageModel.findByPk(id, {
       include: [
@@ -222,23 +225,10 @@ const updatePage = async (req, res) => {
         is_published,
         top_description,
         bottom_description,
-        is_dynamic
+        is_dynamic,
       },
       {
         where: { id },
-      }
-    );
-
-    // Update the SEO details
-    await pageSeoModel.update(
-      {
-        meta_title: meta_title,
-        meta_description: meta_description,
-      },
-      {
-        where: {
-          id: id,
-        },
       }
     );
 
@@ -248,8 +238,6 @@ const updatePage = async (req, res) => {
   }
 };
 
-
-
 const deletePage = async (req, res) => {
   const { id } = req.params;
   try {
@@ -258,10 +246,6 @@ const deletePage = async (req, res) => {
         {
           model: pageSectionModel,
           as: "page_sections",
-        },
-        {
-          model: pageSeoModel,
-          as: "page_seo",
         },
       ],
     });

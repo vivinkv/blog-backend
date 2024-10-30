@@ -45,6 +45,7 @@ const ogImageModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid:true
   }
 );
 

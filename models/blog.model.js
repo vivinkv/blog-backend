@@ -109,6 +109,7 @@ const blogModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid: true,
   }
 );
 

@@ -18,6 +18,8 @@ const blogTopicModel=sequelizeConfig.define('topics',{
         allowNull:true,
         defaultValue:'null'
     }
+},{
+    paranoid:true
 });
 
 module.exports=blogTopicModel;

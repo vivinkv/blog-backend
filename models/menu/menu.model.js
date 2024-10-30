@@ -43,7 +43,8 @@ const menuModel = sequelizeConfig.define("menus", {
   },
 },{
     freezeTableName:true,
-    timestamps:true
+    timestamps:true,
+    paranoid:true
 });
 
 module.exports = menuModel;

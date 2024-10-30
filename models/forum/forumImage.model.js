@@ -45,6 +45,7 @@ const forumImgModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid:true
   }
 );
 

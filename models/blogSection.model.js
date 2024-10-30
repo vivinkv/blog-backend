@@ -34,7 +34,8 @@ const blogSectionModel = sequelizeConfig.define('blogsection',{
 
 },{
     freezeTableName:true,
-    timestamps:true
+    timestamps:true,
+    paranoid:true
 });
 
 

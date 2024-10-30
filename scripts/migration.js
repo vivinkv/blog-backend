@@ -223,12 +223,68 @@ const removeConstraints=async()=>{
   console.log('Remove Constraint Successfully');
 }
 
-removeConstraints();
-changeTableName();
-updateBlogCategoryConstraint();
-jobdown()
-jobaddColumn();
-menuAddColumn();
+
+const addSoftDelete=async()=>{
+  // await queryInterface.addColumn('blog','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+
+  // await queryInterface.addColumn('blogimg','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('comments','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('forums','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('pages','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('user','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('jobs','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+  // await queryInterface.addColumn('menus','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+
+  // await queryInterface.addColumn('favourite','deletedAt',{
+  //   type:DataTypes.DATE,
+  //   allowNull:true
+  // })
+
+  
+ 
+
+  await queryInterface.addColumn('replies','deletedAt',{
+    type:DataTypes.DATE,
+    allowNull:true
+  })
+
+ 
+
+}
+
+// removeConstraints();
+// changeTableName();
+// updateBlogCategoryConstraint();
+// jobdown()
+// jobaddColumn();
+// menuAddColumn();
+addSoftDelete();
+
+
 
 
 

@@ -36,7 +36,8 @@ const blogCommentModel=sequelizeConfig.define('comments',{
     }
 },{
     freezeTableName:true,
-    timestamps:true
+    timestamps:true,
+    paranoid:true
 })
 
 module.exports=blogCommentModel
