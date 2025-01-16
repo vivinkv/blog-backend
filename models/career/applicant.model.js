@@ -50,6 +50,7 @@ const applicantModel = sequelizeConfig.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
   }
 );
 

@@ -34,7 +34,8 @@ const serviceSectionModel = sequelizeConfig.define('servicesection',{
 
 },{
     freezeTableName:true,
-    timestamps:true
+    timestamps:true,
+    paranoid:true
 });
 
 

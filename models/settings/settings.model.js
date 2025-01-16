@@ -11,12 +11,12 @@ const settingsModel = sequelizeConfig.define(
     },
     key: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       unique: true,
     },
     value: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

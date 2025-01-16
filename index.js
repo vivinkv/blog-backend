@@ -14,7 +14,7 @@ const forumRoute = require("./routes/forum.route");
 const careerRoute = require("./routes/career.route");
 const serviceRoute = require("./routes/service.route");
 const menuRoute = require("./routes/menu.route");
-const blogCategoryRoute=require('./routes/category.route');
+const blogCategoryRoute = require("./routes/category.route");
 
 const blogModel = require("./models/blog.model");
 const userModel = require("./models/user.model");
@@ -68,10 +68,7 @@ app.set("views", "./views");
 //ejs setup
 
 // app.use(limiter);
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.BACKEND_URL,
-];
+const allowedOrigins = [process.env.FRONTEND_URL, process.env.BACKEND_URL];
 
 app.use(
   cors({
@@ -92,87 +89,151 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 //associations
-userModel.hasMany(blogModel, { foreignKey: "author", as: "created_by" });
-blogModel.belongsTo(userModel, { foreignKey: "author", as: "created_by" });
+userModel.hasMany(blogModel, {
+  foreignKey: "author",
+  as: "created_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow blogs to remain even if the author is deleted
+  onUpdate: "CASCADE",
+});
+blogModel.belongsTo(userModel, {
+  foreignKey: "author",
+  as: "created_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow blogs to remain even if the author is deleted
+  onUpdate: "CASCADE",
+});
 
 bannerImageModel.hasOne(blogModel, {
   foreignKey: "featured_id",
   as: "featured",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for a banner image
+  onUpdate: "CASCADE",
 });
 blogModel.belongsTo(bannerImageModel, {
   foreignKey: "featured_id",
   as: "featured",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for a banner image
+  onUpdate: "CASCADE",
 });
 
-bannerImageModel.hasOne(blogModel, { foreignKey: "banner_id", as: "banner" });
+bannerImageModel.hasOne(blogModel, {
+  foreignKey: "banner_id",
+  as: "banner",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for a banner image
+  onUpdate: "CASCADE",
+});
 blogModel.belongsTo(bannerImageModel, {
   foreignKey: "banner_id",
   as: "banner",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for a banner image
+  onUpdate: "CASCADE",
 });
 
-bannerImageModel.hasOne(blogModel, { foreignKey: "og_id", as: "og" });
-blogModel.belongsTo(bannerImageModel, { foreignKey: "og_id", as: "og" });
+bannerImageModel.hasOne(blogModel, {
+  foreignKey: "og_id",
+  as: "og",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for an OG image
+  onUpdate: "CASCADE",
+});
+blogModel.belongsTo(bannerImageModel, {
+  foreignKey: "og_id",
+  as: "og",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for an OG image
+  onUpdate: "CASCADE",
+});
 
-blogModel.hasMany(blogSectionModel, { foreignKey: "blog_id", as: "sections" });
+blogModel.hasMany(blogSectionModel, {
+  foreignKey: "blog_id",
+  as: "sections",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for sections of a blog
+  onUpdate: "CASCADE",
+});
 blogSectionModel.belongsTo(blogModel, {
   foreignKey: "blog_id",
   as: "sections",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for sections of a blog
+  onUpdate: "CASCADE",
 });
 
 blogModel.hasMany(blogFavouriteModel, {
   foreignKey: "blog_id",
   as: "favourite",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for favourites of a blog
+  onUpdate: "CASCADE",
 });
 blogFavouriteModel.belongsTo(blogModel, {
   foreignKey: "blog_id",
   as: "favourite",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for favourites of a blog
+  onUpdate: "CASCADE",
 });
 
 blogModel.hasMany(blogCommentModel, { foreignKey: "blog_id", as: "comments" });
 blogCommentModel.belongsTo(blogModel, {
   foreignKey: "blog_id",
   as: "comments",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for comments of a blog
+  onUpdate: "CASCADE",
 });
 
 userModel.hasMany(blogCommentModel, {
   foreignKey: "user_id",
   as: "commented_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow comments to remain even if the user is deleted
+  onUpdate: "CASCADE",
 });
 blogCommentModel.belongsTo(userModel, {
   foreignKey: "user_id",
   as: "commented_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow comments to remain even if the user is deleted
+  onUpdate: "CASCADE",
 });
 
 blogCommentModel.hasMany(blogLikeModel, {
   foreignKey: "comment_id",
   as: "likes",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for likes of a comment
+  onUpdate: "CASCADE",
 });
 blogLikeModel.belongsTo(blogCommentModel, {
   foreignKey: "comment_id",
   as: "likes",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for likes of a comment
+  onUpdate: "CASCADE",
 });
 
-userModel.hasMany(blogLikeModel, { foreignKey: "user_id", as: "liked_by" });
-blogLikeModel.belongsTo(userModel, { foreignKey: "user_id", as: "liked_by" });
+userModel.hasMany(blogLikeModel, { foreignKey: "user_id", as: "liked_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow likes to remain even if the user is deleted
+  onUpdate: "CASCADE",
+ });
+blogLikeModel.belongsTo(userModel, { foreignKey: "user_id", as: "liked_by",
+  onDelete: "SET NULL", // Changed from CASCADE to SET NULL to allow likes to remain even if the user is deleted
+  onUpdate: "CASCADE",
+ });
 
 blogCommentModel.hasMany(blogReplyModel, {
   foreignKey: "comment_id",
   as: "comment_replies",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for replies of a comment
+  onUpdate: "CASCADE",
 });
 blogReplyModel.belongsTo(blogCommentModel, {
   foreignKey: "comment_id",
   as: "comment_replies",
+  onDelete: "CASCADE", // No change needed as CASCADE is appropriate for replies of a comment
+  onUpdate: "CASCADE",
 });
 
 userModel.hasMany(blogReplyModel, { foreignKey: "user_id", as: "replied_by" });
 blogReplyModel.belongsTo(userModel, {
   foreignKey: "user_id",
   as: "replied_by",
+  onDelete: "SET NULL", // Changed from no onDelete to SET NULL to allow replies to remain even if the user is deleted
+  onUpdate: "CASCADE",
 });
 
 blogModel.hasMany(blogSaveModel, {
   foreignKey: "blog_id",
-  onDelete: "SET NULL",
+  onDelete: "SET NULL", // No change needed as SET NULL is appropriate for saves of a blog
   as: "saved",
 });
 blogSaveModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "saved" });
@@ -183,83 +244,102 @@ blogTopicModel.belongsTo(blogModel, { foreignKey: "blog_id", as: "tags" });
 blogModel.belongsToMany(blogCategoryModel, {
   foreignKey: "blog_id",
   through: blogCategoryMapModel,
-  onUpdate:'CASCADE',
-  onDelete:'CASCADE'
+  onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
 blogCategoryModel.belongsToMany(blogModel, {
   foreignKey: "category_id",
   through: blogCategoryMapModel,
-  onUpdate:'CASCADE',
-  onDelete:'CASCADE'
+  onUpdate: "CASCADE",
+  onDelete: "CASCADE",
 });
-
-userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user" });
-jobModel.belongsTo(userModel, { foreignKey: "deleted_by", as: "deleted_user" });
+userModel.hasMany(jobModel, { foreignKey: "deleted_by", as: "deleted_user", onDelete: "SET NULL", onUpdate: "CASCADE" });
+jobModel.belongsTo(userModel, { foreignKey: "deleted_by", as: "deleted_user", onDelete: "SET NULL", onUpdate: "CASCADE" });
 
 //forum
-userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user" });
-forumModel.belongsTo(userModel, { foreignKey: "author", as: "forum_user" });
+userModel.hasMany(forumModel, { foreignKey: "author", as: "forum_user", onDelete: "SET NULL", onUpdate: "CASCADE" });
+forumModel.belongsTo(userModel, { foreignKey: "author", as: "forum_user", onDelete: "SET NULL", onUpdate: "CASCADE" });
 
-forumModel.hasMany(forumReplyModel, { foreignKey: "forum_id", as: "replies" });
+forumModel.hasMany(forumReplyModel, { foreignKey: "forum_id", as: "replies", onDelete: "CASCADE", onUpdate: "CASCADE" });
 forumReplyModel.belongsTo(forumModel, {
   foreignKey: "forum_id",
   as: "replies",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
-userModel.hasMany(forumReplyModel, { foreignKey: "user_id", as: "repliers" });
-forumReplyModel.belongsTo(userModel, { foreignKey: "user_id", as: "repliers" });
+userModel.hasMany(forumReplyModel, { foreignKey: "user_id", as: "repliers", onDelete: "SET NULL", onUpdate: "CASCADE" });
+forumReplyModel.belongsTo(userModel, { foreignKey: "user_id", as: "repliers", onDelete: "SET NULL", onUpdate: "CASCADE" });
 
 userModel.hasMany(serviceModel, {
   foreignKey: "author",
   as: "service_created_by",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
 });
 serviceModel.belongsTo(userModel, {
   foreignKey: "author",
   as: "service_created_by",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
 });
 
 serviceModel.hasMany(serviceSectionModel, {
   foreignKey: "service_id",
   as: "service_sections",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 serviceSectionModel.belongsTo(serviceModel, {
   foreignKey: "service_id",
   as: "service_sections",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
 //career association
-jobModel.hasMany(applicantModel, { foreignKey: "job_id", as: "applications" });
+jobModel.hasMany(applicantModel, { foreignKey: "job_id", as: "applications", onDelete: "CASCADE", onUpdate: "CASCADE" });
 applicantModel.belongsTo(jobModel, {
   foreignKey: "job_id",
   as: "applications",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
-menuModel.hasMany(menuModel, { foreignKey: "parent_id", as: "submenu" });
-menuModel.belongsTo(menuModel, { foreignKey: "parent_id", as: "parentMenu" });
+menuModel.hasMany(menuModel, { foreignKey: "parent_id", as: "submenu", onDelete: "SET NULL", onUpdate: "CASCADE" });
+menuModel.belongsTo(menuModel, { foreignKey: "parent_id", as: "parentMenu", onDelete: "SET NULL", onUpdate: "CASCADE" });
 
 //pages
 
 pageModel.hasMany(pageSectionModel, {
   foreignKey: "page_id",
   as: "page_sections",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 pageSectionModel.belongsTo(pageModel, {
   foreignKey: "page_id",
   as: "page_sections",
+  onDelete: "CASCADE",
+  onUpdate: "CASCADE",
 });
 
-pageModel.hasOne(pageSeoModel, { foreignKey: "page_id", as: "page_seo" });
-pageSeoModel.belongsTo(pageModel, { foreignKey: "page_id", as: "page_seo" });
+pageModel.hasOne(pageSeoModel, { foreignKey: "page_id", as: "page_seo", onDelete: "SET NULL", onUpdate: "CASCADE" });
+pageSeoModel.belongsTo(pageModel, { foreignKey: "page_id", as: "page_seo", onDelete: "SET NULL", onUpdate: "CASCADE" });
 
 // notifications
 
 userModel.hasMany(notificationModel, {
   foreignKey: "created_by",
   as: "notified_by",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
 });
 notificationModel.belongsTo(userModel, {
   foreignKey: "created_by",
   as: "notified_by",
+  onDelete: "SET NULL",
+  onUpdate: "CASCADE",
 });
 
 app.get("/", async (req, res) => {
@@ -511,131 +591,131 @@ app.get("/", async (req, res) => {
 
 app.use("/user", userRoute);
 app.use("/blogs", blogRoute);
-app.use('/category',blogCategoryRoute);
+app.use("/category", blogCategoryRoute);
 app.get("/contact", async (req, res) => {
   const contactDetails = await pageModel.findOne({
     where: {
       page_name: {
-        [Op.iLike]: '%contact%'
+        [Op.iLike]: "%contact%",
       },
     },
   });
 
-  res.json({data:contactDetails.dataValues})
+  res.json({ data: contactDetails.dataValues });
 });
 
-app.get('/test',async(req,res)=>{
+app.get("/test", async (req, res) => {
   const { count, rows } = await blogModel.findAndCountAll({
-      order: [["createdAt", "DESC"]], // Order blogs by latest first
-      include: [
-        {
-          model: userModel,
-          foreignKey: "author",
-          as: "created_by",
-          attributes: {
-            exclude: ["password"],
-          },
+    order: [["createdAt", "DESC"]], // Order blogs by latest first
+    include: [
+      {
+        model: userModel,
+        foreignKey: "author",
+        as: "created_by",
+        attributes: {
+          exclude: ["password"],
         },
-        {
-          model: bannerImageModel,
-          foreignKey: "banner_id",
-          as: "banner",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "featured_id",
-          as: "featured",
-        },
-        {
-          model: bannerImageModel,
-          foreignKey: "og_id",
-          as: "og",
-        },
-        {
-          model: blogSectionModel,
-          foreignKey: "blog_id",
-          as: "sections",
-        },
-        {
-          model: blogFavouriteModel,
-          foreignKey: "blog_id",
-          as: "favourite",
-        },
-        {
-          model: blogCommentModel,
-          foreignKey: "blog_id",
-          as: "comments",
-          include: [
-            {
-              model: userModel,
-              foreignKey: "user_id",
-              as: "commented_by",
-              attributes: {
-                exclude: ["password"],
-              },
-            },
-            {
-              model: blogLikeModel,
-              foreignKey: "comment_id",
-              as: "likes",
-              include: [
-                {
-                  model: userModel,
-                  foreignKey: "user_id",
-                  as: "liked_by",
-                  attributes: {
-                    exclude: ["password"],
-                  },
-                },
-              ],
-            },
-            {
-              model: blogReplyModel,
-              foreignKey: "comment_id",
-              as: "comment_replies",
-              include: [
-                {
-                  model: userModel,
-                  foreignKey: "user_id",
-                  as: "replied_by",
-                  attributes: {
-                    exclude: ["password"],
-                  },
-                },
-              ],
-            },
-          ],
-          separate: true,
-          order: [["createdAt", "DESC"]],
-        },
-        {
-          model: blogTopicModel,
-          foreignKey: "blog_id",
-          as: "tags",
-        },
-        {
-          model: blogCategoryModel,
-          as: "blog_categories",
-          through: {
-            model: blogCategoryMapModel,
-            unique: false,
-          },
-        },
-      ],
-      where: {
-        premium: false,
       },
-    });
+      {
+        model: bannerImageModel,
+        foreignKey: "banner_id",
+        as: "banner",
+      },
+      {
+        model: bannerImageModel,
+        foreignKey: "featured_id",
+        as: "featured",
+      },
+      {
+        model: bannerImageModel,
+        foreignKey: "og_id",
+        as: "og",
+      },
+      {
+        model: blogSectionModel,
+        foreignKey: "blog_id",
+        as: "sections",
+      },
+      {
+        model: blogFavouriteModel,
+        foreignKey: "blog_id",
+        as: "favourite",
+      },
+      {
+        model: blogCommentModel,
+        foreignKey: "blog_id",
+        as: "comments",
+        include: [
+          {
+            model: userModel,
+            foreignKey: "user_id",
+            as: "commented_by",
+            attributes: {
+              exclude: ["password"],
+            },
+          },
+          {
+            model: blogLikeModel,
+            foreignKey: "comment_id",
+            as: "likes",
+            include: [
+              {
+                model: userModel,
+                foreignKey: "user_id",
+                as: "liked_by",
+                attributes: {
+                  exclude: ["password"],
+                },
+              },
+            ],
+          },
+          {
+            model: blogReplyModel,
+            foreignKey: "comment_id",
+            as: "comment_replies",
+            include: [
+              {
+                model: userModel,
+                foreignKey: "user_id",
+                as: "replied_by",
+                attributes: {
+                  exclude: ["password"],
+                },
+              },
+            ],
+          },
+        ],
+        separate: true,
+        order: [["createdAt", "DESC"]],
+      },
+      {
+        model: blogTopicModel,
+        foreignKey: "blog_id",
+        as: "tags",
+      },
+      {
+        model: blogCategoryModel,
+        as: "blog_categories",
+        through: {
+          model: blogCategoryMapModel,
+          unique: false,
+        },
+      },
+    ],
+    where: {
+      premium: false,
+    },
+  });
 
-    res.json({
-      totalResults: count,
-      data: rows,
-    });
-})
+  res.json({
+    totalResults: count,
+    data: rows,
+  });
+});
 
-app.get('/allblogs',async(req,res)=>{
+app.get("/allblogs", async (req, res) => {
   try {
-    const blogs=await blogModel.findAll({
+    const blogs = await blogModel.findAll({
       include: [
         {
           model: userModel,
@@ -731,17 +811,17 @@ app.get('/allblogs',async(req,res)=>{
           },
         },
       ],
-    })
+    });
 
-    res.status(200).json({data:blogs})
+    res.status(200).json({ data: blogs });
   } catch (error) {
-    res.status(500).json({err:error.message})
+    res.status(500).json({ err: error.message });
   }
-})
+});
 
-app.get('/msg',(req,res)=>{
-  res.json({msg:'Server Run Successfully'})
-})
+app.get("/msg", (req, res) => {
+  res.json({ msg: "Server Run Successfully" });
+});
 
 app.get("/:id", async (req, res) => {
   console.log(req?.user);

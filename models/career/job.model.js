@@ -69,6 +69,7 @@ const jobModel = sequelizeConfig.define(
   {
     freezeTableName: true,
     timestamps: true,
+    paranoid: true,
   }
 );
 

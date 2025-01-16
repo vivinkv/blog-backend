@@ -138,6 +138,8 @@ const createSettings = async (req, res) => {
 
     res.status(201).json({ msg: "Settings Created Successfully" });
   } catch (error) {
+    console.log(error?.message);
+    
     res.status(500).json({ err: error.message });
   }
 };

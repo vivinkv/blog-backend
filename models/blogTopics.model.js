@@ -19,6 +19,8 @@ const blogTopicModel=sequelizeConfig.define('topics',{
         defaultValue:'null'
     }
 },{
+    timestamps:true,
+    freezeTableName:true,
     paranoid:true
 });
 

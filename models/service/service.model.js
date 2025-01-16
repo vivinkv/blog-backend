@@ -84,6 +84,7 @@ const serviceModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid: true,
   }
 );
 

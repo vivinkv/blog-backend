@@ -27,6 +27,7 @@ const adminModel = sequelizeConfig.define(
   {
     timestamps: true,
     freezeTableName: true,
+    paranoid:true
   }
 );
 
